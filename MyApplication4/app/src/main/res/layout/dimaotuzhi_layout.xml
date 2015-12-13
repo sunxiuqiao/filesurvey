@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RadioButton
+            android:id="@+id/ganhechuang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ganhechuang"/>
+
+        <RadioButton
+            android:id="@+id/ganhehu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ganhehu"/>
+
+        <RadioButton
+            android:id="@+id/chonggou"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/chonggou"/>
+
+        <RadioButton
+            android:id="@+id/douya"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/douya"/>
+        <RadioButton
+            android:id="@+id/bengya"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bengya"/>
+        <RadioButton
+            android:id="@+id/huapo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/huapo"/>
+
+        <RadioButton
+            android:id="@+id/shandong"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shangdong"/>
+
+        <RadioButton
+            android:id="@+id/rongdong"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rongdong"/>
+
+        <RadioButton
+            android:id="@+id/yanrongloudou"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rongyanloudou"/>
+
+        <RadioButton
+            android:id="@+id/yanfeng"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/yanfeng"/>
+
+        <RadioButton
+            android:id="@+id/titiankan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tiidankan"/>
+
+        <RadioButton
+            android:id="@+id/shanai"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shanai"/>
+
+        <RadioButton
+            android:id="@+id/doushishan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/doushishan"/>
+
+        <RadioButton
+            android:id="@+id/gebitan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/gebbitan"/>
+
+        <RadioButton
+            android:id="@+id/shikuaidi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shikuaidi"/>
+
+        <RadioButton
+            android:id="@+id/yanjiandi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/yanjiandi"/>
+
+        <RadioButton
+            android:id="@+id/junliedi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/junlieidi"/>
+
+        <RadioButton
+            android:id="@+id/shadi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shadi"/>
+
+        <RadioButton
+            android:id="@+id/xueshan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/xueshan"/>
+    </RadioGroup>
+</LinearLayout>

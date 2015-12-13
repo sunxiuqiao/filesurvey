@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/addmap"
+            android:icon="@android:drawable/ic_menu_add"
+            android:title="添加地图"/>
+        <item android:id="@+id/layercontrol"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="图层管理"/>
+        <item android:id="@+id/startedit"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="要素采集" />
+        <item android:id="@+id/search"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="要素查询"/>
+        <item android:id="@+id/surveydiatance"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="测量距离" />
+        <item android:id="@+id/camara"
+            android:icon="@android:drawable/ic_menu_camera"
+            android:title="拍照采集" />
+
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item android:id="@+id/sharedata"
+                android:icon="@android:drawable/ic_menu_save"
+                android:title="数据同步" />
+            <item android:id="@+id/WiFishare"
+                android:icon="@android:drawable/ic_menu_send"
+                android:title="WiFi传输" />
+        </menu>
+    </item>
+
+</menu>

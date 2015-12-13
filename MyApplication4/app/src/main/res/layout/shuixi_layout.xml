@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RadioButton
+            android:id="@+id/heliu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/heliu"/>
+
+        <RadioButton
+            android:id="@+id/hupo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hupo"/>
+
+        <RadioButton
+            android:id="@+id/shuiku"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shuiku"/>
+
+        <RadioButton
+            android:id="@+id/chitang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/chitang"/>
+
+        <RadioButton
+            android:id="@+id/gouqu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/gouqu"/>
+
+        <RadioButton
+           android:id="@+id/shuiyuan"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/shuiyuan"/>
+
+        <RadioButton
+            android:id="@+id/zhaoze"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/zhaoze"/>
+
+        <RadioButton
+            android:id="@+id/haianxian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/haianxian"/>
+
+        <RadioButton
+            android:id="@+id/pubu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pubu"/>
+
+        <RadioButton
+            android:id="@+id/shitan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shitan"/>
+
+        <RadioButton
+            android:id="@+id/douan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/douan"/>
+
+
+    </RadioGroup>
+</LinearLayout>

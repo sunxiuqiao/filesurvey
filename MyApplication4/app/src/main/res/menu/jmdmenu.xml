@@ -1,0 +1,31 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/drawdl"
+            android:title="@string/dulifangwu"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawsls"
+            android:title="@string/sanlieshi"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawjqs"
+            android:title="@string/jiejushi"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawyds"
+            android:title="@string/yaodongshi"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawqt"
+            android:title="@string/qita"
+            app:showAsAction="always"/>
+
+
+    </group>
+
+
+
+</menu>

@@ -1,0 +1,179 @@
+<resources>
+    <string name="app_name">野外调绘</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">新建用户</string>
+    <string name="usermanager">用户管理</string>
+    <string name="lookforuser">查看用户</string>
+    <string name="title_activity_login">野外调绘</string>
+
+    <!-- Strings related to login -->
+    <string name="putusername">请在此输入用户名</string>
+    <string name="prompt_password">请在此输入密码 </string>
+    <string name="action_sign_in">登  录</string>
+    <string name="action_sign_in_short">登录</string>
+    <string name="error_invalid_email">This username is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="rememberpassword">记住密码</string>
+    <string name="autologin">自动登录</string>
+    <string name="url">请在此输入URL链接</string>
+    <string name="golbe">全图</string>
+    <string name="edit">编辑</string>
+    <string name="delete">删除</string>
+    <string name="save">保存</string>
+    <string name="undo">撤销</string>
+
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="saved">New feature saved</string>
+    <string name="action_add">Add Feature</string>
+    <string name="action_save">Save</string>
+    <string name="action_discard">删除</string>
+    <string name="action_delete">Delete Point</string>
+    <string name="action_undo">撤销</string>
+    <string name="title_add_point">点</string>
+    <string name="title_add_polyline">线</string>
+    <string name="title_add_polygon">面</string>
+    <string name="title_feature_type">Select feature type</string>
+    <string name="title_confirm_discard">Discard new feature</string>
+    <string name="title_edit_failed">Saved failed</string>
+    <string name="msg_confirm_discard">确定要放弃正在编辑的要素?</string>
+    <string name="zoomin">缩小</string>
+    <string name="zoomout">放大</string>
+    <string name="localtion">本地位置</string>
+    <string name="pthotodiscrable">照片名称</string>
+    <string name="photolocation">照片描述</string>
+    <string name="wifishare">开始WiFi传输</string>
+    <string name="wifistop">停止WiFi传输</string>
+    <string name="wifidistory">WiFi中断</string>
+
+    <string name="FIDHINT">此FID唯一</string>
+    <string name="FID">要素ID</string>
+    <string name="BSM">标识码 </string>
+    <string name="YSDM">要素代码 </string>
+    <string name="DKBM">地块编码</string>
+    <string name="DKMC">地块名称</string>
+    <string name="SYQXZ">所有权性质</string>
+    <string name="DKLB">地块类别</string>
+    <string name="TDSYLX">土地使用类型</string>
+    <string name="DLDJ">地力等级</string>
+    <string name="TDYT">土地用途</string>
+    <string name="SFJBNT">是否基本农田</string>
+    <string name="SCMJ">实测面积</string>
+    <string name="DKDZ">地块东至</string>
+    <string name="DKNZ">地块南至</string>
+    <string name="DKXZ">地块西至</string>
+    <string name="DKBZ">地块北至</string>
+    <string name="DKBZXX">地块备注信息</string>
+    <string name="ZJRXM">指界人姓名</string>
+
+    <string name="jumindi">居民地</string>
+    <string name="daolu">道路</string>
+    <string name="guanxian">管线、垣栅</string>
+    <string name="shuixi">水系</string>
+    <string name="zhibei">植被</string>
+    <string name="jingjiexian">境界线</string>
+    <string name="dimaohetuzhi">地貌和土质</string>
+    <string name="mingchenghezhuji">地理名称和调查注记</string>
+
+    <string name="dulifangwu">独立房屋</string>
+    <string name="jiejushi">街区式居民地</string>
+    <string name="sanlieshi">散列式居民地</string>
+    <string name="yaodongshi">窑洞式居民地</string>
+    <string name="qita">其他</string>
+
+    <string name="tielu">铁路</string>
+    <string name="gonglu">公路</string>
+    <string name="jigenglu">机耕路</string>
+    <string name="xiangcunlu">乡村路</string>
+    <string name="xiaolu">小路</string>
+    <string name="neibudaolu">内部道路</string>
+
+    <string name="guanxian1">管线</string>
+    <string name="dianlixian">电力线</string>
+    <string name="tongxunxian">通讯线</string>
+    <string name="guandao">管道</string>
+    <string name="yuanshan">垣栅</string>
+    <string name="chengqiang">城墙</string>
+    <string name="weiqiang">围墙</string>
+    <string name="zhanlan">栅栏</string>
+    <string name="tiesiwang">铁丝网</string>
+    <string name="liba">篱笆</string>
+    <string name="di">堤</string>
+
+    <string name="heliu">河流</string>
+    <string name="hupo">湖泊</string>
+    <string name="shuiku">水库</string>
+    <string name="chitang">池塘</string>
+    <string name="gouqu">沟渠</string>
+    <string name="shuiyuan">水源</string>
+    <string name="zhaoze">沼泽</string>
+    <string name="haianxian">海岸线</string>
+    <string name="pubu">瀑布</string>
+    <string name="shitan">石滩</string>
+    <string name="douan">陡岸</string>
+
+    <string name="senlin">森林</string>
+    <string name="shulin">疏林</string>
+    <string name="miaopu">苗圃</string>
+    <string name="xiachangshumu">狭长树木</string>
+    <string name="hangshu">行数</string>
+    <string name="lingxingshu">零星树木</string>
+    <string name="jingjilin">经济林</string>
+    <string name="caodi">草地</string>
+    <string name="gaocaodi">高草地</string>
+    <string name="banhuangdi">半荒植物地</string>
+    <string name="huangcaodi">荒草地</string>
+    <string name="jingjizuowu">经济作物地</string>
+    <string name="shuishengzuowu">水生作物地</string>
+    <string name="gengdi">耕地</string>
+    <string name="caidi">菜地</string>
+
+
+    <string name="guojie">国界</string>
+    <string name="guoneijie">国内各种境界</string>
+
+    <string name="ganhechuang">干河床</string>
+    <string name="ganhehu">干涸湖</string>
+    <string name="chonggou">冲沟</string>
+    <string name="douya">陡崖</string>
+    <string name="bengya">崩崖</string>
+    <string name="huapo">滑坡</string>
+    <string name="shangdong">山洞</string>
+    <string name="rongdong">溶洞</string>
+    <string name="rongyanloudou">熔岩漏斗</string>
+    <string name="yanfeng">岩峰</string>
+    <string name="tiidankan">梯田坎</string>
+    <string name="shanai">山隘</string>
+    <string name="doushishan">陡石山</string>
+    <string name="luyandi">露岩地</string>
+    <string name="shikuaidi">石块地</string>
+    <string name="gebbitan">戈壁滩</string>
+    <string name="yanjiandi">盐碱地</string>
+    <string name="junlieidi">龟裂地</string>
+    <string name="shadi">沙地</string>
+    <string name="xueshan">雪山</string>
+
+    <string name="fwcs">房屋层数</string>
+    <string name="fscz">房屋材质</string>
+    <string name="fygz">房檐改正</string>
+    <string name="bz">备注</string>
+
+    <string name="dldj">道路等级</string>
+    <string name="djdm">等级代码</string>
+    <string name="dlmc">道路名称</string>
+    <string name="dlxh">道路线号</string>
+    <string name="cz">材质</string>
+    <string name="fsss">附属设施</string>
+    <string name="title_activity_featurelist">featurelist</string>
+
+
+</resources>

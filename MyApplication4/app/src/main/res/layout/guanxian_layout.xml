@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RadioGroup
+        android:id="@+id/guanxiandiaohui"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RadioButton
+            android:id="@+id/guanxian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/guanxian"/>
+
+        <RadioButton
+            android:id="@+id/dianlixian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dianlixian"/>
+
+        <RadioButton
+            android:id="@+id/tongxunxian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tongxunxian"/>
+
+        <RadioButton
+            android:id="@+id/guandao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/guandao"/>
+
+        <RadioButton
+            android:id="@+id/yuanshan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/yuanshan"/>
+
+        <RadioButton
+            android:id="@+id/weiqiang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/weiqiang"/>
+
+        <RadioButton
+            android:id="@+id/zhalan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/zhanlan"/>
+
+        <RadioButton
+            android:id="@+id/tiesiwang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tiesiwang"/>
+
+        <RadioButton
+            android:id="@+id/liba"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/liba"/>
+
+        <RadioButton
+            android:id="@+id/di"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/di"/>
+
+
+    </RadioGroup>
+</LinearLayout>
