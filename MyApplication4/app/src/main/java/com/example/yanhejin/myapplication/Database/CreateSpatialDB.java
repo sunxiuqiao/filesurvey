@@ -7,11 +7,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Created by licheetec on 2015/5/2.
  */
-public class CreateSpitalDB extends SQLiteOpenHelper {
-    CreateSpitalDB createSpitalDB;
+public class CreateSpatialDB extends SQLiteOpenHelper {
+    CreateSpatialDB createSpatialDB;
     Context mcontext;
 
-    public CreateSpitalDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
+    public CreateSpatialDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context,name,factory,version);
         mcontext=context;
     }

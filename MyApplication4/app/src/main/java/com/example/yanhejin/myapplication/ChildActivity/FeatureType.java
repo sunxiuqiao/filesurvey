@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.RadioButton;
 
-import com.example.yanhejin.myapplication.Database.CreateSpitalDB;
+import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
 import com.example.yanhejin.myapplication.ExpandableListViewAdapter;
 import com.example.yanhejin.myapplication.R;
@@ -23,7 +23,7 @@ import java.util.List;
 public class FeatureType extends AppCompatActivity {
 
     CreateSurveyDB createSurveyDB;
-    CreateSpitalDB createSpitalDB;
+    CreateSpatialDB createSpatialDB;
     ExpandableListView expandableListView;
     View featureview;
     Dialog featureDialog;

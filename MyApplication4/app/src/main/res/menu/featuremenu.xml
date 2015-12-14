@@ -2,28 +2,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
 
-    <item android:id="@+id/drawjmd"
-        android:title="@string/jumindi"
-        app:showAsAction="always"/>
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/drawjmd"
+            android:title="@string/jumindi"
+            app:showAsAction="always"/>
 
-    <item android:id="@+id/drawdl"
-        android:title="@string/daolu"
-        app:showAsAction="always"/>
+        <item android:id="@+id/drawdl"
+            android:title="@string/daolu"
+            app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/drawsx"
-        android:title="@string/shuixi"
-        app:showAsAction="always"/>
+        <item android:id="@+id/drawsx"
+            android:title="@string/shuixi"
+            app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/drawgx"
-        android:title="@string/guanxian"
-        app:showAsAction="always"/>
+        <item android:id="@+id/drawgx"
+            android:title="@string/guanxian"
+            app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/drawzb"
-        android:title="@string/zhibei"
-        app:showAsAction="ifRoom"/>
+        <item android:id="@+id/drawzb"
+            android:title="@string/zhibei"
+            app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/drawdm"
-        android:title="@string/dimaohetuzhi"
-        app:showAsAction="ifRoom"/>
+        <item android:id="@+id/drawdm"
+            android:title="@string/dimaohetuzhi"
+            app:showAsAction="ifRoom"/>
+    </group>
 
 </menu>

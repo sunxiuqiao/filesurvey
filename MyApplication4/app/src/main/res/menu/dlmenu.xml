@@ -13,19 +13,23 @@
 
         <item android:id="@+id/drawgl"
             android:title="@string/gonglu"
-            app:showAsAction="always"/>
+            app:showAsAction="ifRoom"/>
 
         <item android:id="@+id/drawjgl"
             android:title="@string/jigenglu"
-            app:showAsAction="always"/>
+            app:showAsAction="ifRoom"/>
 
         <item android:id="@+id/drawxcl"
             android:title="@string/xiangcunlu"
-            app:showAsAction="always"/>
+            app:showAsAction="ifRoom"/>
 
         <item android:id="@+id/drawxl"
             android:title="@string/xiaolu"
-            app:showAsAction="always"/>
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawnbdl"
+            android:title="@string/neibudaolu"
+            app:showAsAction="ifRoom"/>
     </group>
 
 

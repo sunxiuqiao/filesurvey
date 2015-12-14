@@ -1,0 +1,92 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/drawghc"
+            android:title="@string/ganhechuang"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawghh"
+            android:title="@string/ganhehu"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawcg"
+            android:title="@string/chonggou"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawdx"
+            android:title="@string/douya"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawby"
+            android:title="@string/bengya"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawhp"
+            android:title="@string/huapo"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawsd"
+            android:title="@string/shangdong"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawrd"
+            android:title="@string/rongdong"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawryl"
+            android:title="@string/rongyanloudou"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawyf"
+            android:title="@string/yanfeng"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawttk"
+            android:title="@string/tiidankan"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawsa"
+            android:title="@string/shanai"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawdss"
+            android:title="@string/doushishan"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawlyd"
+            android:title="@string/luyandi"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawskd"
+            android:title="@string/shikuaidi"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawgbt"
+            android:title="@string/gebbitan"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawyjd"
+            android:title="@string/yanjiandi"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawjld"
+            android:title="@string/junlieidi"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawsdd"
+            android:title="@string/shadi"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawxs"
+            android:title="@string/xueshan"
+            app:showAsAction="ifRoom"/>
+
+
+
+    </group>
+
+
+
+</menu>

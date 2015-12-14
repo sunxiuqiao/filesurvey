@@ -1,0 +1,49 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/drawgx"
+            android:title="@string/guanxian"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawdlx"
+            android:title="@string/dianlixian"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawtxx"
+            android:title="@string/tongxunxian"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawgd"
+            android:title="@string/guandao"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawys"
+            android:title="@string/yuanshan"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawcq"
+            android:title="@string/chengqiang"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawzl"
+            android:title="@string/zhanlan"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawtsw"
+            android:title="@string/tiesiwang"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawlb"
+            android:title="@string/liba"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawd"
+            android:title="@string/di"
+            app:showAsAction="ifRoom"/>
+    </group>
+
+
+
+</menu>
