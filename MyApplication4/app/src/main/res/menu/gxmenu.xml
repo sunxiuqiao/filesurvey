@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/drawgx"
+        <item android:id="@+id/drawgxys"
             android:title="@string/guanxian"
             app:showAsAction="always"/>
 

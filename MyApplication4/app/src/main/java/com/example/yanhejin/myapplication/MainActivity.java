@@ -636,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final String[] geometryType = new String[1];
             switch (item.getItemId()){
                 case R.id.drawjmd:
-                    Type="jumidi";
+                    Type="jmdmenu";
                     setType(Type);
                     PopupMenu jmdpopup=new PopupMenu(MainActivity.this,new View(MainActivity.this));
                     jmdpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -689,6 +689,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     mSimpleFillSymbol.setAlpha(20);
                                     mapTouchListener.setType(geometryType[0]);
                                     return true;
+                                case R.id.drawsk:
+                                    mapTouchListener.geoType=Geometry.Type.POLYGON;
+                                    geometryType[0]="Polygon";
+                                    mSimpleFillSymbol=new SimpleFillSymbol(Color.BLUE, SimpleFillSymbol.STYLE.SOLID);
+                                    mSimpleFillSymbol.setAlpha(40);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawct:
+                                    mapTouchListener.geoType=Geometry.Type.POLYGON;
+                                    geometryType[0]="Polygon";
+                                    mSimpleFillSymbol=new SimpleFillSymbol(Color.BLUE, SimpleFillSymbol.STYLE.SOLID);
+                                    mSimpleFillSymbol.setAlpha(30);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawgq:
+                                    mapTouchListener.geoType=Geometry.Type.POLYLINE;
+                                    geometryType[0]="Polyline";
+                                    simpleLineSymbol =new SimpleLineSymbol(Color.BLUE,2, SimpleLineSymbol.STYLE.DASH);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawsy:
+                                    mapTouchListener.geoType=Geometry.Type.POINT;
+                                    geometryType[0]="Point";
+                                    markerSymbol =new SimpleMarkerSymbol(Color.BLUE,4, SimpleMarkerSymbol.STYLE.CIRCLE);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
                             }
                             return false;
                         }
@@ -698,40 +724,103 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     sxpopup.show();
                     return true;
                 case R.id.drawdl:
+                    Type="daolumenu";
+                    setType(Type);
                     PopupMenu dlpopup=new PopupMenu(MainActivity.this,new View(MainActivity.this));
                     dlpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                     @Override
-                     public boolean onMenuItemClick(MenuItem item) {
-                         int id=item.getItemId();
-                         switch (id){
-                             case R.id.drawgl:
-                                 mapTouchListener.geoType = Geometry.Type.POLYLINE;
-                                 geometryType[0] = "Polyline";
-                                 simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 4, SimpleLineSymbol.STYLE.SOLID);
-                                 mapTouchListener.setType(geometryType[0]);
-                                 return true;
-                             case R.id.drawjgl:
-                                 mapTouchListener.geoType = Geometry.Type.POLYLINE;
-                                 geometryType[0] = "Polyline";
-                                 simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 3, SimpleLineSymbol.STYLE.DASH);
-                                 mapTouchListener.setType(geometryType[0]);
-                                 return true;
-                         }
-                         return false;
-                     }
-                 });
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id = item.getItemId();
+                            switch (id) {
+                                case R.id.drawtl:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 4, SimpleLineSymbol.STYLE.SOLID);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawgl:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 4, SimpleLineSymbol.STYLE.SOLID);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawjgl:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 3, SimpleLineSymbol.STYLE.DASH);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawxl:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 1, SimpleLineSymbol.STYLE.DASH);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawxcl:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 2, SimpleLineSymbol.STYLE.DASH);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawnbdl:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 1, SimpleLineSymbol.STYLE.DASH);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
                     MenuInflater dlinflater=dlpopup.getMenuInflater();
                     dlinflater.inflate(R.menu.dlmenu,dlpopup.getMenu());
                     dlpopup.show();
                     return true;
 
                 case R.id.drawgx:
+                    Type="guanxianmenu";
+                    setType(Type);
                     PopupMenu gxpopup=new PopupMenu(MainActivity.this,new View(MainActivity.this));
+                    gxpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id=item.getItemId();
+                            switch (id){
+                                case R.id.drawgxys:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 2, SimpleLineSymbol.STYLE.SOLID);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawdlx:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 1, SimpleLineSymbol.STYLE.SOLID);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                                case R.id.drawtxx:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLACK,1, SimpleLineSymbol.STYLE.SOLID);
+                                    return true;
+                                case R.id.drawgd:
+                                    mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                                    geometryType[0] = "Polyline";
+                                    simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 3, SimpleLineSymbol.STYLE.SOLID);
+                                    mapTouchListener.setType(geometryType[0]);
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
                     MenuInflater gxinflater=gxpopup.getMenuInflater();
+                    gxinflater.inflate(R.menu.gxmenu,gxpopup.getMenu());
                     return true;
                 case R.id.drawjjl:
                     return true;
                 case R.id.drawdm:
+                    return true;
+                case R.id.drawzb:
                     return true;
 
                 default:
