@@ -122,7 +122,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SimpleLineSymbol simpleLineSymbol;
     MapTouchListener mapTouchListener;
     private boolean isChoose;
-    private boolean isMessageLength;
+    boolean isMessageLength;
+    boolean isPointClear;
 
     PictureMarkerSymbol pictureMarkerSymbol;
     Point point;
@@ -599,9 +600,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     PopupMenu featurePopup;
     String Type=null;
     public void setType(String featureType){
-        if (featurePopup.getMenu().equals("jmdmenu")){
-            this.Type="jmdmenu";
-        }
+            this.Type=featureType;
     }
 
     public String getType(){
@@ -637,6 +636,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final String[] geometryType = new String[1];
             switch (item.getItemId()){
                 case R.id.drawjmd:
+                    Type="jumidi";
+                    setType(Type);
                     PopupMenu jmdpopup=new PopupMenu(MainActivity.this,new View(MainActivity.this));
                     jmdpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
@@ -667,6 +668,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     jmdpopup.show();
                     return true;
                 case  R.id.drawsx:
+                    Type="shuiximenu";
+                    setType(Type);
                     PopupMenu sxpopup=new PopupMenu(MainActivity.this,new View(MainActivity.this));
                     sxpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
@@ -763,11 +766,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         private Point ptPrevious = null;//上一个点
         private ArrayList<Point> points = null;//记录全部点
         private Polygon tempPolygon = null;//记录绘制过程中的多边形
+        final String tag="TAG";
+        private ArrayList<Point> geoPoints=null;
 
         public MapTouchListener(Context context, MapView view) {
             super(context, view);
 
             points = new ArrayList<Point>();
+            geoPoints=new ArrayList<Point>();
         }
 
         // 根据用户选择设置当前绘制的几何图形类型
@@ -858,11 +864,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public boolean onDoubleTap(MotionEvent point) {
             //mGraphicLayer.removeAll();
-            SQLiteDatabase spatialdb= createSpatialDB.getReadableDatabase();
             int pointid=0;
             int graphicid=0;
 
-            if(isMessageLength == true){
+            if(isMessageLength){
                 Polyline polyline = new Polyline();
 
                 Point startPoint = null;
@@ -912,21 +917,91 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 final String fid=String.valueOf(pointid)+String.valueOf(graphicid);
                 Graphic g = new Graphic(polygon, mSimpleFillSymbol);
                 mGraphicLayer.addGraphic(g);
-
                 // 计算总面积
-                String sArea = getAreaString(polygon.calculateArea2D());
+                String sArea = getAreaString(polygon.calculateArea2D())+ " 米";
 
                 Toast.makeText(mapView.getContext(), sArea, Toast.LENGTH_SHORT).show();
             }
             //双击获取要素信息
+            switch (Type){
+                case "jmdmenu":
+                    AlertDialog.Builder jmddata=new AlertDialog.Builder(MainActivity.this);
+                    View jmdview=getLayoutInflater().inflate(R.layout.jumindi,null);
+                    jmddata.setView(jmdview);
+                    jmddata.setTitle("录入居民地属性信息");
+                    final EditText linkData= (EditText) jmdview.findViewById(R.id.linkID);
+                    final EditText fwcstext= (EditText) jmdview.findViewById(R.id.fwcs);
+                    final EditText fwcztext= (EditText) jmdview.findViewById(R.id.fwcz);
+                    final EditText fygztext= (EditText) jmdview.findViewById(R.id.fygz);
+                    final EditText bztext= (EditText) jmdview.findViewById(R.id.bz);
+                    final SQLiteDatabase jmdattributedb=createSurveyDB.getReadableDatabase();
+                    jmddata.setNegativeButton("取消录入", null);
+                    jmddata.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                if (fwcstext.getText().toString().equals("")) {
+                                    Toast.makeText(MainActivity.this, "房屋层数为空！", Toast.LENGTH_LONG).show();
+                                } else {
+                                    ContentValues jmdattrvalues = new ContentValues();
+                                    jmdattrvalues.put("LinkID", Integer.parseInt(linkData.getText().toString()));
+                                    jmdattrvalues.put("FWCS", Integer.parseInt(fwcstext.getText().toString()));
+                                    jmdattrvalues.put("FWCZ", fwcztext.getText().toString());
+                                    jmdattrvalues.put("FYGZ", Float.valueOf(fygztext.getText().toString()));
+                                    jmdattrvalues.put("BZ", bztext.getText().toString());
+                                    jmdattributedb.insert("JMDData", null, jmdattrvalues);
+                                }
+                            } catch (Exception e) {
+                                Log.i(tag, e.toString());
+                            }
+                            jmdattributedb.close();
+                            Toast.makeText(MainActivity.this, "属性数据存储成功", Toast.LENGTH_LONG).show();
+                            try {
+                                int linkID = Integer.parseInt(linkData.getText().toString());
+                                SQLiteDatabase jmdspatialdb = createSpatialDB.getReadableDatabase();
+                                Point currentPoint = null;
+                                if (String.valueOf(linkID).equals("")) {
+                                    Toast.makeText(MainActivity.this, "linkID不存在，已取消空间数据录入！", Toast.LENGTH_LONG).show();
+                                }
+                                else {
+                                    if (points.size() == 1 || points.size() == 0) {
+                                        Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                    }
+                                    if (points.size() > 1) {
+
+                                        for (int i = 1; i < points.size(); i++) {
+                                            currentPoint = points.get(i - 1);
+                                            float x = (float) currentPoint.getX();
+                                            float y = (float) currentPoint.getY();
+                                            ContentValues jmdvalues = new ContentValues();
+                                            jmdvalues.put("LinkAID", linkID);
+                                            jmdvalues.put("x", x);
+                                            jmdvalues.put("y", y);
+                                            jmdspatialdb.insert("JMDData", null, jmdvalues);
+
+                                        }
+                                        Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                        empty();
+                                        jmdspatialdb.close();
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Log.i(tag, e.toString());
+                            }
+                        }
+                    });
+                    jmddata.create().show();
+            }
 
             // 其他清理工作
+            return false;
+        }
+
+        private void empty(){
             ptStart = null;
             ptPrevious = null;
-            points.clear();
             tempPolygon = null;
-
-            return false;
+            points.clear();
         }
 
         private String getAreaString(double dValue){

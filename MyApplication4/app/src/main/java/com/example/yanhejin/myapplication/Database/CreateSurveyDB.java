@@ -25,6 +25,11 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"Permission integer,"
             +"LogTime varchar(50))";
 
+    public static final String CreatePhotoDB="create table PhotoData("+"PhotoID integer primary key autoincrement,"
+            +"photoname varchar(50),"
+            +"photodescrible varchar(100),"
+            +"phototime varchar(50))";
+
     public static final String CreateSurveyDB="create table surveydk("+"FID integer primary key,"
             +"BSM integer,"
             +"YSDM varchar(50),"
@@ -36,7 +41,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"DLDJ varchar(50),"
             +"TDYT varchar(50),"
             +"SFJBNT varchar(50),"
-            +"SCMJ float,"
+            +"SCMJ REAL,"
             +"DKDZ varchar(50),"
             +"DKXZ varchar(50),"
             +"DKNZ varchar(50),"
@@ -45,25 +50,22 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"ZJRXM varchar(50))";
 
     public static final String CreateDKDataDB="create table DKData("+"pointID integer,"
-            +"x float,"
-            +"y float,"
+            +"x REAL,"
+            +"y REAL,"
             +"graphicID integer,"
-            +"DKDataID integer primary key(pointID,graphicID)";
+            +"DKDataID integer primary key(pointID,graphicID))";
 
-    public static final String CreatePhotoDB="create table PhotoData("+"PhotoID integer primary key autoincrement,"
-            +"photoname varchar(50),"
-            +"photodescrible varchar(100),"
-            +"phototime varchar(50)";
+
 
     public static final String CreateJMDDB="create table JMDData("+"ID integer primary key autoincrement,"
-            +"FWLB varchar(50),"
+            +"LinkID integer,"
             +"FWCS integer,"
             +"FWCZ varchar(50),"
-            +"FYGZ folat,"
-            +"BZ varchar(100)";
+            +"FYGZ REAL,"
+            +"BZ varchar(100))";
 
     public  static final String CreateDLDB="create table DLData("+"ID integer primary key autoincrement,"
-            +"LinkSID integer"
+            +"LinkSID integer,"
             +"DLMC varchar(50),"
             +"DLXH integer,"
             +"DJDM varchar(50),"
