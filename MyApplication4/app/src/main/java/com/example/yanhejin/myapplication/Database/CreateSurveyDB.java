@@ -64,8 +64,13 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"FYGZ REAL,"
             +"BZ varchar(100))";
 
+    public static  final String CreateSXDB="create table SXData("+" ID integer primary key autoincrement,"
+            +"LinkID integer,"
+            +"FTName varchar(50),"
+            +"FSSS varchar(50),"
+            +"BZ varchar(100))";
     public  static final String CreateDLDB="create table DLData("+"ID integer primary key autoincrement,"
-            +"LinkSID integer,"
+            +"LinkID integer,"
             +"DLMC varchar(50),"
             +"DLXH integer,"
             +"DJDM varchar(50),"
@@ -82,6 +87,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL(CreatePhotoDB);
         db.execSQL(CreateJMDDB);
         db.execSQL(CreateDLDB);
+        db.execSQL(CreateSXDB);
         Toast.makeText(mcontext, "create success!", Toast.LENGTH_LONG).show();
 
     }
