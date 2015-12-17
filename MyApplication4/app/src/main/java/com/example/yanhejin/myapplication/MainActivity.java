@@ -53,7 +53,6 @@ import android.widget.Toast;
 
 import com.esri.android.map.FeatureLayer;
 import com.esri.android.map.GraphicsLayer;
-import com.esri.android.map.Layer;
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISDynamicMapServiceLayer;
@@ -400,8 +399,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.startedit:
                 actionmode = MainActivity.this.startActionMode(actioncallback);
-                mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-                mapView.setOnTouchListener(mapTouchListener);
+                //mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
+                //mapView.setOnTouchListener(mapTouchListener);
                 break;
             case R.id.camara:
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -409,8 +408,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.surveydiatance:
                 MeasureDistance();
-                Layer layer=mapView.getLayerByID(1);
-                layer.setVisible(true);
                 break;
             case R.id.WiFishare:
                 break;
@@ -653,8 +650,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void jmdPopup(){
         final String[] geometryType = new String[1];
-        Type = "jmdmenu";
-        checkListener();
+
+
+        //checkListener();
         setType(Type);
         PopupMenu jmdpopup = new PopupMenu(MainActivity.this, new View(MainActivity.this));
         jmdpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -663,13 +661,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int id = item.getItemId();
                 switch (id) {
                     case R.id.drawjqs:
+                        mapView.setOnTouchListener(mapTouchListener);
+                        mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
                         mapTouchListener.geoType = Geometry.Type.POLYGON;
                         geometryType[0] = "Polygon";
                         mapTouchListener.getType();
                         mSimpleFillSymbol = new SimpleFillSymbol(Color.RED, SimpleFillSymbol.STYLE.SOLID);
                         mSimpleFillSymbol.setAlpha(100);
                         mapTouchListener.setType(geometryType[0]);
-                        mEditMode=EditMode.POLYGON;
+                        //mEditMode=EditMode.POLYGON;
                         break;
                     case R.id.drawyds:
                         mapTouchListener.geoType = Geometry.Type.POLYGON;
@@ -891,17 +891,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void setType(String geometryType) {
             if (geometryType.equalsIgnoreCase("Point")) {
                 this.geoType = Geometry.Type.POINT;
-                mEditMode = EditMode.POINT;
+                //mEditMode = EditMode.POINT;
             } else if (geometryType.equalsIgnoreCase("Polyline")) {
                 this.geoType = Geometry.Type.POLYLINE;
-                mEditMode = EditMode.POLYLINE;
+                //mEditMode = EditMode.POLYLINE;
             } else if (geometryType.equalsIgnoreCase("Polygon")) {
                 this.geoType = Geometry.Type.POLYGON;
-                mEditMode = EditMode.POLYGON;
-            } else if (geometryType.equalsIgnoreCase("None")) {
-                mEditMode = EditMode.NONE;
+                //mEditMode = EditMode.POLYGON;
             }
-
         }
 
 
@@ -916,7 +913,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //if(ptStart == null)
             //mGraphicLayer.removeAll();//第一次开始前，清空全部graphic
 
-            if (geoType == Geometry.Type.POINT && mEditMode == EditMode.POINT) {//直接画点
+            if (geoType == Geometry.Type.POINT ) {//直接画点
                 //mGraphicLayer.removeAll();
                 ptStart = ptCurrent;
 
@@ -924,7 +921,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mGraphicLayer.addGraphic(graphic);
 
                 return true;
-            }else if ((geoType == Geometry.Type.POLYLINE&&mEditMode==EditMode.POLYLINE) || (geoType == Geometry.Type.POLYGON&&mEditMode==EditMode.POLYGON)){
+            }else if ((geoType == Geometry.Type.POLYLINE) || (geoType == Geometry.Type.POLYGON)){
                 points.add(ptCurrent);//将当前点加入点集合中
 
                 if (ptStart == null) {//画线或多边形的第一个点
@@ -986,7 +983,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int pointid=0;
             int graphicid=0;
 
-            if(isMessageLength&&geoType==Geometry.Type.POLYLINE&&mEditMode==mEditMode.POLYLINE){
+            if(isMessageLength&&geoType==Geometry.Type.POLYLINE){
                 Polyline polyline = new Polyline();
 
                 Point startPoint = null;
@@ -1015,7 +1012,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 Toast.makeText(mapView.getContext(), length, Toast.LENGTH_SHORT).show();
             }
-            else if (geoType==Geometry.Type.POLYGON&&mEditMode==EditMode.POLYGON){
+            else if (geoType==Geometry.Type.POLYGON){
                 Polygon polygon = new Polygon();
 
                 Point startPoint = null;
@@ -1040,7 +1037,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String sArea = getAreaString(polygon.calculateArea2D())+ " 米";
 
                 Toast.makeText(mapView.getContext(), sArea, Toast.LENGTH_SHORT).show();
-            }else if (mEditMode==EditMode.NONE){
+            }else {
                 return false;
             }
             //双击获取要素信息
@@ -1119,7 +1116,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ptStart = null;
             ptPrevious = null;
             tempPolygon = null;
-            mEditMode=EditMode.NONE;
             return false;
         }
 
@@ -1154,9 +1150,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     //量测距离
     private void MeasureDistance(){
-
-        Layer layer=mapView.getLayerByID(1);
-        layer.setVisible(false);
 
         SimpleFillSymbol fillSymbol;
         Unit[] linearUnits=new Unit[]{
