@@ -58,6 +58,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
 
 
     public static final String CreateJMDDB="create table JMDData("+"ID integer primary key autoincrement,"
+            +"FTName varchar(50)"
             +"LinkID integer,"
             +"FWCS integer,"
             +"FWCZ varchar(50),"
@@ -65,11 +66,13 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"BZ varchar(100))";
 
     public static  final String CreateSXDB="create table SXData("+" ID integer primary key autoincrement,"
+            +"FTName varchar(50)"
             +"LinkID integer,"
             +"FTName varchar(50),"
             +"FSSS varchar(50),"
             +"BZ varchar(100))";
     public  static final String CreateDLDB="create table DLData("+"ID integer primary key autoincrement,"
+            +"FTName varchar(50)"
             +"LinkID integer,"
             +"DLMC varchar(50),"
             +"DLXH integer,"
