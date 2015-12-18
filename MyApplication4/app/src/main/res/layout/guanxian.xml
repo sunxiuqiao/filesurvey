@@ -10,7 +10,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="要素类型"
+            android:text="要素名称"
             android:layout_weight="1"
             android:layout_marginLeft="10pt"/>
         <EditText
@@ -32,22 +32,6 @@
             android:layout_marginLeft="10pt"/>
         <EditText
             android:id="@+id/linkID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.4"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="名称"
-            android:layout_weight="1"
-            android:layout_marginLeft="10pt"/>
-        <EditText
-            android:id="@+id/gxname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.4"/>

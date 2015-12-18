@@ -58,7 +58,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
 
 
     public static final String CreateJMDDB="create table JMDData("+"ID integer primary key autoincrement,"
-            +"FTName varchar(50)"
+            +"FTName varchar(50),"
             +"LinkID integer,"
             +"FWCS integer,"
             +"FWCZ varchar(50),"
@@ -66,20 +66,51 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"BZ varchar(100))";
 
     public static  final String CreateSXDB="create table SXData("+" ID integer primary key autoincrement,"
-            +"FTName varchar(50)"
-            +"LinkID integer,"
             +"FTName varchar(50),"
+            +"LinkID integer,"
+            +"YSMC varchar(50),"
             +"FSSS varchar(50),"
             +"BZ varchar(100))";
     public  static final String CreateDLDB="create table DLData("+"ID integer primary key autoincrement,"
-            +"FTName varchar(50)"
+            +"FTName varchar(50),"
             +"LinkID integer,"
             +"DLMC varchar(50),"
-            +"DLXH integer,"
+            +"DLXH varchar(50),"
             +"DJDM varchar(50),"
             +"BZ varchar(100))";
 
+    public static final String CreateZBDB="create table ZBData("+"ID integer primary key autoincrement,"
+            +"FTName varchar(50),"
+            +"LinkID integer,"
+            +"YSMC varchar(50),"
+            +"YSZL varchar(50),"
+            +"SSLC varchar(50),"
+            +"BZ varchar(100))";
+    public static final String CreateGXDB="create table GXData("+"ID integer primary key autoincrement,"
+            +"FTName varchar(50),"
+            +"LinkID integer,"
+            +"DLXZX varchar(50),"
+            +"DLXFS varchar(50),"
+            +"BZ varchar(100))";
 
+    public static final  String CreateJJXDB="create table JJXData("+"ID integer primary key autoincrement,"
+            +"FTName varchar(50),"
+            +"LinkID integer,"
+            +"GJ varchar(50),"
+            +"NBJJX varchar(50),"
+            +"BZ varchar(100))";
+
+    public static final String CreateZJDB="create table ZJData("+"ID integer primary key autoincrement,"
+            +"FTName varchar(50),"
+            +"LinkID integer,"
+            +"ZJMC varchar(50),"
+            +"BZ varchar(100))";
+
+    public static final String CreateDMDB="create table DMData("+"ID integer primary key autoincrement,"
+            +"FTName varchar(50),"
+            +"LinkID integer,"
+            +"DMMC varchar(50),"
+            +"BZ varchar(100))";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -91,6 +122,11 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL(CreateJMDDB);
         db.execSQL(CreateDLDB);
         db.execSQL(CreateSXDB);
+        db.execSQL(CreateGXDB);
+        db.execSQL(CreateJJXDB);
+        db.execSQL(CreateZJDB);
+        db.execSQL(CreateZBDB);
+        db.execSQL(CreateDMDB);
         Toast.makeText(mcontext, "create success!", Toast.LENGTH_LONG).show();
 
     }

@@ -34,7 +34,7 @@
             android:id="@+id/linkID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"/>
+            android:layout_weight="0.4"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,10 +47,10 @@
             android:layout_weight="1"
             android:layout_marginLeft="10pt"/>
         <EditText
-            android:id="@+id/fwcs"
+            android:id="@+id/zbmc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"/>
+            android:layout_weight="0.4"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,10 +63,10 @@
             android:layout_weight="1"
             android:layout_marginLeft="10pt"/>
         <EditText
-            android:id="@+id/fwcz"
+            android:id="@+id/zbzl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"/>
+            android:layout_weight="0.4"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -79,9 +79,25 @@
             android:layout_weight="1"
             android:layout_marginLeft="10pt"/>
         <EditText
-            android:id="@+id/fygz"
+            android:id="@+id/sslc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"/>
+            android:layout_weight="0.4"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bz"
+            android:layout_weight="1"
+            android:layout_marginLeft="10pt"/>
+        <EditText
+            android:id="@+id/bz"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"/>
     </LinearLayout>
 </LinearLayout>

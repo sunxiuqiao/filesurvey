@@ -10,7 +10,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="类型类型"
+            android:text="要素类型"
             android:layout_weight="1"
             android:layout_marginLeft="10pt"/>
         <EditText
@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.4"/>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,14 +44,30 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="地貌名称"
+            android:text="国界"
             android:layout_weight="1"
             android:layout_marginLeft="10pt"/>
         <EditText
-            android:id="@+id/dmmc"
+            android:id="@+id/gj"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"/>
+            android:layout_weight="0.4"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="国界内部境界线"
+            android:layout_weight="1"
+            android:layout_marginLeft="10pt"/>
+        <EditText
+            android:id="@+id/nbjjx"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,6 +83,6 @@
             android:id="@+id/bz"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"/>
+            android:layout_weight="0.4"/>
     </LinearLayout>
 </LinearLayout>
