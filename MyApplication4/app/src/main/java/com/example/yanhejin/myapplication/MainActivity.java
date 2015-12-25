@@ -3,7 +3,6 @@ package com.example.yanhejin.myapplication;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.ContentValues;
@@ -53,7 +52,6 @@ import com.esri.android.map.FeatureLayer;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
-import com.esri.android.map.ags.ArcGISDynamicMapServiceLayer;
 import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.toolkit.analysis.MeasuringTool;
@@ -342,37 +340,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 View addmapview = getLayoutInflater().inflate(R.layout.addmap, null, false);
                 final RadioButton addonlinemap = (RadioButton) addmapview.findViewById(R.id.addonlinemap);
                 final RadioButton addlocalmap = (RadioButton) addmapview.findViewById(R.id.addvectormap);
-                final RadioButton addtiffmap = (RadioButton) addmapview.findViewById(R.id.addtiffmap);
-                AlertDialog.Builder addmapbuilder = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog.Builder addmapbuilder = new AlertDialog.Builder(MainActivity.this);
                 addmapbuilder.setView(addmapview);
                 addmapbuilder.setTitle("选择添加的地图");
-                addmapbuilder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                addmapbuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (addonlinemap.isChecked()) {
                             addOnlineMap();
-                        }
-                        if (addlocalmap.isChecked()) {
+                        } else if (addlocalmap.isChecked()) {
                             addLocalMap();
-                        }
-                        if (addtiffmap.isChecked()) {
-                            addTiledMap();
                         }
                     }
                 });
-                addmapbuilder.setPositiveButton("取消", null);
+                addmapbuilder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        addmapbuilder.setCancelable(true);
+                    }
+                });
                 addmapbuilder.create().show();
                 break;
             case R.id.layercontrol:
-                GettpkFileName();
+
                 break;
             case R.id.startedit:
                 actionmode = MainActivity.this.startActionMode(actioncallback);
                 break;
             case R.id.camara:
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent,1);
                 break;
+            case R.id.soundRecord:
+                Intent soundIntent=new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+                startActivity(soundIntent);
+
             case R.id.surveydiatance:
                 MeasureDistance();
                 break;
@@ -502,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (MapURL.equals("")) {
                     Toast.makeText(MainActivity.this, "请输入URL链接", Toast.LENGTH_LONG).show();
                 }
-                ArcGISDynamicMapServiceLayer maplayeronline = new ArcGISDynamicMapServiceLayer(MapURL);
+                ArcGISTiledMapServiceLayer maplayeronline = new ArcGISTiledMapServiceLayer(MapURL);
                 try {
                     mapView.addLayer(maplayeronline, 2);
                 } catch (Exception e) {
@@ -516,8 +518,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //添加本地图层3
     public void addLocalMap() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("选择添加的图层");
+        //getMapPathFromSD();
         final String path = Environment.getExternalStorageDirectory().getAbsolutePath();
         String filename = "ArcGISSurvey/androiddb.geodatabase";
         String pathname = path + "/" + filename;
@@ -1384,47 +1385,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /*
-    * 读取内存卡.tpk地图
+    * 读取本地地图信息，列表显示在listview中
     * */
-    public List<String> GettpkFileName() {
-        String fileAbsolutePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "ArcGISSurvey";
-        List<String> tpkvectorfile = new ArrayList<String>();
+
+    public List<String> getMapPathFromSD(){
+        List<String> maplayerList=new ArrayList<String>();
+        View maplistview = getLayoutInflater().inflate(R.layout.maplist, null);
+        final ListView maplist = (ListView) maplistview.findViewById(R.id.maplist);
+        String mappath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/ArcGISSurvey";
+
+        File mFile=new File(mappath);
+        File[] files=mFile.listFiles();
+
         ArrayAdapter<String> arrayAdapter;
-        File file = new File(fileAbsolutePath);
-        File[] subFile = file.listFiles();
-        for (int i = 0; i < subFile.length; i++) {
-            if (!subFile[i].isDirectory()) {
-                String filename = subFile[i].getName();
-                if (filename.trim().toLowerCase().endsWith(".tpk")) {
-                    tpkvectorfile.add(filename);
-                }
+
+        for (int i=0;i<files.length;i++){
+            File file=files[i];
+            if (checkIsMapFile(file.getPath())){
+                maplayerList.add(file.getPath());
             }
         }
-        Dialog mapDialog = new Dialog(MainActivity.this);
-        mapDialog.setTitle("矢量地图列表");
-        View maplistview = getLayoutInflater().inflate(R.layout.maplist, null);
-        ListView maplist = (ListView) maplistview.findViewById(R.id.maplist);
-        arrayAdapter = new ArrayAdapter<String>(this, R.layout.maplist, tpkvectorfile);
+        final View itemView=getLayoutInflater().inflate(R.layout.item,null);
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.item, maplayerList);
         maplist.setAdapter(arrayAdapter);
-        maplist.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        maplist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        final AlertDialog.Builder mapBuidler=new AlertDialog.Builder(MainActivity.this);
+        mapBuidler.create();
+        mapBuidler.setTitle("本地地图列表");
+        mapBuidler.setView(maplistview);
+        maplist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView) view.findViewById(R.id.itemview);
                 String pathname = textView.getText().toString();
-                tiledLayer = new ArcGISLocalTiledLayer(pathname);
-                mapView.addLayer(tiledLayer);
-                Toast.makeText(MainActivity.this, "添加成功", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Toast.makeText(MainActivity.this, "未选择图层，添加失败", Toast.LENGTH_LONG).show();
+                position = maplist.getCheckedItemPosition();
+                String fileEnd = pathname.substring(pathname.lastIndexOf(".") + 1, pathname.length()).toLowerCase();
+                if (fileEnd.equals("geodatabase")) {
+                    Geodatabase geodatabase = null;
+                    try {
+                        geodatabase = new Geodatabase(pathname);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    if (geodatabase != null) {
+                        geodatabaseFeatureTable = geodatabase.getGeodatabaseFeatureTableByLayerId(0);
+                        featureLayer = new FeatureLayer(geodatabaseFeatureTable);
+                        SimpleLineSymbol simpleMarkerSymbol = new SimpleLineSymbol(Color.BLUE, 3, SimpleLineSymbol.STYLE.SOLID);
+                        SimpleRenderer simpleRenderer = new SimpleRenderer(simpleMarkerSymbol);
+                        featureLayer.setRenderer(simpleRenderer);
+                        mapView.addLayer(featureLayer, position+2);
+                    } else {
+                        Toast.makeText(MainActivity.this, "添加数据库地图失败！", Toast.LENGTH_LONG).show();
+                    }
+                } else if (fileEnd.equals("tpk")) {
+                    tiledLayer = new ArcGISLocalTiledLayer(pathname);
+                    mapView.addLayer(tiledLayer, position+2);
+                }
+                Toast.makeText(MainActivity.this, "添加图层成功!", Toast.LENGTH_LONG).show();
             }
         });
-        mapDialog.setContentView(maplistview);
-        mapDialog.show();
-        return tpkvectorfile;
+        mapBuidler.show();
+        return maplayerList;
+    }
+
+    public boolean checkIsMapFile(String mapname){
+        boolean isMapFile=false;
+
+        String fileEnd=mapname.substring(mapname.lastIndexOf(".")+1,mapname.length()).toLowerCase();
+        if (fileEnd.equals("tpk")||fileEnd.equals("geodatabase")){
+            isMapFile=true;
+        }else {
+            isMapFile=false;
+        }
+        return isMapFile;
     }
     public void jmdPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);

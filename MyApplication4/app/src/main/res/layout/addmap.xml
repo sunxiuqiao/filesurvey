@@ -15,14 +15,9 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="添加本地矢量地图"
+            android:text="添加本地图"
             android:id="@+id/addvectormap" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="添加本地栅格地图"
-            android:id="@+id/addtiffmap" />
     </RadioGroup>
 
 
