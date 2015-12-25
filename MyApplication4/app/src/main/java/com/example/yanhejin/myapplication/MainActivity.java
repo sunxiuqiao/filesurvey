@@ -50,6 +50,7 @@ import android.widget.Toast;
 
 import com.esri.android.map.FeatureLayer;
 import com.esri.android.map.GraphicsLayer;
+import com.esri.android.map.Layer;
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISLocalTiledLayer;
@@ -148,13 +149,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView = (MapView) findViewById(R.id.mapview);
         ArcGISTiledMapServiceLayer maplayeronline = new ArcGISTiledMapServiceLayer(mapURL);
         mapView.addLayer(maplayeronline);
-        mapView.addLayer(tiledLayer, 0);
+        mapView.addLayer(tiledLayer);
         point = (Point) GeometryEngine.project(new Point(40.805, 111.661), SpatialReference.create(4326), mapView.getSpatialReference());
         mapView.centerAt(point, true);
         mapView.enableWrapAround(true);
         mapView.setEsriLogoVisible(true);
         mGraphicLayer = new GraphicsLayer();
-        mapView.addLayer(mGraphicLayer, 1);
+        mapView.addLayer(mGraphicLayer);
         /*
         * GPS定位
         * */
@@ -529,7 +530,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SimpleLineSymbol simpleMarkerSymbol = new SimpleLineSymbol(Color.BLUE, 3, SimpleLineSymbol.STYLE.SOLID);
             SimpleRenderer simpleRenderer = new SimpleRenderer(simpleMarkerSymbol);
             featureLayer.setRenderer(simpleRenderer);
-            mapView.addLayer(featureLayer, 3);
+            mapView.addLayer(featureLayer);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(MainActivity.this, "载入的地图无效", Toast.LENGTH_LONG).show();
@@ -542,7 +543,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String fullpath = path + "/" + "ArcGISSurvey/叠加图.tpk";
         tiledLayer = new ArcGISLocalTiledLayer(fullpath);
         try {
-            mapView.addLayer(tiledLayer, 4);
+            mapView.addLayer(tiledLayer);
         } catch (Exception e) {
             e.getMessage();
             Toast.makeText(MainActivity.this, "载入的地图无效", Toast.LENGTH_LONG).show();
@@ -1385,6 +1386,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /*
+    * 获取已经添加的所有图层
+    * */
+
+    public void getLayers(){
+        List<String> addlayerList=new ArrayList<String>();
+        Layer[] addlayers;
+        addlayers=mapView.getLayers();
+        ArrayAdapter<String> arrayAdapter;
+        boolean ischoose=false;
+        View maplistview = getLayoutInflater().inflate(R.layout.maplayercontrol, null);
+        final ListView layerlist = (ListView) maplistview.findViewById(R.id.layerlist);
+        for (int i=0;i<addlayers.length;i++){
+            addlayerList.add(addlayerList.get(i).toString());
+        }
+        arrayAdapter=new ArrayAdapter<String>(this,R.layout.item,addlayerList);
+        layerlist.setAdapter(arrayAdapter);
+        AlertDialog.Builder layerBuilder=new AlertDialog.Builder(MainActivity.this);
+        layerBuilder.create();
+        layerBuilder.setTitle("已添加图层列表");
+        layerBuilder.setView(maplistview);
+        if (layerlist.isSelected()){
+           final String layername= layerlist.getSelectedItem().toString();
+            layerBuilder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+
+        }
+
+
+        layerBuilder.show();
+
+    }
+
+    /*
     * 读取本地地图信息，列表显示在listview中
     * */
 
@@ -1432,13 +1470,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         SimpleLineSymbol simpleMarkerSymbol = new SimpleLineSymbol(Color.BLUE, 3, SimpleLineSymbol.STYLE.SOLID);
                         SimpleRenderer simpleRenderer = new SimpleRenderer(simpleMarkerSymbol);
                         featureLayer.setRenderer(simpleRenderer);
-                        mapView.addLayer(featureLayer, position+2);
+                        mapView.addLayer(featureLayer);
                     } else {
                         Toast.makeText(MainActivity.this, "添加数据库地图失败！", Toast.LENGTH_LONG).show();
                     }
                 } else if (fileEnd.equals("tpk")) {
                     tiledLayer = new ArcGISLocalTiledLayer(pathname);
-                    mapView.addLayer(tiledLayer, position+2);
+                    mapView.addLayer(tiledLayer);
                 }
                 Toast.makeText(MainActivity.this, "添加图层成功!", Toast.LENGTH_LONG).show();
             }
