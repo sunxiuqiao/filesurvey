@@ -53,7 +53,12 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
             +"x REAL,"
             +"y REAL)";
 
-    public String CreateZJData="create table ZJData("+"DMID integer primary key autoincrement,"
+    public String CreateZJData="create table ZJData("+"ZJID integer primary key autoincrement,"
+            +"LinkAID integer,"
+            +"x REAL,"
+            +"y REAL)";
+
+    public String CreatePZJData="create table PZJData("+"PZJID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
@@ -68,6 +73,7 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
         db.execSQL(CreateGXData);
         db.execSQL(CreateJJXData);
         db.execSQL(CreateZJData);
+        db.execSQL(CreatePZJData);
     }
 
     @Override

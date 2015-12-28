@@ -12,29 +12,4 @@
             android:id="@+id/layerlist"
             android:choiceMode="singleChoice"></ListView>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/delete"
-            android:id="@+id/layerdelete"
-            style="?android:textAppearanceSmall"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="不可见"
-            android:id="@+id/unvisable"
-            style="?android:textAppearanceSmall"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="置顶"
-            android:id="@+id/fristlayer"
-            style="?android:textAppearanceSmall"/>
-    </LinearLayout>
-
-
 </LinearLayout>

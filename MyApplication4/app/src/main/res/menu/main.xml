@@ -5,6 +5,9 @@
         android:title="@string/action_settings"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    <item android:id="@+id/zhuji"
+        android:title="@string/zhuji"
+        app:showAsAction="always"/>
 
     <item android:id="@+id/zoomin"
         android:title="@string/zoomin"
@@ -20,4 +23,5 @@
         android:title="@string/localtion"
         android:icon="@drawable/global"
         app:showAsAction="always"/>
+
 </menu>

@@ -112,6 +112,13 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"DMMC varchar(50),"
             +"BZ varchar(100))";
 
+    public static final String CreatePZJDB="create table PZJData("+"ID integer primary key autoincrement,"
+            +"LinkID integer,"
+            +"YSName varchar(50),"
+            +"YSType varchar(50),"
+            +"ZJTIME varchar(50),"
+            +"BZ varchar(100))";
+
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -127,6 +134,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL(CreateZJDB);
         db.execSQL(CreateZBDB);
         db.execSQL(CreateDMDB);
+        db.execSQL(CreatePZJDB);
         Toast.makeText(mcontext, "create success!", Toast.LENGTH_LONG).show();
 
     }
