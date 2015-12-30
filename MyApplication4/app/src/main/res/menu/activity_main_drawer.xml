@@ -28,9 +28,9 @@
 
     <item android:title="Communicate">
         <menu>
-            <item android:id="@+id/sharedata"
+            <item android:id="@+id/biaozhu"
                 android:icon="@android:drawable/ic_menu_save"
-                android:title="数据同步" />
+                android:title="标注" />
             <item android:id="@+id/WiFishare"
                 android:icon="@android:drawable/ic_menu_send"
                 android:title="WiFi传输" />

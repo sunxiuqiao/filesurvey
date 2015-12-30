@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/diwubiaozu"
+            android:title="@string/diwubiaozhu"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/wenzibiaozu"
+            android:title="@string/wenzibiaozhu"
+            app:showAsAction="always"/>
+
+    </group>
+
+</menu>

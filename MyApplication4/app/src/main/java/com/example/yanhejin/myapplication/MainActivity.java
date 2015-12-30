@@ -71,10 +71,7 @@ import com.esri.core.geometry.Polygon;
 import com.esri.core.geometry.Polyline;
 import com.esri.core.geometry.SpatialReference;
 import com.esri.core.geometry.Unit;
-import com.esri.core.map.CallbackListener;
 import com.esri.core.map.Feature;
-import com.esri.core.map.FeatureEditResult;
-import com.esri.core.map.FeatureSet;
 import com.esri.core.map.Field;
 import com.esri.core.map.Graphic;
 import com.esri.core.renderer.SimpleRenderer;
@@ -82,9 +79,8 @@ import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleFillSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
+import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
-import com.esri.core.tasks.SpatialRelationship;
-import com.esri.core.tasks.ags.query.Query;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
 
@@ -100,7 +96,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -144,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     final  int STATE_ADD_GRAPHIC=1;//进入 “添加graphics状态，这时候单击地图时操作就添加graphics
     final int STATE_SHOW=2;//“选中graphics状态“，这时候单击地图时操作就选择一个graphics，并显示该graphics的附加信息”
     int m_State;//状态
-
+    Graphic textgraphic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -343,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mapView.zoomout();
                 return true;
             case R.id.locationnow:
-
                 if (mapView.isLoaded()) {
                     Polygon polygon = mapView.getExtent();
                     int dimension = polygon.getDimension();
@@ -352,13 +346,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 return true;
             case R.id.zhuji:
-                m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
-                if (m_State==STATE_ADD_GRAPHIC){
-                    item.setTitle("点击结束添加");
-                }else {
-                    item.setTitle("准备添加要素");
-                }
-                mapView.setOnSingleTapListener(m_OnSingleTapListener);
+
             default:
                 return false;
         }
@@ -426,16 +414,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.surveydiatance:
                 MeasureDistance();
                 break;
-            case R.id.WiFishare:
+            case R.id.biaozhu:
+                actionmode=MainActivity.this.startActionMode(zhujiCallback);
                 break;
-            case R.id.sharedata:
-                if (!isSelected){
+            case R.id.wifishare:
+                /*if (!isSelected){
                    break;
                 }
                 Toast.makeText(getApplicationContext(),"开始提交",Toast.LENGTH_LONG).show();
                 atts.put("field_name", "呵呵");
                 Graphic graphic=new Graphic(null,null,atts);
-                agflayer.applyEdits(null,null,new Graphic[]{graphic},new myEdits());
+                agflayer.applyEdits(null,null,new Graphic[]{graphic},new myEdits());*/
                 break;
             default:
                 break;
@@ -470,7 +459,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 result=getGraphicFromLayer(x,y,layer);
                 if (result!=null){
                     String msgTag= (String) result.getAttributeValue("tag");
-                    AlretMsg(msgTag);
+                    AlretMsg("注记的要素名称： "+msgTag);
                 }
             }
         }
@@ -485,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final EditText zhujix= (EditText) zhujiview.findViewById(R.id.zhujix);
             final EditText zhujiy= (EditText) zhujiview.findViewById(R.id.zhujiy);
             final EditText zhujibz= (EditText) zhujiview.findViewById(R.id.zhujibeizhu);
-            SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm");
+            SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
             Date currentdate = new Date(System.currentTimeMillis());
             final String zhujitime = format.format(currentdate);
             AlertDialog.Builder featureBuilder=new AlertDialog.Builder(MainActivity.this);
@@ -493,16 +482,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             featureBuilder.setTitle("填写地理注记");
             featureBuilder.setView(zhujiview);
             featureBuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                String type=zhujitype.getText().toString();
-                String name = zhujiname.getText().toString();
-                String bz=zhujibz.getText().toString();
+
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    String type=zhujitype.getText().toString();
+                    String name = zhujiname.getText().toString();
+                    String bz=zhujibz.getText().toString();
+                    float xatt=Float.parseFloat(zhujix.getText().toString());
+                    float yatt=Float.parseFloat(zhujiy.getText().toString());
                     if (zhujiLink.getText().toString().equals("")){
                         Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                    }else {
+                    }
+                    if (zhujix.getText().toString().equals("")){
+                        Toast.makeText(MainActivity.this, "x坐标为空！", Toast.LENGTH_LONG).show();
+                    }
+                    if (zhujiy.getText().toString().equals("")){
+                        Toast.makeText(MainActivity.this, "y坐标为空！", Toast.LENGTH_LONG).show();
+                    }
+                    else {
                         Cursor zhujinum=zhujiattrDB.rawQuery("select LinkID from PZJData where LinkID=?", new String[]{zhujiLink.getText().toString()});
-                        if (zhujinum.equals("")){
+                        if (!zhujinum.moveToFirst()){
                             ContentValues arrValues=new ContentValues();
                             arrValues.put("LinkID",Integer.valueOf(zhujiLink.getText().toString()));
                             arrValues.put("YSName",name);
@@ -514,8 +513,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Toast.makeText(MainActivity.this, "属性数据保存成功", Toast.LENGTH_LONG).show();
                             ContentValues spatValues=new ContentValues();
                             spatValues.put("LinkID",Integer.valueOf(zhujiLink.getText().toString()));
-                            spatValues.put("x",Float.parseFloat(zhujix.getText().toString()));
-                            spatValues.put("y", zhujiy.getText().toString());
+                            spatValues.put("x",xatt);
+                            spatValues.put("y",yatt);
                             zhujispatDB.insert("PZJData", null, spatValues);
                             zhujispatDB.close();
                             Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
@@ -531,12 +530,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         else {
                             Toast.makeText(MainActivity.this, "连接号重复，重新输入！", Toast.LENGTH_LONG).show();
                         }
+                        zhujinum.close();
                     }
                 }
             });
             featureBuilder.setNegativeButton("取消", null);
             featureBuilder.show();
         }
+    };
+
+    OnSingleTapListener wenzi_OnSingleTapListener=new OnSingleTapListener() {
+        @Override
+        public void onSingleTap(float x, float y) {
+            if (!mapView.isLoaded()) {
+                return;
+            }
+            if (m_State == STATE_ADD_GRAPHIC) {
+                AddNewGraphic(x, y);
+            } else {
+                return;
+            }
+        }
+
+        private void AddNewGraphic(final float x, final float y) {
+            final GraphicsLayer layer = getGraphicLayer();
+            
+            if (layer != null && layer.isInitialized() && layer.isVisible()) {
+                final Point point = mapView.toMapPoint(new Point(x, y));
+                AlertDialog.Builder textBuilder=new AlertDialog.Builder(MainActivity.this);
+                View textview=getLayoutInflater().inflate(R.layout.biaozhu,null);
+                final EditText text= (EditText) textview.findViewById(R.id.biaozhutext);
+                textBuilder.setView(textview);
+                textBuilder.create();
+                textBuilder.setTitle("填写标注文字");
+                textBuilder.setPositiveButton("确定标注", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String name = text.getText().toString();
+                        TextSymbol textSymbol = new TextSymbol(14, name, Color.BLUE);
+                        textSymbol.setFontFamily("DroidSansFallback.ttf");
+                        textgraphic = new Graphic(point, textSymbol);
+                        layer.addGraphic(textgraphic);
+                    }
+                });
+                textBuilder.setNegativeButton("取消标注", null);
+                textBuilder.show();
+            }
+        }
+
     };
 
     /*
@@ -567,7 +608,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return result;
     }
-
     /*
     * 创建图层标注样式
     * */
@@ -590,6 +630,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return mGraphicLayer;
     }
+
+
     //拍照
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -703,7 +745,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 ArcGISTiledMapServiceLayer maplayeronline = new ArcGISTiledMapServiceLayer(MapURL);
                 try {
-                    mapView.addLayer(maplayeronline, 2);
+                    mapView.addLayer(maplayeronline);
                 } catch (Exception e) {
                     e.getMessage();
                     Toast.makeText(MainActivity.this, "请输入有效的URL链接", Toast.LENGTH_LONG).show();
@@ -768,7 +810,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //自定义的工具栏在上方
-    private ActionMode.Callback actioncallback = new ActionMode.Callback() {
+    public ActionMode.Callback actioncallback = new ActionMode.Callback() {
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -786,7 +828,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.drawjmd:
-                    jmdPopup();
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_ADD_GRAPHIC:STATE_SHOW;
+                    if (m_State==STATE_ADD_GRAPHIC){
+                        jmdPopup();
+                    }else {
+                        break;
+                    }
+                    mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawsx:
                     sxPopup();
@@ -821,6 +870,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    /*
+    * 自定义的工具栏在上方
+    * */
+    public ActionMode.Callback zhujiCallback =new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater biaozhuinflater=mode.getMenuInflater();
+            biaozhuinflater.inflate(R.menu.biaozhumenu,menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()){
+                case R.id.diwubiaozu:
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if (m_State==STATE_ADD_GRAPHIC){
+                        item.setTitle("结束标注");
+                    }else {
+                        item.setTitle("地物标注");
+                    }
+                    mapView.setOnSingleTapListener(m_OnSingleTapListener);
+                    break;
+                case R.id.wenzibiaozu:
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if (m_State==STATE_ADD_GRAPHIC){
+                        item.setTitle("结束标注");
+                    }else {
+                        item.setTitle("文字标注");
+                    }
+                    mapView.setOnSingleTapListener(wenzi_OnSingleTapListener);
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mode.finish();
+        }
+    };
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -839,6 +935,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //地图触摸事件
     class MapTouchListener extends MapOnTouchListener {
+
         private Geometry.Type geoType = null;//用于判定当前选择的几何图形类型
         private Point ptStart = null;//起点
         private Point ptPrevious = null;//上一个点
@@ -850,7 +947,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super(context, view);
             points = new ArrayList<Point>();
         }
-
 
         // 根据用户选择设置当前绘制的几何图形类型
         public void setType(String geometryType) {
@@ -868,8 +964,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return this.geoType;
         }
 
+
         @Override
         public boolean onSingleTap(MotionEvent point) {
+
+            if(!mapView.isLoaded()){
+                return false;
+            }if (m_State==STATE_ADD_GRAPHIC){
+                DrawFeature(point);
+            }
+
+            return false;
+        }
+
+        private void DrawFeature(MotionEvent point){
+            GraphicsLayer layer=getGraphicLayer();
             if (geoType != null) {
                 Point ptCurrent = mapView.toMapPoint(new Point(point.getX(), point.getY()));
                 points.add(ptCurrent);
@@ -877,12 +986,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     ptStart = ptCurrent;
                     if (geoType == Geometry.Type.POINT) {//直接画点
                         Graphic graphic = new Graphic(ptCurrent, markerSymbol);
-                        mGraphicLayer.addGraphic(graphic);
+                        layer.addGraphic(graphic);
                     }
                 } else {//起始点不为空
                     if (geoType == Geometry.Type.POINT) {
                         Graphic graphic = new Graphic(ptCurrent, markerSymbol);
-                        mGraphicLayer.addGraphic(graphic);
+                        layer.addGraphic(graphic);
                     }
                     //生成当前线段（由当前点和上一个点构成）
                     if (geoType == Geometry.Type.POLYLINE) {
@@ -893,12 +1002,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         line.setEnd(ptCurrent);
                         polyline.addSegment(line, true);
                         Graphic g = new Graphic(polyline, simpleLineSymbol);
-                        mGraphicLayer.addGraphic(g);
-                        if (isMessageLength == true) {
-                            // 计算当前线段的长度
-                            String length = Double.toString(Math.round(polyline.calculateLength2D())) + " 米";
-                            Toast.makeText(mapView.getContext(), length, Toast.LENGTH_SHORT).show();
-                        }
+                        layer.addGraphic(g);
                     } else if (geoType == Geometry.Type.POLYGON) {
                         Line line = new Line();
                         line.setStart(ptPrevious);
@@ -907,21 +1011,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (tempPolygon == null) tempPolygon = new Polygon();
                         tempPolygon.addSegment(line, true);
                         Graphic g = new Graphic(tempPolygon, mSimpleFillSymbol);
-                        mGraphicLayer.addGraphic(g);
-                        //计算当前面积
-                        String sArea = getAreaString(tempPolygon.calculateArea2D()) + " 米";
-
-                        Toast.makeText(mapView.getContext(), sArea, Toast.LENGTH_SHORT).show();
+                        layer.addGraphic(g);
                     }
                 }
                 ptPrevious = ptCurrent;
             }
-            return false;
         }
 
 
         //@Override
         public boolean onDoubleTap(MotionEvent point) {
+            GraphicsLayer layer=getGraphicLayer();
             int pointid = 0;
             int graphicid = 0;
 
@@ -951,7 +1051,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         polyline.addSegment(line, false);
                     }
                     Graphic g = new Graphic(polyline, simpleLineSymbol);
-                    mGraphicLayer.addGraphic(g);
+                    layer.addGraphic(g);
                     // 计算总长度
                     String length = Double.toString(Math.round(polyline.calculateLength2D())) + " 米";
 
@@ -982,7 +1082,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     final String fid = String.valueOf(pointid) + String.valueOf(graphicid);
                     Graphic g = new Graphic(polygon, mSimpleFillSymbol);
-                    mGraphicLayer.addGraphic(g);
+                    layer.addGraphic(g);
                     // 计算总面积
                     String sArea = getAreaString(polygon.calculateArea2D()) + " 米";
 
@@ -1017,8 +1117,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             try {
-                                if (fwcstext.getText().toString().equals("") || linkData.getText().equals("")) {
-                                    if (linkData.getText().equals("")) {
+                                if (fwcstext.getText().toString().equals("") || linkData.getText().toString().equals("")) {
+                                    if (linkData.getText().toString().equals("")) {
                                         Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
                                     }
                                     if (fwcstext.getText().toString().equals("")) {
@@ -1026,7 +1126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     }
                                 } else {
                                     Cursor linkc = jmdattributedb.rawQuery("select LinkID from JMDData where LinkID=?", new String[]{linkData.getText().toString()});
-                                    if (linkc.equals("")) {
+                                    if (!linkc.moveToFirst()) {
                                         ContentValues jmdattrvalues = new ContentValues();
                                         jmdattrvalues.put("FTName", featureName);
                                         jmdattrvalues.put("LinkID", Integer.parseInt(linkData.getText().toString()));
@@ -1099,11 +1199,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             try {
-                                if (LinkID.getText().equals("")) {
+                                if (LinkID.getText().toString().equals("")) {
                                     Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
                                 } else {
                                     Cursor linkc = shuixidb.rawQuery("select LinkID from JMDData where LinkID=?", new String[]{LinkID.getText().toString()});
-                                    if (linkc.equals("")) {
+                                    if (!linkc.moveToFirst()) {
                                         ContentValues shuixiValues = new ContentValues();
                                         shuixiValues.put("FTName", featureName);
                                         shuixiValues.put("LinkID", Integer.parseInt(LinkID.getText().toString()));
@@ -1117,7 +1217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                             int linkID = Integer.parseInt(LinkID.getText().toString());
                                             SQLiteDatabase shuixispatialdb = createSpatialDB.getReadableDatabase();
                                             Point currentPoint = null;
-                                            if (LinkID.getText().equals("")) {
+                                            if (LinkID.getText().toString().equals("")) {
                                                 Toast.makeText(MainActivity.this, "linkID不存在，已取消空间数据录入！", Toast.LENGTH_LONG).show();
                                             } else {
                                                 if (points.size() < 3) {
@@ -1172,11 +1272,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     dlBuildr.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (dlLinkId.getText().equals("")) {
+                            if (dlLinkId.getText().toString().equals("")) {
                                 Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
                             } else {
                                 Cursor dllink = daoludb.rawQuery("select LinkID from DLData where LinkID=?", new String[]{dlLinkId.getText().toString()});
-                                if (dllink.equals("")) {
+                                if (!dllink.moveToFirst()) {
                                     ContentValues dlValues = new ContentValues();
                                     dlValues.put("FTName", featureName);
                                     dlValues.put("LinkID", Integer.valueOf(dlLinkId.getText().toString()));
@@ -1239,11 +1339,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     zbBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (zbLinkID.getText().equals("")){
+                            if (zbLinkID.getText().toString().equals("")){
                                 Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
                             }else {
                                 Cursor zbCousor=zbattributedb.rawQuery("select LinkID from ZBData where LinkID=?",new String[]{zbLinkID.getText().toString()});
-                                if (zbCousor.equals("")){
+                                if (!zbCousor.moveToFirst()){
                                     ContentValues zbattriValues=new ContentValues();
                                     zbattriValues.put("FTName", featureName);
                                     zbattriValues.put("LinkID",Integer.valueOf(zbLinkID.getText().toString()));
@@ -1253,6 +1353,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     zbattriValues.put("BZ", zbbztext.getText().toString());
                                     zbattributedb.insert("ZBData", null, zbattriValues);
                                     zbattributedb.close();
+                                    zbCousor.close();
                                     Toast.makeText(MainActivity.this, "属性数据存储成功！", Toast.LENGTH_LONG).show();
                                     try {
                                         int linkID=Integer.valueOf(zbLinkID.getText().toString());
@@ -1303,11 +1404,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     gxBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (gxLinkID.getText().equals("")) {
+                            if (gxLinkID.getText().toString().equals("")) {
                                 Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
                             } else {
                                 Cursor gxCursor = gxattributedb.rawQuery("select LinkID from GXData where LinkID=?", new String[]{gxLinkID.getText().toString()});
-                                if (gxCursor.equals("")) {
+                                if (!gxCursor.moveToFirst()) {
                                     ContentValues gxattriValues = new ContentValues();
                                     gxattriValues.put("FTName", featureName);
                                     gxattriValues.put("LinkID", Integer.valueOf(gxLinkID.getText().toString()));
@@ -1339,6 +1440,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Log.i(tag, e.toString());
                                     }
                                 }
+                                gxCursor.close();
                             }
                         }
                     });
@@ -1365,11 +1467,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     jjxBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (jjxlinkID.getText().equals("")) {
+                            if (jjxlinkID.getText().toString().equals("")) {
                                 Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
                             } else {
                                 Cursor jjxcursor = jjxattributedb.rawQuery("select LinkID from JJXData where LinkAID=?", new String[]{jjxlinkID.getText().toString()});
-                                if (jjxcursor.equals("")) {
+                                if (!jjxcursor.moveToFirst()) {
                                     SQLiteDatabase jjxattributedb = createSurveyDB.getReadableDatabase();
                                     ContentValues jjxattriValues = new ContentValues();
                                     jjxattriValues.put("FTName", featureName);
@@ -1402,6 +1504,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Log.i(tag, e.toString());
                                     }
                                 }
+                                jjxcursor.close();
                             }
                         }
                     });
@@ -1427,11 +1530,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     zjBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (zjLinkID.getText().equals("")){
+                            if (zjLinkID.getText().toString().equals("")){
                                 Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
                             }else {
                                 Cursor zjCursor=zjattributedb.rawQuery("select LinkID from ZJData where LinkID=?",new String[]{zjLinkID.getText().toString()});
-                                if (zjCursor.equals("")){
+                                if (!zjCursor.moveToFirst()){
                                     ContentValues zjattriValues=new ContentValues();
                                     zjattriValues.put("FTName",zjtype.getText().toString());
                                     zjattriValues.put("LinkID",Integer.valueOf(zjLinkID.getText().toString()));
@@ -1462,6 +1565,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Log.i(tag,e.toString());
                                     }
                                 }
+                                zjCursor.close();
                             }
                         }
                     });
@@ -1487,11 +1591,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             SQLiteDatabase dmattributedb=createSurveyDB.getReadableDatabase();
-                            if (dmLinkID.getText().equals("")){
+                            if (dmLinkID.getText().toString().equals("")){
                                 Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
                             }else {
                                 Cursor dmC=dmattributedb.rawQuery("select LinkID from DMData where LinkID=?",new String[]{dmLinkID.getText().toString()});
-                                if (dmC.equals("")){
+                                if (!dmC.moveToFirst()){
                                     ContentValues dmaValues=new ContentValues();
                                     dmaValues.put("FTName",featureName);
                                     dmaValues.put("LinkID",Integer.valueOf(dmLinkID.getText().toString()));
@@ -1521,7 +1625,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Log.i(tag,e.toString());
                                     }
                                 }
-
+                                dmC.close();
                             }
                         }
                     });
@@ -1582,71 +1686,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActionMode(measuringTool);
     }
 
-    class mySelectFeatureSingleTap implements OnSingleTapListener{
-
-
-        @Override
-        public void onSingleTap(float x, float y) {
-            Point point=mapView.toMapPoint(x,y);
-            Query query=new Query();
-            query.setInSpatialReference(mapView.getSpatialReference());
-            query.setReturnGeometry(true);
-            query.setSpatialRelationship(SpatialRelationship.INTERSECTS);
-            query.setGeometry(point);
-            agflayer.selectFeatures(query, ArcGISFeatureLayer.SELECTION_METHOD.NEW,new queryCallback());
-        }
-    }
-
-    class queryCallback implements CallbackListener<FeatureSet>{
-
-        @Override
-        public void onCallback(FeatureSet featureSet) {
-            if (featureSet.getGraphics().length>0){
-                isSelected=true;
-                Graphic graphic=featureSet.getGraphics()[0];
-                obID=graphic.getAttributeValue(agflayer.getObjectIdField()).toString();
-                atts=graphic.getAttributes();
-                Set<Map.Entry<String,Object>> entrySet=atts.entrySet();
-                for (Map.Entry<String,Object> entry:entrySet){
-                    Log.i("Attribute",entry.getKey()+":"+entry.getValue());
-                }
-            }
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            Log.i(TAG, "qCallBackLis 出错啦"+throwable.getMessage());
-        }
-    }
-
-
-    class myEdits implements CallbackListener<FeatureEditResult[][]>{
-
-        @Override
-        public void onCallback(FeatureEditResult[][] featureEditResults) {
-            if (featureEditResults[2]!=null&&featureEditResults[2][0].isSuccess()){
-                Log.i(TAG, "edit 成功啦");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dmsLayer.refresh();
-                        Toast.makeText(MainActivity.this,"edit 成功",Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            Log.i(TAG, "edit 出错啦"+throwable.getMessage());
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this,"edit 出错了",Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-    }
     /*
     * 读取本地.geodatabase数据库要素信息
     * */
@@ -1764,8 +1803,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     public void jmdPopup() {
-        mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-        mapView.setOnTouchListener(mapTouchListener);
         final String[] geometryType = {""};
         Type = "jmdmenu";
         setType(Type);
