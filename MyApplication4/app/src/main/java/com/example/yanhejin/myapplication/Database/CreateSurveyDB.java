@@ -63,6 +63,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"FWCS integer,"
             +"FWCZ varchar(50),"
             +"FYGZ REAL,"
+            +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
 
     public static  final String CreateSXDB="create table SXData("+" ID integer primary key autoincrement,"
@@ -70,6 +71,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"LinkID integer,"
             +"YSMC varchar(50),"
             +"FSSS varchar(50),"
+            +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
     public  static final String CreateDLDB="create table DLData("+"ID integer primary key autoincrement,"
             +"FTName varchar(50),"
@@ -77,6 +79,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"DLMC varchar(50),"
             +"DLXH varchar(50),"
             +"DJDM varchar(50),"
+            +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
 
     public static final String CreateZBDB="create table ZBData("+"ID integer primary key autoincrement,"
@@ -85,12 +88,14 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"YSMC varchar(50),"
             +"YSZL varchar(50),"
             +"SSLC varchar(50),"
+            +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
     public static final String CreateGXDB="create table GXData("+"ID integer primary key autoincrement,"
             +"FTName varchar(50),"
             +"LinkID integer,"
             +"DLXZX varchar(50),"
             +"DLXFS varchar(50),"
+            +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
 
     public static final  String CreateJJXDB="create table JJXData("+"ID integer primary key autoincrement,"
@@ -98,22 +103,32 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"LinkID integer,"
             +"GJ varchar(50),"
             +"NBJJX varchar(50),"
+            +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
 
     public static final String CreateZJDB="create table ZJData("+"ID integer primary key autoincrement,"
             +"FTName varchar(50),"
             +"LinkID integer,"
             +"ZJMC varchar(50),"
+            +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
 
     public static final String CreateDMDB="create table DMData("+"ID integer primary key autoincrement,"
             +"FTName varchar(50),"
             +"LinkID integer,"
             +"DMMC varchar(50),"
+            +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
 
     public static final String CreatePZJDB="create table PZJData("+"ID integer primary key autoincrement,"
             +"LinkID integer,"
+            +"YSName varchar(50),"
+            +"YSType varchar(50),"
+            +"ZJTIME varchar(50),"
+            +"BZ varchar(100))";
+
+    public static final String CreateWZBZDB="create table WZBZData("+"ID integer primary key autoincrement,"
+            +"YSDM varchar(50),"
             +"YSName varchar(50),"
             +"YSType varchar(50),"
             +"ZJTIME varchar(50),"

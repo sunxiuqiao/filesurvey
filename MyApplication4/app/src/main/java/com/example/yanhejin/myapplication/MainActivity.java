@@ -61,7 +61,6 @@ import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.toolkit.analysis.MeasuringTool;
 import com.esri.core.geodatabase.Geodatabase;
 import com.esri.core.geodatabase.GeodatabaseFeatureTable;
-import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Line;
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     CreateSurveyDB createSurveyDB;
     CreateSpatialDB createSpatialDB;
     private long exitTime;
-    static final String mapURL = "http://cache1.arcgisonline.cn/ArcGIS/rest/services/ChinaOnlineStreetCold/MapServer";
+    static final String mapURL = "http://cache1.arcgisonline.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer";
     MapView mapView;
     GeodatabaseFeatureTable geodatabaseFeatureTable;
     FeatureLayer featureLayer;
@@ -162,19 +161,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mapView = (MapView) findViewById(R.id.mapview);
-        mapView.addLayer( new ArcGISTiledMapServiceLayer(mapURL));
-        //dmsLayer=new ArcGISDynamicMapServiceLayer("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/MapServer");
+        ArcGISTiledMapServiceLayer maplayeronline=new ArcGISTiledMapServiceLayer(mapURL);
+        mapView.addLayer(maplayeronline);        //dmsLayer=new ArcGISDynamicMapServiceLayer("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/MapServer");
         //mapView.addLayer(dmsLayer);
         //agflayer=new ArcGISFeatureLayer("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0", ArcGISFeatureLayer.MODE.SELECTION);
         //mapView.addLayer(agflayer);
         //mapView.addLayer(tiledLayer);
-        Envelope initextext=new Envelope(12899459.4956466, 4815363.65520802, 13004178.2243971, 4882704.67712717);
-        mapView.setExtent(initextext);
-        setSupportActionBar(toolbar);/*
+        /*Envelope initextext=new Envelope(12899459.4956466, 4815363.65520802, 13004178.2243971, 4882704.67712717);
+        mapView.setExtent(initextext);*/
+        setSupportActionBar(toolbar);
         point = (Point) GeometryEngine.project(new Point(40.805, 111.661), SpatialReference.create(4326), mapView.getSpatialReference());
         mapView.centerAt(point, true);
         mapView.enableWrapAround(true);
-        mapView.setEsriLogoVisible(true);*/
+        mapView.setEsriLogoVisible(true);
         /*
         * GPS定位
         * */
@@ -235,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         double latitude = loc.getLatitude();
                                         double longitude = loc.getLongitude();
                                         Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(latitude) + "北纬：" + String.valueOf(longitude), Toast.LENGTH_LONG).show();
+                                        mGraphicLayer=new GraphicsLayer();
                                         markLocation(loc);
                                     }
                                 }
@@ -295,7 +295,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //画线
         Graphic graphicline = new Graphic(mapPoint, new SimpleLineSymbol(Color.BLUE, 4, SimpleLineSymbol.STYLE.SOLID));
         mGraphicLayer.addGraphic(graphicline);
-
         mapView.centerAt(mapPoint, true);
         SQLiteDatabase GPSdb = createSpatialDB.getReadableDatabase();//数据库为空
         ContentValues GPSValues = new ContentValues();
@@ -345,7 +344,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     AlretMsg("地图范围dimension=%s,type=%s", dimension, type.value());
                 }
                 return true;
-            case R.id.zhuji:
 
             default:
                 return false;
@@ -384,8 +382,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (addonlinemap.isChecked()) {
                             addOnlineMap();
                         } else if (addlocalmap.isChecked()) {
-                           // addLocalMap();
-                            getMapPathFromSD();
+                            addLocalMap();
+                            //getMapPathFromSD();
                         }
                     }
                 });
@@ -418,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 actionmode=MainActivity.this.startActionMode(zhujiCallback);
                 break;
             case R.id.wifishare:
+               addLocalMap();
                 /*if (!isSelected){
                    break;
                 }
@@ -554,28 +553,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         private void AddNewGraphic(final float x, final float y) {
             final GraphicsLayer layer = getGraphicLayer();
-            
+            final SQLiteDatabase wzdb=createSurveyDB.getReadableDatabase();
             if (layer != null && layer.isInitialized() && layer.isVisible()) {
                 final Point point = mapView.toMapPoint(new Point(x, y));
                 AlertDialog.Builder textBuilder=new AlertDialog.Builder(MainActivity.this);
                 View textview=getLayoutInflater().inflate(R.layout.biaozhu,null);
-                final EditText text= (EditText) textview.findViewById(R.id.biaozhutext);
+                final EditText ysdmtext= (EditText) textview.findViewById(R.id.featureDM);
+                final EditText text= (EditText) textview.findViewById(R.id.zjmc);
+                final EditText yslxtext= (EditText) textview.findViewById(R.id.ftName);
+                final EditText bztext= (EditText) textview.findViewById(R.id.bz);
+                SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
+                Date currentdate = new Date(System.currentTimeMillis());
+                final String zhujitime = format.format(currentdate);
                 textBuilder.setView(textview);
                 textBuilder.create();
                 textBuilder.setTitle("填写标注文字");
                 textBuilder.setPositiveButton("确定标注", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        ContentValues wzValues=new ContentValues();
+                        String ysdm=ysdmtext.getText().toString();
                         String name = text.getText().toString();
+                        String type=yslxtext.getText().toString();
+                        String bz=bztext.getText().toString();
                         TextSymbol textSymbol = new TextSymbol(14, name, Color.BLUE);
                         textSymbol.setFontFamily("DroidSansFallback.ttf");
                         textgraphic = new Graphic(point, textSymbol);
                         layer.addGraphic(textgraphic);
+                        wzValues.put("YSDM", ysdm);
+                        wzValues.put("YSName",name);
+                        wzValues.put("YSType",type);
+                        wzValues.put("ZJTIME",zhujitime);
+                        wzValues.put("BZ", bz);
+                        wzdb.insert("WZBZData", null, wzValues);
                     }
                 });
                 textBuilder.setNegativeButton("取消标注", null);
                 textBuilder.show();
             }
+            wzdb.close();
         }
 
     };
@@ -759,9 +775,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void addLocalMap() {
         //getMapPathFromSD();
         final String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        String filename = "ArcGISSurvey/androiddb.geodatabase";
+        String filename = "ArcGISSurvey/android.geodatabase";
         String pathname = path + "/" + filename;
         try {
+
             Geodatabase geodatabase = new Geodatabase(pathname);
             geodatabaseFeatureTable = geodatabase.getGeodatabaseFeatureTableByLayerId(0);
             featureLayer = new FeatureLayer(geodatabaseFeatureTable);
@@ -773,6 +790,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
             Toast.makeText(MainActivity.this, "载入的地图无效", Toast.LENGTH_LONG).show();
         }
+        Toast.makeText(MainActivity.this,"成功",Toast.LENGTH_LONG).show();
     }
 
     //添加瓦片地图（本地）4
@@ -917,21 +935,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mapView.pause();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mapView.unpause();
-
-
-    }
-
 
     //地图触摸事件
     class MapTouchListener extends MapOnTouchListener {
@@ -969,12 +972,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onSingleTap(MotionEvent point) {
 
             if(!mapView.isLoaded()){
-                return false;
+                return true;
             }if (m_State==STATE_ADD_GRAPHIC){
                 DrawFeature(point);
+            }else {
+                return true;
             }
 
-            return false;
+            return true;
         }
 
         private void DrawFeature(MotionEvent point){
@@ -1018,9 +1023,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-
+        /*
+        * 双节结束要素采集并且要素信息入库
+        * */
         //@Override
         public boolean onDoubleTap(MotionEvent point) {
+            SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
+            Date currentdate = new Date(System.currentTimeMillis());
+            final String zhujitime = format.format(currentdate);
             GraphicsLayer layer=getGraphicLayer();
             int pointid = 0;
             int graphicid = 0;
@@ -1040,7 +1050,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // 绘制完整的线段
                 if (points.size() < 2) {
                     Toast.makeText(MainActivity.this, "绘制点数小于2不能形成线段", Toast.LENGTH_LONG).show();
-                    return false;
+                    return true;
                 } else {
                     for (int i = 1; i < points.size(); i++) {
                         startPoint = points.get(i - 1);
@@ -1066,7 +1076,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // 绘制完整的多边形
                 if (points.size() < 2) {
                     Toast.makeText(MainActivity.this, "绘制点数小于3不能形成闭合面", Toast.LENGTH_LONG).show();
-                    return false;
+                    return true;
                 } else {
                     for (int i = 1; i < points.size(); i++) {
                         startPoint = points.get(i - 1);
@@ -1090,547 +1100,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
             } else {
-                return false;
+                return true;
             }
             //双击获取要素信息
             switch (Type) {
                 case "jmdmenu":
-                    final AlertDialog.Builder jmddata = new AlertDialog.Builder(MainActivity.this);
-                    View jmdview = getLayoutInflater().inflate(R.layout.jumindi, null);
-                    jmddata.setView(jmdview);
-                    jmddata.setTitle("录入居民地属性信息");
-                    final EditText linkData = (EditText) jmdview.findViewById(R.id.linkID);
-                    final EditText fnameText = (EditText) jmdview.findViewById(R.id.ftName);
-                    final EditText fwcstext = (EditText) jmdview.findViewById(R.id.fwcs);
-                    final EditText fwcztext = (EditText) jmdview.findViewById(R.id.fwcz);
-                    final EditText fygztext = (EditText) jmdview.findViewById(R.id.fygz);
-                    final EditText bztext = (EditText) jmdview.findViewById(R.id.bz);
-                    fnameText.setText(featureName);
-                    final SQLiteDatabase jmdattributedb = createSurveyDB.getReadableDatabase();
-                    jmddata.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            points.clear();
-                        }
-                    });
-                    jmddata.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                if (fwcstext.getText().toString().equals("") || linkData.getText().toString().equals("")) {
-                                    if (linkData.getText().toString().equals("")) {
-                                        Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                                    }
-                                    if (fwcstext.getText().toString().equals("")) {
-                                        Toast.makeText(MainActivity.this, "房屋层数为空！", Toast.LENGTH_LONG).show();
-                                    }
-                                } else {
-                                    Cursor linkc = jmdattributedb.rawQuery("select LinkID from JMDData where LinkID=?", new String[]{linkData.getText().toString()});
-                                    if (!linkc.moveToFirst()) {
-                                        ContentValues jmdattrvalues = new ContentValues();
-                                        jmdattrvalues.put("FTName", featureName);
-                                        jmdattrvalues.put("LinkID", Integer.parseInt(linkData.getText().toString()));
-                                        jmdattrvalues.put("FWCS", Integer.parseInt(fwcstext.getText().toString()));
-                                        jmdattrvalues.put("FWCZ", fwcztext.getText().toString());
-                                        jmdattrvalues.put("FYGZ", Float.valueOf(fygztext.getText().toString()));
-                                        jmdattrvalues.put("BZ", bztext.getText().toString());
-                                        jmdattributedb.insert("JMDData", null, jmdattrvalues);
-                                        jmdattributedb.close();
-                                        Toast.makeText(MainActivity.this, "属性数据存储成功", Toast.LENGTH_LONG).show();
-                                        try {
-                                            int linkID = Integer.parseInt(linkData.getText().toString());
-                                            SQLiteDatabase jmdspatialdb = createSpatialDB.getReadableDatabase();
-                                            Point currentPoint = null;
-                                            if (String.valueOf(linkID).equals("")) {
-                                                Toast.makeText(MainActivity.this, "linkID不存在，已取消空间数据录入！", Toast.LENGTH_LONG).show();
-                                            } else {
-                                                if (points.size() <= 2) {
-                                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                                }
-                                                if (points.size() > 2) {
-                                                    for (int i = 1; i < points.size(); i++) {
-                                                        currentPoint = points.get(i - 1);
-                                                        float x = (float) currentPoint.getX();
-                                                        float y = (float) currentPoint.getY();
-                                                        ContentValues jmdvalues = new ContentValues();
-                                                        jmdvalues.put("LinkAID", linkID);
-                                                        jmdvalues.put("x", x);
-                                                        jmdvalues.put("y", y);
-                                                        jmdspatialdb.insert("JMDData", null, jmdvalues);
-                                                    }
-                                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
-                                                    points.clear();
-                                                    jmdspatialdb.close();
-                                                }
-                                            }
-                                        } catch (Exception e) {
-                                            Log.i(tag, e.toString());
-                                        }
-                                    } else {
-                                        Toast.makeText(MainActivity.this, "连接号重复，重新输入！", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            } catch (Exception e) {
-                                Log.i(tag, e.toString());
-                            }
-                        }
-                    });
-                    jmddata.create().show();
+                    AddJMDFeatureData(zhujitime);
                     break;
                 case "shuiximenu":
-                    AlertDialog.Builder shuixiBuilder = new AlertDialog.Builder(MainActivity.this);
-                    View shuixiView = getLayoutInflater().inflate(R.layout.shuixi, null);
-                    final EditText ftnametext = (EditText) shuixiView.findViewById(R.id.ftName);
-                    final EditText LinkID = (EditText) shuixiView.findViewById(R.id.linkID);
-                    final EditText featurename = (EditText) shuixiView.findViewById(R.id.featurename);
-                    final EditText fssstext = (EditText) shuixiView.findViewById(R.id.fsss);
-                    final EditText sxbztext = (EditText) shuixiView.findViewById(R.id.bz);
-                    final SQLiteDatabase shuixidb = createSurveyDB.getReadableDatabase();
-                    ftnametext.setText(featureName);
-                    shuixiBuilder.setTitle("填写水系属性信息");
-                    shuixiBuilder.setView(shuixiView);
-                    shuixiBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            points.clear();
-                        }
-                    });
-                    shuixiBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                if (LinkID.getText().toString().equals("")) {
-                                    Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                                } else {
-                                    Cursor linkc = shuixidb.rawQuery("select LinkID from JMDData where LinkID=?", new String[]{LinkID.getText().toString()});
-                                    if (!linkc.moveToFirst()) {
-                                        ContentValues shuixiValues = new ContentValues();
-                                        shuixiValues.put("FTName", featureName);
-                                        shuixiValues.put("LinkID", Integer.parseInt(LinkID.getText().toString()));
-                                        shuixiValues.put("YSMC", featurename.getText().toString());
-                                        shuixiValues.put("FSSS", fssstext.getText().toString());
-                                        shuixiValues.put("BZ", sxbztext.getText().toString());
-                                        shuixidb.insert("SXData", null, shuixiValues);
-                                        shuixidb.close();
-                                        Toast.makeText(MainActivity.this, "属性数据存储成功！", Toast.LENGTH_LONG).show();
-                                        try {
-                                            int linkID = Integer.parseInt(LinkID.getText().toString());
-                                            SQLiteDatabase shuixispatialdb = createSpatialDB.getReadableDatabase();
-                                            Point currentPoint = null;
-                                            if (LinkID.getText().toString().equals("")) {
-                                                Toast.makeText(MainActivity.this, "linkID不存在，已取消空间数据录入！", Toast.LENGTH_LONG).show();
-                                            } else {
-                                                if (points.size() < 3) {
-                                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                                } else if (points.size() > 2) {
-                                                    ContentValues shuixivalues = new ContentValues();
-                                                    for (int i = 0; i < points.size(); i++) {
-                                                        currentPoint = points.get(i);
-                                                        shuixivalues.put("LinkAID", linkID);
-                                                        shuixivalues.put("x", currentPoint.getX());
-                                                        shuixivalues.put("y", currentPoint.getY());
-                                                        shuixispatialdb.insert("SXData", null, shuixivalues);
-                                                    }
-                                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
-                                                    points.clear();
-                                                    shuixispatialdb.close();
-                                                }
-                                            }
-                                        } catch (Exception e) {
-                                            Log.i(tag, e.toString());
-                                        }
-                                    } else {
-                                        Toast.makeText(MainActivity.this, "连接号重复，重新输入！", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            } catch (Exception e) {
-                                Log.i(tag, e.toString());
-                            }
-                        }
-                    });
-                    shuixiBuilder.create().show();
+                    AddSXFeatureData(zhujitime);
                     break;
                 case "daolumenu":
-                    AlertDialog.Builder dlBuildr = new AlertDialog.Builder(MainActivity.this);
-                    View dlView = getLayoutInflater().inflate(R.layout.daolu, null);
-                    EditText fdlName = (EditText) dlView.findViewById(R.id.ftName);
-                    final EditText dlLinkId = (EditText) dlView.findViewById(R.id.linkID);
-                    final EditText dlmctext = (EditText) dlView.findViewById(R.id.dlmc);
-                    final EditText dlxhtext = (EditText) dlView.findViewById(R.id.dlxh);
-                    final EditText djdmtext = (EditText) dlView.findViewById(R.id.djdm);
-                    final EditText dlbztext= (EditText) dlView.findViewById(R.id.bz);
-                    fdlName.setText(featureName);
-                    dlBuildr.setView(dlView);
-                    dlBuildr.setTitle("填写道路属性信息");
-                    final SQLiteDatabase daoludb=createSurveyDB.getReadableDatabase();
-                    dlBuildr.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            points.clear();
-                        }
-                    });
-                    dlBuildr.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (dlLinkId.getText().toString().equals("")) {
-                                Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                            } else {
-                                Cursor dllink = daoludb.rawQuery("select LinkID from DLData where LinkID=?", new String[]{dlLinkId.getText().toString()});
-                                if (!dllink.moveToFirst()) {
-                                    ContentValues dlValues = new ContentValues();
-                                    dlValues.put("FTName", featureName);
-                                    dlValues.put("LinkID", Integer.valueOf(dlLinkId.getText().toString()));
-                                    dlValues.put("DLMC", dlmctext.getText().toString());
-                                    dlValues.put("DLXH", dlxhtext.getText().toString());
-                                    dlValues.put("DJDM", djdmtext.getText().toString());
-                                    dlValues.put("BZ", dlbztext.getText().toString());
-                                    daoludb.insert("DLData", null, dlValues);
-                                    daoludb.close();
-                                    Toast.makeText(MainActivity.this, "属性数据存储成功！", Toast.LENGTH_LONG).show();
-                                    try {
-                                        int linkID = Integer.valueOf(dlLinkId.getText().toString());
-                                        SQLiteDatabase daoluspatialdb = createSpatialDB.getReadableDatabase();
-                                        Point currentpoint;
-                                        if (points.size() < 3) {
-                                            Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                        } else if (points.size() > 2) {
-                                            ContentValues dlspatialValues = new ContentValues();
-                                            for (int i = 0; i < points.size(); i++) {
-                                                currentpoint = points.get(i);
-                                                dlspatialValues.put("LinkAID", linkID);
-                                                dlspatialValues.put("x", currentpoint.getX());
-                                                dlspatialValues.put("y", currentpoint.getY());
-                                                daoluspatialdb.insert("DLData", null, dlspatialValues);
-                                            }
-                                            daoluspatialdb.close();
-                                            Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
-                                            points.clear();
-                                        }
-                                    } catch (Exception e) {
-                                        Log.i(tag, e.toString());
-                                    }
-                                } else {
-                                    Toast.makeText(MainActivity.this, "连接号重复，重新输入！", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }
-                    });
-                    dlBuildr.create().show();
+                   AddDLFeatureData(zhujitime);
                     break;
                 case "zhibeimenu":
-                    AlertDialog.Builder zbBuilder=new AlertDialog.Builder(MainActivity.this);
-                    View zbView=getLayoutInflater().inflate(R.layout.zhibei,null);
-                    EditText zbFName= (EditText) zbView.findViewById(R.id.ftName);
-                    final EditText zbLinkID= (EditText) zbView.findViewById(R.id.ftName);
-                    final EditText zbmctext= (EditText) zbView.findViewById(R.id.zbmc);
-                    final EditText zbzltext= (EditText) zbView.findViewById(R.id.zbzl);
-                    final EditText sslctext= (EditText) zbView.findViewById(R.id.sslc);
-                    final EditText zbbztext= (EditText) zbView.findViewById(R.id.bz);
-                    zbBuilder.setView(zbView);
-                    zbBuilder.setTitle("填写植被属性信息");
-                    final SQLiteDatabase zbattributedb=createSurveyDB.getReadableDatabase();
-                    zbFName.setText(featureName);
-                    zbBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            points.clear();
-                        }
-                    });
-                    zbBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (zbLinkID.getText().toString().equals("")){
-                                Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                            }else {
-                                Cursor zbCousor=zbattributedb.rawQuery("select LinkID from ZBData where LinkID=?",new String[]{zbLinkID.getText().toString()});
-                                if (!zbCousor.moveToFirst()){
-                                    ContentValues zbattriValues=new ContentValues();
-                                    zbattriValues.put("FTName", featureName);
-                                    zbattriValues.put("LinkID",Integer.valueOf(zbLinkID.getText().toString()));
-                                    zbattriValues.put("YSMC",zbmctext.getText().toString());
-                                    zbattriValues.put("YSZL",zbzltext.getText().toString());
-                                    zbattriValues.put("SSLC",sslctext.getText().toString());
-                                    zbattriValues.put("BZ", zbbztext.getText().toString());
-                                    zbattributedb.insert("ZBData", null, zbattriValues);
-                                    zbattributedb.close();
-                                    zbCousor.close();
-                                    Toast.makeText(MainActivity.this, "属性数据存储成功！", Toast.LENGTH_LONG).show();
-                                    try {
-                                        int linkID=Integer.valueOf(zbLinkID.getText().toString());
-                                        SQLiteDatabase zbspatialdb=createSpatialDB.getReadableDatabase();
-                                        Point currentpoint;
-                                        if (points.size()<3){
-                                            Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                        }else if (points.size()>2){
-                                            for (int i=0;i<points.size();i++){
-                                                currentpoint=points.get(i);
-                                                ContentValues zbspatialValues=new ContentValues();
-                                                zbspatialValues.put("LinkAID",linkID);
-                                                zbspatialValues.put("x",currentpoint.getX());
-                                                zbspatialValues.put("y",currentpoint.getY());
-                                                zbspatialdb.insert("ZBData",null,zbspatialValues);
-                                            }
-                                            zbspatialdb.close();
-                                            Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
-                                            points.clear();
-                                        }
-                                    }catch (Exception e){
-                                        Log.i(tag,e.toString());
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    zbBuilder.create().show();
+                    AddZBFeatureData(zhujitime);
                     break;
                 case "guanxianmenu":
-                    AlertDialog.Builder gxBuilder=new AlertDialog.Builder(MainActivity.this);
-                    View gxView=getLayoutInflater().inflate(R.layout.guanxian,null);
-                    EditText gxname= (EditText) gxView.findViewById(R.id.ftName);
-                    final EditText gxLinkID= (EditText) gxView.findViewById(R.id.linkID);
-                    final EditText dlxzx= (EditText) gxView.findViewById(R.id.dlxzx);
-                    final EditText dlxfs= (EditText) gxView.findViewById(R.id.dlxfs);
-                    final EditText gxbz= (EditText) gxView.findViewById(R.id.bz);
-                    gxname.setText(featureName);
-                    gxBuilder.setView(gxView);
-                    gxBuilder.setTitle("填写管线和电力线属性信息");
-                    final SQLiteDatabase gxattributedb=createSurveyDB.getReadableDatabase();
-                    gxBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            points.clear();
-                        }
-                    });
-                    gxBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (gxLinkID.getText().toString().equals("")) {
-                                Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                            } else {
-                                Cursor gxCursor = gxattributedb.rawQuery("select LinkID from GXData where LinkID=?", new String[]{gxLinkID.getText().toString()});
-                                if (!gxCursor.moveToFirst()) {
-                                    ContentValues gxattriValues = new ContentValues();
-                                    gxattriValues.put("FTName", featureName);
-                                    gxattriValues.put("LinkID", Integer.valueOf(gxLinkID.getText().toString()));
-                                    gxattriValues.put("DLXZX", dlxzx.getText().toString());
-                                    gxattriValues.put("DLXFS", dlxfs.getText().toString());
-                                    gxattriValues.put("BZ", gxbz.getText().toString());
-                                    gxattributedb.insert("GXData", null, gxattriValues);
-                                    gxattributedb.close();
-                                    try {
-                                        int LinkID = Integer.valueOf(gxLinkID.getText().toString());
-                                        if (points.size() < 3) {
-                                            Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                        } else if (points.size() > 2) {
-                                            Point currrentPoint;
-                                            SQLiteDatabase gxspatialdb = createSpatialDB.getReadableDatabase();
-                                            for (int i = 0; i < points.size(); i++) {
-                                                currrentPoint = points.get(i);
-                                                ContentValues gxspatialValues = new ContentValues();
-                                                gxspatialValues.put("LinkAID", LinkID);
-                                                gxspatialValues.put("x", currrentPoint.getX());
-                                                gxspatialValues.put("y", currrentPoint.getY());
-                                                gxspatialdb.insert("GXData", null, gxattriValues);
-                                            }
-                                            gxspatialdb.close();
-                                            Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
-                                            points.clear();
-                                        }
-                                    } catch (Exception e) {
-                                        Log.i(tag, e.toString());
-                                    }
-                                }
-                                gxCursor.close();
-                            }
-                        }
-                    });
-                    gxBuilder.create().show();
+                    AddGXFeatureData(zhujitime);
                     break;
                 case "jjxmenu":
-                    AlertDialog.Builder jjxBuilder=new AlertDialog.Builder(MainActivity.this);
-                    View jjxView=getLayoutInflater().inflate(R.layout.jingjie,null);
-                    final EditText jjxlinkID= (EditText) jjxView.findViewById(R.id.linkID);
-                    EditText jjxname= (EditText) jjxView.findViewById(R.id.ftName);
-                    final EditText jjxgj= (EditText) jjxView.findViewById(R.id.gj);
-                    final EditText jjxnbjx= (EditText) jjxView.findViewById(R.id.nbjjx);
-                    final EditText jjxbz= (EditText) jjxView.findViewById(R.id.bz);
-                    jjxname.setText(featureName);
-                    final SQLiteDatabase jjxattributedb=createSurveyDB.getReadableDatabase();
-                    jjxBuilder.setView(jjxView);
-                    jjxBuilder.setTitle("填写境界线属性信息");
-                    jjxBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            points.clear();
-                        }
-                    });
-                    jjxBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (jjxlinkID.getText().toString().equals("")) {
-                                Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                            } else {
-                                Cursor jjxcursor = jjxattributedb.rawQuery("select LinkID from JJXData where LinkAID=?", new String[]{jjxlinkID.getText().toString()});
-                                if (!jjxcursor.moveToFirst()) {
-                                    SQLiteDatabase jjxattributedb = createSurveyDB.getReadableDatabase();
-                                    ContentValues jjxattriValues = new ContentValues();
-                                    jjxattriValues.put("FTName", featureName);
-                                    jjxattriValues.put("LinkID", Integer.valueOf(jjxlinkID.getText().toString()));
-                                    jjxattriValues.put("GJ", jjxgj.getText().toString());
-                                    jjxattriValues.put("NBJJX", jjxnbjx.getText().toString());
-                                    jjxattriValues.put("BZ", jjxbz.getText().toString());
-                                    jjxattributedb.insert("JJXData", null, jjxattriValues);
-                                    jjxattributedb.close();
-                                    try {
-                                        int LinkID = Integer.valueOf(jjxlinkID.getText().toString());
-                                        if (points.size() < 3) {
-                                            Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                        } else if (points.size() > 2) {
-                                            SQLiteDatabase jjxspatialdb = createSpatialDB.getReadableDatabase();
-                                            Point currrentPoint;
-                                            for (int i = 0; i < points.size(); i++) {
-                                                currrentPoint = points.get(i);
-                                                ContentValues jjxspatialValues = new ContentValues();
-                                                jjxattriValues.put("LinkAID", LinkID);
-                                                jjxattriValues.put("x", currrentPoint.getX());
-                                                jjxspatialValues.put("y", currrentPoint.getY());
-                                                jjxspatialdb.insert("JJXData", null, jjxspatialValues);
-                                            }
-                                            jjxspatialdb.close();
-                                            Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
-                                            points.clear();
-                                        }
-                                    } catch (Exception e) {
-                                        Log.i(tag, e.toString());
-                                    }
-                                }
-                                jjxcursor.close();
-                            }
-                        }
-                    });
-                    jjxBuilder.create().show();
+                   AddJJXFeatureData(zhujitime);
                     break;
                 case "zjmenu":
-                    AlertDialog.Builder zjBuilder=new AlertDialog.Builder(MainActivity.this);
-                    View zjView=getLayoutInflater().inflate(R.layout.zhuji,null);
-                    final EditText zjtype= (EditText) zjView.findViewById(R.id.ftName);
-                    final EditText zjLinkID= (EditText) zjView.findViewById(R.id.linkID);
-                    final EditText zhmc= (EditText) zjView.findViewById(R.id.zjmc);
-                    final EditText ZJBZ= (EditText) zjView.findViewById(R.id.bz);
-                    final SQLiteDatabase zjattributedb=createSurveyDB.getReadableDatabase();
-                    zjBuilder.setTitle("填写地理注记属性信息");
-                    zjBuilder.setView(zjView);
-                    zjBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            points.clear();
-                        }
-                    });
-                    zjBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (zjLinkID.getText().toString().equals("")){
-                                Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                            }else {
-                                Cursor zjCursor=zjattributedb.rawQuery("select LinkID from ZJData where LinkID=?",new String[]{zjLinkID.getText().toString()});
-                                if (!zjCursor.moveToFirst()){
-                                    ContentValues zjattriValues=new ContentValues();
-                                    zjattriValues.put("FTName",zjtype.getText().toString());
-                                    zjattriValues.put("LinkID",Integer.valueOf(zjLinkID.getText().toString()));
-                                    zjattriValues.put("ZJMC",zhmc.getText().toString());
-                                    zjattriValues.put("BZ", ZJBZ.getText().toString());
-                                    zjattributedb.insert("ZJData", null, zjattriValues);
-                                    zjattributedb.close();
-                                    try {
-                                        if (points.size()<3){
-                                            Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                        }
-                                        else if (points.size()>2){
-                                            SQLiteDatabase zjspatial=createSpatialDB.getReadableDatabase();
-                                            ContentValues zjspatialValues=new ContentValues();
-                                            Point currentPoints;
-                                            for (int i=0;i<points.size();i++){
-                                                currentPoints=points.get(i);
-                                                zjspatialValues.put("LinkAID",Integer.valueOf(zjLinkID.getText().toString()));
-                                                zjspatialValues.put("x",currentPoints.getX());
-                                                zjspatialValues.put("y",currentPoints.getY());
-                                                zjspatial.insert("ZJData", null, zjspatialValues);
-                                            }
-                                            zjspatial.close();
-                                            Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
-                                            points.clear();
-                                        }
-                                    }catch (Exception e){
-                                        Log.i(tag,e.toString());
-                                    }
-                                }
-                                zjCursor.close();
-                            }
-                        }
-                    });
-                    zjBuilder.create().show();
+                   AddZJFeatureData(zhujitime);
                     break;
                 case "dimaopmenu":
-                    AlertDialog.Builder dmBuilder=new AlertDialog.Builder(MainActivity.this);
-                    View dmView=getLayoutInflater().inflate(R.layout.dimao,null);
-                    EditText dmName= (EditText) dmView.findViewById(R.id.ftName);
-                    final EditText dmLinkID= (EditText) dmView.findViewById(R.id.linkID);
-                    final EditText dmMC= (EditText) dmView.findViewById(R.id.dmmc);
-                    final EditText dmbz= (EditText) dmView.findViewById(R.id.bz);
-                    dmName.setText(featureName);
-                    dmBuilder.setView(dmView);
-                    dmBuilder.setTitle("填写地貌属性信息");
-                    dmBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            points.clear();
-                        }
-                    });
-                    dmBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            SQLiteDatabase dmattributedb=createSurveyDB.getReadableDatabase();
-                            if (dmLinkID.getText().toString().equals("")){
-                                Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
-                            }else {
-                                Cursor dmC=dmattributedb.rawQuery("select LinkID from DMData where LinkID=?",new String[]{dmLinkID.getText().toString()});
-                                if (!dmC.moveToFirst()){
-                                    ContentValues dmaValues=new ContentValues();
-                                    dmaValues.put("FTName",featureName);
-                                    dmaValues.put("LinkID",Integer.valueOf(dmLinkID.getText().toString()));
-                                    dmaValues.put("DMMC",dmMC.getText().toString());
-                                    dmaValues.put("BZ", dmbz.getText().toString());
-                                    dmattributedb.insert("DMData", null, dmaValues);
-                                    dmattributedb.close();
-                                    try {
-                                        if (points.size()<3){
-                                            Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                        }else if (points.size()>2){
-                                            SQLiteDatabase dmsdb=createSpatialDB.getReadableDatabase();
-                                            Point cPoint;
-                                            for (int i=0;i<points.size();i++){
-                                                cPoint=points.get(i);
-                                                ContentValues dmsValues=new ContentValues();
-                                                dmsValues.put("LinkAID",Integer.valueOf(dmLinkID.getText().toString()));
-                                                dmsValues.put("x",cPoint.getX());
-                                                dmsValues.put("y",cPoint.getY());
-                                                dmsdb.insert("DMData",null,dmsValues);
-                                            }
-                                            dmsdb.close();
-                                            Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
-                                            points.clear();
-                                        }
-                                    }catch (Exception e){
-                                        Log.i(tag,e.toString());
-                                    }
-                                }
-                                dmC.close();
-                            }
-                        }
-                    });
-                    dmBuilder.create().show();
-
+                    AddDMFeatureData(zhujitime);
+                    break;
                 default:
                     break;
 
@@ -1639,8 +1136,589 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ptPrevious = null;
             tempPolygon = null;
             return false;
+
+
+        }
+        /*
+        * 居民地信息入库
+        * */
+        public void AddJMDFeatureData(final String zhujitime){
+            final AlertDialog.Builder jmddata = new AlertDialog.Builder(MainActivity.this);
+            View jmdview = getLayoutInflater().inflate(R.layout.jumindi, null);
+            jmddata.setView(jmdview);
+            jmddata.setTitle("录入居民地属性信息");
+            final EditText linkData = (EditText) jmdview.findViewById(R.id.linkID);
+            final EditText fnameText = (EditText) jmdview.findViewById(R.id.ftName);
+            final EditText fwcstext = (EditText) jmdview.findViewById(R.id.fwcs);
+            final EditText fwcztext = (EditText) jmdview.findViewById(R.id.fwcz);
+            final EditText fygztext = (EditText) jmdview.findViewById(R.id.fygz);
+            final EditText bztext = (EditText) jmdview.findViewById(R.id.bz);
+            fnameText.setText(featureName);
+            final SQLiteDatabase jmdattributedb = createSurveyDB.getReadableDatabase();
+            jmddata.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            jmddata.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        if (fwcstext.getText().toString().equals("") || linkData.getText().toString().equals("")) {
+                            if (linkData.getText().toString().equals("")) {
+                                Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                            }
+                            if (fwcstext.getText().toString().equals("")) {
+                                Toast.makeText(MainActivity.this, "房屋层数为空！", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Cursor linkc = jmdattributedb.rawQuery("select LinkID from JMDData where LinkID=?", new String[]{linkData.getText().toString()});
+                            if (!linkc.moveToFirst()) {
+                                ContentValues jmdattrvalues = new ContentValues();
+                                jmdattrvalues.put("FTName", featureName);
+                                jmdattrvalues.put("LinkID", Integer.parseInt(linkData.getText().toString()));
+                                jmdattrvalues.put("FWCS", Integer.parseInt(fwcstext.getText().toString()));
+                                jmdattrvalues.put("FWCZ", fwcztext.getText().toString());
+                                jmdattrvalues.put("FYGZ", Float.valueOf(fygztext.getText().toString()));
+                                jmdattrvalues.put("ZJTIME",zhujitime);
+                                jmdattrvalues.put("BZ", bztext.getText().toString());
+                                jmdattributedb.insert("JMDData", null, jmdattrvalues);
+                                jmdattributedb.close();
+                                Toast.makeText(MainActivity.this, "属性数据存储成功", Toast.LENGTH_LONG).show();
+                                try {
+                                    int linkID = Integer.parseInt(linkData.getText().toString());
+                                    SQLiteDatabase jmdspatialdb = createSpatialDB.getReadableDatabase();
+                                    Point currentPoint = null;
+                                    if (String.valueOf(linkID).equals("")) {
+                                        Toast.makeText(MainActivity.this, "linkID不存在，已取消空间数据录入！", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        if (points.size() <= 2) {
+                                            Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                        }
+                                        if (points.size() > 2) {
+                                            for (int i = 1; i < points.size(); i++) {
+                                                currentPoint = points.get(i - 1);
+                                                float x = (float) currentPoint.getX();
+                                                float y = (float) currentPoint.getY();
+                                                ContentValues jmdvalues = new ContentValues();
+                                                jmdvalues.put("LinkAID", linkID);
+                                                jmdvalues.put("x", x);
+                                                jmdvalues.put("y", y);
+                                                jmdspatialdb.insert("JMDData", null, jmdvalues);
+                                            }
+                                            Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                            points.clear();
+                                            jmdspatialdb.close();
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Log.i(tag, e.toString());
+                                }
+                            } else {
+                                Toast.makeText(MainActivity.this, "连接号重复，重新输入！", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.i(tag, e.toString());
+                    }
+                }
+            });
+            jmddata.create().show();
         }
 
+        /*
+        * 水系信息入库
+        * */
+        public void AddSXFeatureData(final String zhujitime){
+            AlertDialog.Builder shuixiBuilder = new AlertDialog.Builder(MainActivity.this);
+            View shuixiView = getLayoutInflater().inflate(R.layout.shuixi, null);
+            final EditText ftnametext = (EditText) shuixiView.findViewById(R.id.ftName);
+            final EditText LinkID = (EditText) shuixiView.findViewById(R.id.linkID);
+            final EditText featurename = (EditText) shuixiView.findViewById(R.id.featurename);
+            final EditText fssstext = (EditText) shuixiView.findViewById(R.id.fsss);
+            final EditText sxbztext = (EditText) shuixiView.findViewById(R.id.bz);
+            final SQLiteDatabase shuixidb = createSurveyDB.getReadableDatabase();
+            ftnametext.setText(featureName);
+            shuixiBuilder.setTitle("填写水系属性信息");
+            shuixiBuilder.setView(shuixiView);
+            shuixiBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            shuixiBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        if (LinkID.getText().toString().equals("")) {
+                            Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                        } else {
+                            Cursor linkc = shuixidb.rawQuery("select LinkID from JMDData where LinkID=?", new String[]{LinkID.getText().toString()});
+                            if (!linkc.moveToFirst()) {
+                                ContentValues shuixiValues = new ContentValues();
+                                shuixiValues.put("FTName", featureName);
+                                shuixiValues.put("LinkID", Integer.parseInt(LinkID.getText().toString()));
+                                shuixiValues.put("YSMC", featurename.getText().toString());
+                                shuixiValues.put("FSSS", fssstext.getText().toString());
+                                shuixiValues.put("ZJTIME",zhujitime);
+                                shuixiValues.put("BZ", sxbztext.getText().toString());
+                                shuixidb.insert("SXData", null, shuixiValues);
+                                shuixidb.close();
+                                Toast.makeText(MainActivity.this, "属性数据存储成功！", Toast.LENGTH_LONG).show();
+                                try {
+                                    int linkID = Integer.parseInt(LinkID.getText().toString());
+                                    SQLiteDatabase shuixispatialdb = createSpatialDB.getReadableDatabase();
+                                    Point currentPoint = null;
+                                    if (LinkID.getText().toString().equals("")) {
+                                        Toast.makeText(MainActivity.this, "linkID不存在，已取消空间数据录入！", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        if (points.size() < 3) {
+                                            Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                        } else if (points.size() > 2) {
+                                            ContentValues shuixivalues = new ContentValues();
+                                            for (int i = 0; i < points.size(); i++) {
+                                                currentPoint = points.get(i);
+                                                shuixivalues.put("LinkAID", linkID);
+                                                shuixivalues.put("x", currentPoint.getX());
+                                                shuixivalues.put("y", currentPoint.getY());
+                                                shuixispatialdb.insert("SXData", null, shuixivalues);
+                                            }
+                                            Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                            points.clear();
+                                            shuixispatialdb.close();
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Log.i(tag, e.toString());
+                                }
+                            } else {
+                                Toast.makeText(MainActivity.this, "连接号重复，重新输入！", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.i(tag, e.toString());
+                    }
+                }
+            });
+            shuixiBuilder.create().show();
+        }
+
+        /*
+        * 道路信息入库
+        * */
+        public void AddDLFeatureData(final String zhujitime){
+            AlertDialog.Builder dlBuildr = new AlertDialog.Builder(MainActivity.this);
+            View dlView = getLayoutInflater().inflate(R.layout.daolu, null);
+            EditText fdlName = (EditText) dlView.findViewById(R.id.ftName);
+            final EditText dlLinkId = (EditText) dlView.findViewById(R.id.linkID);
+            final EditText dlmctext = (EditText) dlView.findViewById(R.id.dlmc);
+            final EditText dlxhtext = (EditText) dlView.findViewById(R.id.dlxh);
+            final EditText djdmtext = (EditText) dlView.findViewById(R.id.djdm);
+            final EditText dlbztext= (EditText) dlView.findViewById(R.id.bz);
+            fdlName.setText(featureName);
+            dlBuildr.setView(dlView);
+            dlBuildr.setTitle("填写道路属性信息");
+            final SQLiteDatabase daoludb=createSurveyDB.getReadableDatabase();
+            dlBuildr.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            dlBuildr.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (dlLinkId.getText().toString().equals("")) {
+                        Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                    } else {
+                        Cursor dllink = daoludb.rawQuery("select LinkID from DLData where LinkID=?", new String[]{dlLinkId.getText().toString()});
+                        if (!dllink.moveToFirst()) {
+                            ContentValues dlValues = new ContentValues();
+                            dlValues.put("FTName", featureName);
+                            dlValues.put("LinkID", Integer.valueOf(dlLinkId.getText().toString()));
+                            dlValues.put("DLMC", dlmctext.getText().toString());
+                            dlValues.put("DLXH", dlxhtext.getText().toString());
+                            dlValues.put("DJDM", djdmtext.getText().toString());
+                            dlValues.put("ZJTIME",zhujitime);
+                            dlValues.put("BZ", dlbztext.getText().toString());
+                            daoludb.insert("DLData", null, dlValues);
+                            daoludb.close();
+                            Toast.makeText(MainActivity.this, "属性数据存储成功！", Toast.LENGTH_LONG).show();
+                            try {
+                                int linkID = Integer.valueOf(dlLinkId.getText().toString());
+                                SQLiteDatabase daoluspatialdb = createSpatialDB.getReadableDatabase();
+                                Point currentpoint;
+                                if (points.size() < 3) {
+                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                } else if (points.size() > 2) {
+                                    ContentValues dlspatialValues = new ContentValues();
+                                    for (int i = 0; i < points.size(); i++) {
+                                        currentpoint = points.get(i);
+                                        dlspatialValues.put("LinkAID", linkID);
+                                        dlspatialValues.put("x", currentpoint.getX());
+                                        dlspatialValues.put("y", currentpoint.getY());
+                                        daoluspatialdb.insert("DLData", null, dlspatialValues);
+                                    }
+                                    daoluspatialdb.close();
+                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                    points.clear();
+                                }
+                            } catch (Exception e) {
+                                Log.i(tag, e.toString());
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, "连接号重复，重新输入！", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            });
+            dlBuildr.create().show();
+        }
+
+        /*
+        * 植被信息入库
+        * */
+        public void AddZBFeatureData(final String zhujitime){
+            AlertDialog.Builder zbBuilder=new AlertDialog.Builder(MainActivity.this);
+            View zbView=getLayoutInflater().inflate(R.layout.zhibei,null);
+            EditText zbFName= (EditText) zbView.findViewById(R.id.ftName);
+            final EditText zbLinkID= (EditText) zbView.findViewById(R.id.ftName);
+            final EditText zbmctext= (EditText) zbView.findViewById(R.id.zbmc);
+            final EditText zbzltext= (EditText) zbView.findViewById(R.id.zbzl);
+            final EditText sslctext= (EditText) zbView.findViewById(R.id.sslc);
+            final EditText zbbztext= (EditText) zbView.findViewById(R.id.bz);
+            zbBuilder.setView(zbView);
+            zbBuilder.setTitle("填写植被属性信息");
+            final SQLiteDatabase zbattributedb=createSurveyDB.getReadableDatabase();
+            zbFName.setText(featureName);
+            zbBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            zbBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (zbLinkID.getText().toString().equals("")){
+                        Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                    }else {
+                        Cursor zbCousor=zbattributedb.rawQuery("select LinkID from ZBData where LinkID=?",new String[]{zbLinkID.getText().toString()});
+                        if (!zbCousor.moveToFirst()){
+                            ContentValues zbattriValues=new ContentValues();
+                            zbattriValues.put("FTName", featureName);
+                            zbattriValues.put("LinkID",Integer.valueOf(zbLinkID.getText().toString()));
+                            zbattriValues.put("YSMC",zbmctext.getText().toString());
+                            zbattriValues.put("YSZL",zbzltext.getText().toString());
+                            zbattriValues.put("SSLC",sslctext.getText().toString());
+                            zbattriValues.put("ZJTIME",zhujitime);
+                            zbattriValues.put("BZ", zbbztext.getText().toString());
+                            zbattributedb.insert("ZBData", null, zbattriValues);
+                            zbattributedb.close();
+                            zbCousor.close();
+                            Toast.makeText(MainActivity.this, "属性数据存储成功！", Toast.LENGTH_LONG).show();
+                            try {
+                                int linkID=Integer.valueOf(zbLinkID.getText().toString());
+                                SQLiteDatabase zbspatialdb=createSpatialDB.getReadableDatabase();
+                                Point currentpoint;
+                                if (points.size()<3){
+                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                }else if (points.size()>2){
+                                    for (int i=0;i<points.size();i++){
+                                        currentpoint=points.get(i);
+                                        ContentValues zbspatialValues=new ContentValues();
+                                        zbspatialValues.put("LinkAID",linkID);
+                                        zbspatialValues.put("x",currentpoint.getX());
+                                        zbspatialValues.put("y",currentpoint.getY());
+                                        zbspatialdb.insert("ZBData",null,zbspatialValues);
+                                    }
+                                    zbspatialdb.close();
+                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                    points.clear();
+                                }
+                            }catch (Exception e){
+                                Log.i(tag,e.toString());
+                            }
+                        }
+                    }
+                }
+            });
+            zbBuilder.create().show();
+        }
+
+        /*
+        * 管线和电力线信息入库
+        * */
+        public void AddGXFeatureData(final String zhujitime){
+            AlertDialog.Builder gxBuilder=new AlertDialog.Builder(MainActivity.this);
+            View gxView=getLayoutInflater().inflate(R.layout.guanxian,null);
+            EditText gxname= (EditText) gxView.findViewById(R.id.ftName);
+            final EditText gxLinkID= (EditText) gxView.findViewById(R.id.linkID);
+            final EditText dlxzx= (EditText) gxView.findViewById(R.id.dlxzx);
+            final EditText dlxfs= (EditText) gxView.findViewById(R.id.dlxfs);
+            final EditText gxbz= (EditText) gxView.findViewById(R.id.bz);
+            gxname.setText(featureName);
+            gxBuilder.setView(gxView);
+            gxBuilder.setTitle("填写管线和电力线属性信息");
+            final SQLiteDatabase gxattributedb=createSurveyDB.getReadableDatabase();
+            gxBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            gxBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (gxLinkID.getText().toString().equals("")) {
+                        Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                    } else {
+                        Cursor gxCursor = gxattributedb.rawQuery("select LinkID from GXData where LinkID=?", new String[]{gxLinkID.getText().toString()});
+                        if (!gxCursor.moveToFirst()) {
+                            ContentValues gxattriValues = new ContentValues();
+                            gxattriValues.put("FTName", featureName);
+                            gxattriValues.put("LinkID", Integer.valueOf(gxLinkID.getText().toString()));
+                            gxattriValues.put("DLXZX", dlxzx.getText().toString());
+                            gxattriValues.put("DLXFS", dlxfs.getText().toString());
+                            gxattriValues.put("ZJTIME",zhujitime);
+                            gxattriValues.put("BZ", gxbz.getText().toString());
+                            gxattributedb.insert("GXData", null, gxattriValues);
+                            gxattributedb.close();
+                            try {
+                                int LinkID = Integer.valueOf(gxLinkID.getText().toString());
+                                if (points.size() < 3) {
+                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                } else if (points.size() > 2) {
+                                    Point currrentPoint;
+                                    SQLiteDatabase gxspatialdb = createSpatialDB.getReadableDatabase();
+                                    for (int i = 0; i < points.size(); i++) {
+                                        currrentPoint = points.get(i);
+                                        ContentValues gxspatialValues = new ContentValues();
+                                        gxspatialValues.put("LinkAID", LinkID);
+                                        gxspatialValues.put("x", currrentPoint.getX());
+                                        gxspatialValues.put("y", currrentPoint.getY());
+                                        gxspatialdb.insert("GXData", null, gxattriValues);
+                                    }
+                                    gxspatialdb.close();
+                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                    points.clear();
+                                }
+                            } catch (Exception e) {
+                                Log.i(tag, e.toString());
+                            }
+                        }
+                        gxCursor.close();
+                    }
+                }
+            });
+            gxBuilder.create().show();
+        }
+
+        /*
+        * 境界线信息入库
+        * */
+        public void AddJJXFeatureData(final String zhujitime){
+            AlertDialog.Builder jjxBuilder=new AlertDialog.Builder(MainActivity.this);
+            View jjxView=getLayoutInflater().inflate(R.layout.jingjie,null);
+            final EditText jjxlinkID= (EditText) jjxView.findViewById(R.id.linkID);
+            EditText jjxname= (EditText) jjxView.findViewById(R.id.ftName);
+            final EditText jjxgj= (EditText) jjxView.findViewById(R.id.gj);
+            final EditText jjxnbjx= (EditText) jjxView.findViewById(R.id.nbjjx);
+            final EditText jjxbz= (EditText) jjxView.findViewById(R.id.bz);
+            jjxname.setText(featureName);
+            final SQLiteDatabase jjxattributedb=createSurveyDB.getReadableDatabase();
+            jjxBuilder.setView(jjxView);
+            jjxBuilder.setTitle("填写境界线属性信息");
+            jjxBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            jjxBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (jjxlinkID.getText().toString().equals("")) {
+                        Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                    } else {
+                        Cursor jjxcursor = jjxattributedb.rawQuery("select LinkID from JJXData where LinkAID=?", new String[]{jjxlinkID.getText().toString()});
+                        if (!jjxcursor.moveToFirst()) {
+                            SQLiteDatabase jjxattributedb = createSurveyDB.getReadableDatabase();
+                            ContentValues jjxattriValues = new ContentValues();
+                            jjxattriValues.put("FTName", featureName);
+                            jjxattriValues.put("LinkID", Integer.valueOf(jjxlinkID.getText().toString()));
+                            jjxattriValues.put("GJ", jjxgj.getText().toString());
+                            jjxattriValues.put("NBJJX", jjxnbjx.getText().toString());
+                            jjxattriValues.put("ZJTIME",zhujitime);
+                            jjxattriValues.put("BZ", jjxbz.getText().toString());
+                            jjxattributedb.insert("JJXData", null, jjxattriValues);
+                            jjxattributedb.close();
+                            try {
+                                int LinkID = Integer.valueOf(jjxlinkID.getText().toString());
+                                if (points.size() < 3) {
+                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                } else if (points.size() > 2) {
+                                    SQLiteDatabase jjxspatialdb = createSpatialDB.getReadableDatabase();
+                                    Point currrentPoint;
+                                    for (int i = 0; i < points.size(); i++) {
+                                        currrentPoint = points.get(i);
+                                        ContentValues jjxspatialValues = new ContentValues();
+                                        jjxattriValues.put("LinkAID", LinkID);
+                                        jjxattriValues.put("x", currrentPoint.getX());
+                                        jjxspatialValues.put("y", currrentPoint.getY());
+                                        jjxspatialdb.insert("JJXData", null, jjxspatialValues);
+                                    }
+                                    jjxspatialdb.close();
+                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                    points.clear();
+                                }
+                            } catch (Exception e) {
+                                Log.i(tag, e.toString());
+                            }
+                        }
+                        jjxcursor.close();
+                    }
+                }
+            });
+            jjxBuilder.create().show();
+        }
+
+        /*
+        * 注记信息入库
+        * */
+        public void AddZJFeatureData(final String zhujitime){
+            AlertDialog.Builder zjBuilder=new AlertDialog.Builder(MainActivity.this);
+            View zjView=getLayoutInflater().inflate(R.layout.zhuji,null);
+            final EditText zjtype= (EditText) zjView.findViewById(R.id.ftName);
+            final EditText zjLinkID= (EditText) zjView.findViewById(R.id.linkID);
+            final EditText zhmc= (EditText) zjView.findViewById(R.id.zjmc);
+            final EditText ZJBZ= (EditText) zjView.findViewById(R.id.bz);
+            final SQLiteDatabase zjattributedb=createSurveyDB.getReadableDatabase();
+            zjBuilder.setTitle("填写地理注记属性信息");
+            zjBuilder.setView(zjView);
+            zjBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            zjBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (zjLinkID.getText().toString().equals("")){
+                        Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                    }else {
+                        Cursor zjCursor=zjattributedb.rawQuery("select LinkID from ZJData where LinkID=?",new String[]{zjLinkID.getText().toString()});
+                        if (!zjCursor.moveToFirst()){
+                            ContentValues zjattriValues=new ContentValues();
+                            zjattriValues.put("FTName",zjtype.getText().toString());
+                            zjattriValues.put("LinkID",Integer.valueOf(zjLinkID.getText().toString()));
+                            zjattriValues.put("ZJMC",zhmc.getText().toString());
+                            zjattriValues.put("ZJTIME",zhujitime);
+                            zjattriValues.put("BZ", ZJBZ.getText().toString());
+                            zjattributedb.insert("ZJData", null, zjattriValues);
+                            zjattributedb.close();
+                            try {
+                                if (points.size()<3){
+                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                }
+                                else if (points.size()>2){
+                                    SQLiteDatabase zjspatial=createSpatialDB.getReadableDatabase();
+                                    ContentValues zjspatialValues=new ContentValues();
+                                    Point currentPoints;
+                                    for (int i=0;i<points.size();i++){
+                                        currentPoints=points.get(i);
+                                        zjspatialValues.put("LinkAID",Integer.valueOf(zjLinkID.getText().toString()));
+                                        zjspatialValues.put("x",currentPoints.getX());
+                                        zjspatialValues.put("y",currentPoints.getY());
+                                        zjspatial.insert("ZJData", null, zjspatialValues);
+                                    }
+                                    zjspatial.close();
+                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                    points.clear();
+                                }
+                            }catch (Exception e){
+                                Log.i(tag,e.toString());
+                            }
+                        }
+                        zjCursor.close();
+                    }
+                }
+            });
+            zjBuilder.create().show();
+        }
+
+        /*
+        * 地貌信息入库
+        * */
+        public void AddDMFeatureData(final String zhujitime){
+            AlertDialog.Builder dmBuilder=new AlertDialog.Builder(MainActivity.this);
+            View dmView=getLayoutInflater().inflate(R.layout.dimao,null);
+            EditText dmName= (EditText) dmView.findViewById(R.id.ftName);
+            final EditText dmLinkID= (EditText) dmView.findViewById(R.id.linkID);
+            final EditText dmMC= (EditText) dmView.findViewById(R.id.dmmc);
+            final EditText dmbz= (EditText) dmView.findViewById(R.id.bz);
+            dmName.setText(featureName);
+            dmBuilder.setView(dmView);
+            dmBuilder.setTitle("填写地貌属性信息");
+            dmBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            dmBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    SQLiteDatabase dmattributedb=createSurveyDB.getReadableDatabase();
+                    if (dmLinkID.getText().toString().equals("")){
+                        Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                    }else {
+                        Cursor dmC=dmattributedb.rawQuery("select LinkID from DMData where LinkID=?",new String[]{dmLinkID.getText().toString()});
+                        if (!dmC.moveToFirst()){
+                            ContentValues dmaValues=new ContentValues();
+                            dmaValues.put("FTName",featureName);
+                            dmaValues.put("LinkID",Integer.valueOf(dmLinkID.getText().toString()));
+                            dmaValues.put("DMMC",dmMC.getText().toString());
+                            dmaValues.put("ZJTIME",zhujitime);
+                            dmaValues.put("BZ", dmbz.getText().toString());
+                            dmattributedb.insert("DMData", null, dmaValues);
+                            dmattributedb.close();
+                            try {
+                                if (points.size()<3){
+                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                }else if (points.size()>2){
+                                    SQLiteDatabase dmsdb=createSpatialDB.getReadableDatabase();
+                                    Point cPoint;
+                                    for (int i=0;i<points.size();i++){
+                                        cPoint=points.get(i);
+                                        ContentValues dmsValues=new ContentValues();
+                                        dmsValues.put("LinkAID",Integer.valueOf(dmLinkID.getText().toString()));
+                                        dmsValues.put("x",cPoint.getX());
+                                        dmsValues.put("y",cPoint.getY());
+                                        dmsdb.insert("DMData",null,dmsValues);
+                                    }
+                                    dmsdb.close();
+                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                    points.clear();
+                                }
+                            }catch (Exception e){
+                                Log.i(tag,e.toString());
+                            }
+                        }
+                        dmC.close();
+                    }
+                }
+            });
+            dmBuilder.create().show();
+        }
+
+        /*
+        * 计算面积和长度
+        * */
         private String getAreaString(double dValue) {
             long area = Math.abs(Math.round(dValue));
             String sArea = "";
@@ -1716,8 +1794,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                }
            }
         }
-
     }
+
     /*
     * 读取本地地图信息，列表显示在listview中
     * */
@@ -1798,8 +1876,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return isMapFile;
     }
-
-
 
 
     public void jmdPopup() {
@@ -2300,6 +2376,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuInflater zjInflater=zhujimenu.getMenuInflater();
         zjInflater.inflate(R.menu.zhujimenu, zhujimenu.getMenu());
         zhujimenu.show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapView.pause();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.unpause();
+
+
     }
 
 }
