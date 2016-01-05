@@ -150,6 +150,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL(CreateZBDB);
         db.execSQL(CreateDMDB);
         db.execSQL(CreatePZJDB);
+        db.execSQL(CreateWZBZDB);
         Toast.makeText(mcontext, "create success!", Toast.LENGTH_LONG).show();
 
     }
