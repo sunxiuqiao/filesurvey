@@ -62,6 +62,7 @@ import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.toolkit.analysis.MeasuringTool;
 import com.esri.core.geodatabase.Geodatabase;
 import com.esri.core.geodatabase.GeodatabaseFeatureTable;
+import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Line;
@@ -166,18 +167,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView = (MapView) findViewById(R.id.mapview);
         ArcGISTiledMapServiceLayer maplayeronline=new ArcGISTiledMapServiceLayer(mapURL);
         maplayeronline.setOpacity((float) 0.5);
-        mapView.addLayer(maplayeronline);        //dmsLayer=new ArcGISDynamicMapServiceLayer("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/MapServer");
-        //mapView.addLayer(dmsLayer);
-        //agflayer=new ArcGISFeatureLayer("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0", ArcGISFeatureLayer.MODE.SELECTION);
-        //mapView.addLayer(agflayer);
-        //mapView.addLayer(tiledLayer);
-        /*Envelope initextext=new Envelope(114.255518, 30.573291, 114.286859, 30.600270);
-        mapView.setExtent(initextext);*/
+        mapView.addLayer(maplayeronline);
+        Envelope initextext=new Envelope(12748887.542, 3609934.261, 12713168.721, 3546235.696);
+        mapView.setExtent(initextext);
         setSupportActionBar(toolbar);
-        point = (Point) GeometryEngine.project(new Point(40.805, 111.661), SpatialReference.create(4326), mapView.getSpatialReference());
+        /*point = (Point) GeometryEngine.project(new Point(40.805, 111.661), SpatialReference.create(4326), mapView.getSpatialReference());
         mapView.centerAt(point, true);
         mapView.enableWrapAround(true);
-        mapView.setEsriLogoVisible(true);
+        mapView.setEsriLogoVisible(true);*/
         /*
         * GPS定位
         * */
@@ -276,8 +273,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void markLocation(Location location) {
         //mGraphicLayer.removeAll();
         Polyline poly = null;
-        double locx = location.getLongitude();
-        double locy = location.getLatitude();
+        double locx = location.getLongitude()+0.005465;
+        double locy = location.getLatitude()-0.0025;
         wgsPoint = new Point(locx, locy);
         mapPoint = (Point) GeometryEngine.project(wgsPoint, SpatialReference.create(4326), mapView.getSpatialReference());
         //创建图层
