@@ -51,6 +51,7 @@ import android.widget.Toast;
 
 import com.esri.android.map.FeatureLayer;
 import com.esri.android.map.GraphicsLayer;
+import com.esri.android.map.Layer;
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISDynamicMapServiceLayer;
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        int onlayerindex=1;
         m_State=STATE_SHOW;
         if (savedInstanceState == null) {
             mMapState = null;
@@ -163,12 +165,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         mapView = (MapView) findViewById(R.id.mapview);
         ArcGISTiledMapServiceLayer maplayeronline=new ArcGISTiledMapServiceLayer(mapURL);
+        maplayeronline.setOpacity((float) 0.5);
         mapView.addLayer(maplayeronline);        //dmsLayer=new ArcGISDynamicMapServiceLayer("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/MapServer");
         //mapView.addLayer(dmsLayer);
         //agflayer=new ArcGISFeatureLayer("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0", ArcGISFeatureLayer.MODE.SELECTION);
         //mapView.addLayer(agflayer);
         //mapView.addLayer(tiledLayer);
-        /*Envelope initextext=new Envelope(12899459.4956466, 4815363.65520802, 13004178.2243971, 4882704.67712717);
+        /*Envelope initextext=new Envelope(114.255518, 30.573291, 114.286859, 30.600270);
         mapView.setExtent(initextext);*/
         setSupportActionBar(toolbar);
         point = (Point) GeometryEngine.project(new Point(40.805, 111.661), SpatialReference.create(4326), mapView.getSpatialReference());
@@ -202,17 +205,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     return;
                                 }
                             }
-                            loc = locationManager.getLastKnownLocation(provider);
                             LocationListener locationListener = new LocationListener() {
                                 /**
                                  * 位置改变时调用
                                  */
                                 @Override
                                 public void onLocationChanged(Location location) {
-                                    if (loc!=null){
-                                        double latitude = loc.getLatitude();
-                                        double longitude = loc.getLongitude();
-                                        Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(latitude) + "北纬：" + String.valueOf(longitude), Toast.LENGTH_LONG).show();
+                                    if (location!=null){
+                                        double latitude = location.getLatitude()-0.0025;
+                                        double longitude = location.getLongitude()+0.005465;
+                                        Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
                                         markLocation(location);
                                     }
                                 }
@@ -234,13 +236,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 }
                             };
                             locationManager.requestLocationUpdates(provider, 100000, 10, locationListener);
-                                    if (loc != null) {
-                                        double latitude = loc.getLatitude();
-                                        double longitude = loc.getLongitude();
-                                        Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(latitude) + "北纬：" + String.valueOf(longitude), Toast.LENGTH_LONG).show();
-                                        mGraphicLayer=new GraphicsLayer();
-                                        markLocation(loc);
-                                    }
+                            loc = locationManager.getLastKnownLocation(provider);
+                            if (loc != null) {
+                                double latitude = loc.getLatitude()-0.0025;
+                                double longitude = loc.getLongitude()+0.005465;
+                                Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
+                                mGraphicLayer=new GraphicsLayer();
+                                markLocation(loc);
+                            }
                         }
                     }
                 }).show();
@@ -773,8 +776,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //添加本地图层3
     public void addLocalMap() {
-        //getMapPathFromSD();
-        final String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        getMapPathFromSD();
+        /*final String path = Environment.getExternalStorageDirectory().getAbsolutePath();
         String filename = "ArcGISSurvey/android.geodatabase";
         String pathname = path + "/" + filename;
         try {
@@ -790,7 +793,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(MainActivity.this, "载入的地图无效", Toast.LENGTH_LONG).show();
-        }
+        }*/
     }
 
     //添加瓦片地图（本地）4
@@ -849,8 +852,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if (m_State==STATE_ADD_GRAPHIC){
                         jmdPopup();
-                        mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-                        mapView.setOnTouchListener(mapTouchListener);
                     }else {
                     }
                     break;
@@ -883,10 +884,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void onDestroyActionMode(ActionMode mode) {
             mode.finish();
             //依然解决不了和onsingletouchlistener冲突的问题
-            mapView.setOnTouchListener(new MapTouchListener(MainActivity.this,mapView));
+            //mapView.setOnTouchListener(new MapTouchListener(MainActivity.this,mapView));
         }
     };
 
+    public void showEditMode(){
+        int layerCount=0;
+        for (Layer layer:mapView.getLayers()){
+            if (layer instanceof FeatureLayer){
+                layerCount++;
+            }
+        }
+        if (layerCount>0){
+            if (mapTouchListener==null){
+                mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+                mapView.setOnTouchListener(mapTouchListener);
+            }
+        }
+    }
     /*
     * 注记自定义的工具栏在上方
     * */
@@ -945,9 +960,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         private Polygon tempPolygon = null;//记录绘制过程中的多边形
         final String tag = "TAG";
         GraphicsLayer layer;
+        MapView map;
+        Context context;
 
         public MapTouchListener(Context context, MapView view) {
             super(context, view);
+            this.context=context;
+            map=view;
             points = new ArrayList<Point>();
         }
 
@@ -972,7 +991,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             GraphicsLayer layer=getGraphicLayer();
             if (m_State==STATE_ADD_GRAPHIC){
                 if (geoType != null) {
-                    Point ptCurrent = mapView.toMapPoint(new Point(point.getX(), point.getY()));
+                    Point ptCurrent = map.toMapPoint(new Point(point.getX(), point.getY()));
                     points.add(ptCurrent);
                     if (ptStart == null) {//起始点为空
                         ptStart = ptCurrent;
@@ -997,7 +1016,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             layer.addGraphic(g);
                             String length = Double.toString(Math.round(polyline.calculateLength2D())) + " 米";
 
-                            Toast.makeText(mapView.getContext(), length, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(map.getContext(), length, Toast.LENGTH_SHORT).show();
                         } else if (geoType == Geometry.Type.POLYGON) {
                             Line line = new Line();
                             line.setStart(ptPrevious);
@@ -1059,11 +1078,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     Graphic g = new Graphic(polyline, simpleLineSymbol);
                     layer.addGraphic(g);
-                    mapView.addLayer(layer);
+                    map.addLayer(layer);
                     // 计算总长度
                     String length = Double.toString(Math.round(polyline.calculateLength2D())) + " 米";
 
-                    Toast.makeText(mapView.getContext(), length, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(map.getContext(), length, Toast.LENGTH_SHORT).show();
                 }
 
             } else if (geoType == Geometry.Type.POLYGON) {
@@ -1091,11 +1110,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     final String fid = String.valueOf(pointid) + String.valueOf(graphicid);
                     Graphic g = new Graphic(polygon, mSimpleFillSymbol);
                     layer.addGraphic(g);
-                    mapView.addLayer(layer);
+                    map.addLayer(layer);
                     // 计算总面积
                     String sArea = getAreaString(polygon.calculateArea2D()) + " 米";
 
-                    Toast.makeText(mapView.getContext(), sArea, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(map.getContext(), sArea, Toast.LENGTH_SHORT).show();
                 }
 
             } else {
@@ -1802,6 +1821,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     * */
 
     public List<String> getMapPathFromSD(){
+        final int layerindex=1;
         List<String> maplayerList=new ArrayList<String>();
         View maplistview = getLayoutInflater().inflate(R.layout.maplist, null);
         final ListView maplist = (ListView) maplistview.findViewById(R.id.maplist);
@@ -1846,19 +1866,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         SimpleLineSymbol simpleMarkerSymbol = new SimpleLineSymbol(Color.BLUE, 3, SimpleLineSymbol.STYLE.SOLID);
                         SimpleRenderer simpleRenderer = new SimpleRenderer(simpleMarkerSymbol);
                         featureLayer.setRenderer(simpleRenderer);
-                        mapView.addLayer(featureLayer);
+                        mapView.addLayer(featureLayer,layerindex+1);
                     } else {
                         Toast.makeText(MainActivity.this, "添加数据库地图失败！", Toast.LENGTH_LONG).show();
                     }
                 } else if (fileEnd.equals("tpk")) {
                     tiledLayer = new ArcGISLocalTiledLayer(pathname);
-                    mapView.addLayer(tiledLayer);
+                    mapView.addLayer(tiledLayer,layerindex-1);
                 }
-                try {
+                /*try {
                     getfeatures(pathname);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                }
+                }*/
                 Toast.makeText(MainActivity.this, "添加图层成功!", Toast.LENGTH_LONG).show();
             }
         });
@@ -1883,6 +1903,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final String[] geometryType = {""};
         Type = "jmdmenu";
         setType(Type);
+        mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+        mapView.setOnTouchListener(mapTouchListener);
         PopupMenu jmdpopup = new PopupMenu(MainActivity.this, new View(MainActivity.this));
         jmdpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
