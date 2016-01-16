@@ -58,7 +58,6 @@ import com.esri.android.map.Layer;
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISDynamicMapServiceLayer;
-import com.esri.android.map.ags.ArcGISFeatureLayer;
 import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnSingleTapListener;
@@ -106,10 +105,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     CreateSurveyDB createSurveyDB;
     CreateSpatialDB createSpatialDB;
+    String dbpath=android.os.Environment.getDataDirectory().getAbsolutePath()+"/"+"ArcGISSurvey";
+    SQLiteDatabase spatialdb;
+    SQLiteDatabase attributedb;
     private long exitTime;
     static final String mapURL = "http://cache1.arcgisonline.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer";
     MapView mapView;
-    GeodatabaseFeatureTable geodatabaseFeatureTable;
     FeatureLayer featureLayer;
     ArcGISLocalTiledLayer tiledLayer;
     FloatingActionButton location;
@@ -121,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String KEY_MAP_STATE = "com.esri.MapState";
 
-    ArcGISFeatureLayer agflayer;
     GraphicsLayer mGraphicLayer;
     SimpleFillSymbol mSimpleFillSymbol = null;
     SimpleMarkerSymbol markerSymbol;
@@ -131,12 +131,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     boolean isMessageLength;
 
     PictureMarkerSymbol pictureMarkerSymbol;
-    Point point;
     Point wgsPoint;
     Point mapPoint;
     Location loc;
-    boolean isSelected=false;
-    String obID;
     Map<String,Object> atts;
     ArcGISDynamicMapServiceLayer dmsLayer;
 
@@ -149,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TemplatePicker tp;
     public static ProgressDialog progress;
     public boolean onlineData = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,9 +162,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ((DialogFragment) dialogFrag).dismiss();
             }
         }
-        createSpatialDB = new CreateSpatialDB(MainActivity.this, "SpatialSurveyDB", null, 1);
-        createSurveyDB = new CreateSurveyDB(MainActivity.this, "AttributeSurveyDB", null, 1);
-        //QueryUser();
+        createSpatialDB = new CreateSpatialDB(MainActivity.this, "SpatialSurveyDB.db", null, 1);
+        createSurveyDB = new CreateSurveyDB(MainActivity.this, "AttributeSurveyDB.db", null, 1);
+        String spatialpath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"/"+"SpatialSurveyDB.db";
+        String attributepath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"/"+"AttributeSurveyDB.db";
+        File spatialp=new File(dbpath);
+        File spatialf=new File(spatialpath);
+        File attributef=new File(attributepath);
+        if (!spatialp.exists()){
+            spatialp.mkdirs();
+        }
+        boolean isSpatialCreateSuccess=false;
+        boolean isAttributrCreateSuccess=false;
+        if (!spatialf.exists()&&!attributef.exists()){
+            try {
+                isSpatialCreateSuccess=spatialf.createNewFile();
+                isAttributrCreateSuccess=attributef.createNewFile();
+            }catch (IOException ioex){
+                Toast.makeText(MainActivity.this, ioex.toString(), Toast.LENGTH_LONG).show();
+            }
+        }else {
+            isSpatialCreateSuccess=true;
+            isAttributrCreateSuccess=true;
+        }if (isSpatialCreateSuccess&&isAttributrCreateSuccess){
+            spatialdb=SQLiteDatabase.openOrCreateDatabase(spatialf,null);
+            attributedb=SQLiteDatabase.openOrCreateDatabase(attributef,null);
+        }
         Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_LONG).show();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -295,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mGraphicLayer.addGraphic(graphicline);
         mapView.centerAt(mapPoint, true);
         mapView.addLayer(mGraphicLayer);
+
         SQLiteDatabase GPSdb = createSpatialDB.getReadableDatabase();//数据库为空
         SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
         Date currentdate = new Date(System.currentTimeMillis());

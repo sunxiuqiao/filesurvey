@@ -10,10 +10,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class CreateSpatialDB extends SQLiteOpenHelper {
     CreateSpatialDB createSpatialDB;
     Context mcontext;
-
+    String spatialdbname=android.os.Environment.getDataDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"SpatialSurveyDB.db";
     public CreateSpatialDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context,name,factory,version);
         mcontext=context;
+        spatialdbname=name;
     }
 
     public String CreateGPSData="create table GPSData("+"GPSID integer primary key autoincrement,"
