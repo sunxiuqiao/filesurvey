@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +19,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,6 +35,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,7 +78,6 @@ import com.esri.core.geometry.Unit;
 import com.esri.core.map.Feature;
 import com.esri.core.map.Field;
 import com.esri.core.map.Graphic;
-import com.esri.core.renderer.SimpleRenderer;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleFillSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
@@ -84,6 +86,8 @@ import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
+import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
+import com.example.yanhejin.myapplication.OfflineEdit.TemplatePicker;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -142,7 +146,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     int m_State;//状态
     Graphic textgraphic;
 
-
+    TemplatePicker tp;
+    public static ProgressDialog progress;
+    public boolean onlineData = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -237,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if (loc != null) {
                                 double latitude = loc.getLatitude()-0.0025;
                                 double longitude = loc.getLongitude()+0.005465;
-                                Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "当前位置："+ "北纬：" + String.valueOf(latitude) + "东经：" + String.valueOf(longitude) , Toast.LENGTH_LONG).show();
                                 mGraphicLayer=new GraphicsLayer();
                                 markLocation(loc);
                             }
@@ -290,9 +296,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView.centerAt(mapPoint, true);
         mapView.addLayer(mGraphicLayer);
         SQLiteDatabase GPSdb = createSpatialDB.getReadableDatabase();//数据库为空
+        SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
+        Date currentdate = new Date(System.currentTimeMillis());
+        final String GPSdate = format.format(currentdate);
         ContentValues GPSValues = new ContentValues();
         GPSValues.put("x", locx);
         GPSValues.put("y", locy);
+        GPSValues.put("date",GPSdate);
         GPSdb.insert("GPSData", null, GPSValues);
         Toast.makeText(MainActivity.this, "GPS数据保存成功", Toast.LENGTH_LONG).show();
         GPSdb.close();
@@ -330,14 +340,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mapView.zoomout();
                 return true;
             case R.id.locationnow:
-                if (mapView.isLoaded()) {
-                    Polygon polygon = mapView.getExtent();
-                    int dimension = polygon.getDimension();
-                    Geometry.Type type = polygon.getType();
-                    AlretMsg("地图范围dimension=%s,type=%s", dimension, type.value());
-                }
+                SpatialReference spatialReference= mapView.getSpatialReference().getGCS();
+                Toast.makeText(MainActivity.this,spatialReference.toString(),Toast.LENGTH_LONG).show();
+                /*Envelope envelope=spatialReference.getPannableExtent();
+                mapView.setExtent(envelope);*/
                 return true;
-
             default:
                 return false;
         }
@@ -466,6 +473,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final EditText zhujix= (EditText) zhujiview.findViewById(R.id.zhujix);
             final EditText zhujiy= (EditText) zhujiview.findViewById(R.id.zhujiy);
             final EditText zhujibz= (EditText) zhujiview.findViewById(R.id.zhujibeizhu);
+            zhujix.setText(String.valueOf(x));
+            zhujiy.setText(String.valueOf(y));
             SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
             Date currentdate = new Date(System.currentTimeMillis());
             final String zhujitime = format.format(currentdate);
@@ -794,18 +803,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //添加瓦片地图（本地）4
-    public void addTiledMap() {
-        mapView.addLayer(tiledLayer);
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        String fullpath = path + "/" + "ArcGISSurvey/叠加图.tpk";
-        tiledLayer = new ArcGISLocalTiledLayer(fullpath);
-        try {
-            mapView.addLayer(tiledLayer);
-        } catch (Exception e) {
-            e.getMessage();
-            Toast.makeText(MainActivity.this, "载入的地图无效", Toast.LENGTH_LONG).show();
-        }
-    }
 
     String Type = null;
 
@@ -1858,18 +1855,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         e.printStackTrace();
                     }
                     if (geodatabase != null) {
-                        geodatabaseFeatureTable = geodatabase.getGeodatabaseFeatureTableByLayerId(0);
-                        featureLayer = new FeatureLayer(geodatabaseFeatureTable);
-                        SimpleLineSymbol simpleMarkerSymbol = new SimpleLineSymbol(Color.BLUE, 3, SimpleLineSymbol.STYLE.SOLID);
-                        SimpleRenderer simpleRenderer = new SimpleRenderer(simpleMarkerSymbol);
-                        featureLayer.setRenderer(simpleRenderer);
-                        mapView.addLayer(featureLayer,layerindex+1);
+                        for (GeodatabaseFeatureTable geotable : geodatabase.getGeodatabaseTables()) {
+                            featureLayer = new FeatureLayer(geotable);
+                            featureLayer.setOpacity(50);
+                            mapView.addLayer(featureLayer, layerindex + 1);
+                        }
+
                     } else {
                         Toast.makeText(MainActivity.this, "添加数据库地图失败！", Toast.LENGTH_LONG).show();
                     }
                 } else if (fileEnd.equals("tpk")) {
                     tiledLayer = new ArcGISLocalTiledLayer(pathname);
-                    mapView.addLayer(tiledLayer,layerindex-1);
+                    mapView.addLayer(tiledLayer, layerindex - 1);
                 }
                 /*try {
                     getfeatures(pathname);
@@ -1896,6 +1893,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    /*
+    * 居民地要素
+    * */
     public void jmdPopup() {
         final String[] geometryType = {""};
         Type = "jmdmenu";
@@ -1936,6 +1936,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         jmdpopup.show();
     }
 
+    /*
+    * 水系要素
+    * */
     public void sxPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
         mapView.setOnTouchListener(mapTouchListener);
@@ -2008,6 +2011,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sxpopup.show();
     }
 
+    /*
+    * 道路要素
+    * */
     public void dlPopup() {
         final String[] geometryType = new String[1];
         Type = "daolumenu";
@@ -2077,6 +2083,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dlpopup.show();
     }
 
+    /*
+    * 管线要素
+    * */
     public void gxPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
         mapView.setOnTouchListener(mapTouchListener);
@@ -2129,6 +2138,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         gxpopup.show();
     }
 
+    /*
+    * 植被要素
+    * */
     public void zbPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
         mapView.setOnTouchListener(mapTouchListener);
@@ -2235,6 +2247,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         zhibeiPopup.show();
     }
 
+    /*
+    * 地貌土质要素
+    * */
     public void dmPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
         mapView.setOnTouchListener(mapTouchListener);
@@ -2335,6 +2350,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dmPopup.show();
     }
 
+    /*
+    * 境界线要素
+    * */
     public void jjxPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
         mapView.setOnTouchListener(mapTouchListener);
@@ -2372,6 +2390,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         jjxPopup.show();
     }
 
+    /*
+    * 注记要素
+    * */
     public void zhujiPopup(){
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
         mapView.setOnTouchListener(mapTouchListener);
@@ -2396,6 +2417,84 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuInflater zjInflater=zhujimenu.getMenuInflater();
         zjInflater.inflate(R.menu.zhujimenu, zhujimenu.getMenu());
         zhujimenu.show();
+    }
+
+    /**
+     * This is responsible for retrieving the template types for the edits.
+     */
+    public class TemplatePickerTask extends AsyncTask<Void, Void, Void> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            setTemplatePicker(new TemplatePicker(MainActivity.this,
+                    mapView));
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog
+                    .show(MainActivity.this,
+                            "Loading Edit Templates",
+                            "Might take more time for layers with many templates",
+                            true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            progressDialog.dismiss();
+            getTemplatePicker().showAtLocation(mapView, Gravity.BOTTOM, 0, 0);
+
+            super.onPostExecute(result);
+        }
+
+    }
+
+    public TemplatePicker getTemplatePicker() {
+        return tp;
+    }
+
+    public void setTemplatePicker(TemplatePicker tp) {
+        this.tp = tp;
+    }
+
+    /**
+     * Shows the edit templates for all the feature layers in the map
+     */
+    public void showEditTemplatePicker() {
+
+        GDBUtil.showProgress(MainActivity.this, true);
+        //clear();
+        int layerCount = 0;
+        for (Layer layer : mapView.getLayers()) {
+            if (layer instanceof FeatureLayer) {
+                layerCount++;
+            }
+        }
+        if (layerCount > 0) {
+            if (mapTouchListener == null) {
+                mapTouchListener = new MapTouchListener(MainActivity.this,mapView);
+                mapView.setOnTouchListener(mapTouchListener);
+            }
+            if (getTemplatePicker() != null) {
+                getTemplatePicker().showAtLocation(mapView, Gravity.BOTTOM, 0,0);
+            } else {
+                new TemplatePickerTask().execute();
+            }
+        } else {
+            GDBUtil.showMessage(MainActivity.this,"No Editable Local Feature Layers.");
+
+        }
+        GDBUtil.showProgress(MainActivity.this, false);
+
+    }
+
+    public MapView getMapView() {
+        return mapView;
     }
 
     @Override

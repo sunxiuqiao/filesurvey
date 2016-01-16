@@ -23,17 +23,18 @@
         <item android:id="@+id/soundRecord"
             android:icon="@android:drawable/ic_btn_speak_now"
             android:title="录音采集"/>
+        <item android:id="@+id/biaozhu"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="标注" />
+        <item android:id="@+id/WiFishare"
+            android:icon="@android:drawable/ic_menu_send"
+            android:title="WiFi传输" />
 
     </group>
 
     <item android:title="Communicate">
         <menu>
-            <item android:id="@+id/biaozhu"
-                android:icon="@android:drawable/ic_menu_save"
-                android:title="标注" />
-            <item android:id="@+id/WiFishare"
-                android:icon="@android:drawable/ic_menu_send"
-                android:title="WiFi传输" />
+
         </menu>
     </item>
 
