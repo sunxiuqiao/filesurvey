@@ -49,6 +49,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -151,7 +152,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        int onlayerindex=1;
         m_State=STATE_SHOW;
         if (savedInstanceState == null) {
             mMapState = null;
@@ -162,11 +162,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ((DialogFragment) dialogFrag).dismiss();
             }
         }
-        createSpatialDB = new CreateSpatialDB(MainActivity.this, "SpatialSurveyDB.db", null, 1);
-        createSurveyDB = new CreateSurveyDB(MainActivity.this, "AttributeSurveyDB.db", null, 1);
+
         String spatialpath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"/"+"SpatialSurveyDB.db";
         String attributepath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"/"+"AttributeSurveyDB.db";
-        File spatialp=new File(dbpath);
+        createSpatialDB = new CreateSpatialDB(MainActivity.this, spatialpath, null, 1);
+        createSurveyDB = new CreateSurveyDB(MainActivity.this, attributepath, null, 2);
+       /* File spatialp=new File(dbpath);
         File spatialf=new File(spatialpath);
         File attributef=new File(attributepath);
         if (!spatialp.exists()){
@@ -187,7 +188,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }if (isSpatialCreateSuccess&&isAttributrCreateSuccess){
             spatialdb=SQLiteDatabase.openOrCreateDatabase(spatialf,null);
             attributedb=SQLiteDatabase.openOrCreateDatabase(attributef,null);
-        }
+        }*/
+
         Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_LONG).show();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -216,59 +218,67 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onClick(View v) {
                         final List<String> providers = locationManager.getProviders(true);
-                        for (String provider : providers) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    // TODO: Consider calling
-                                    //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                                    // here to request the missing permissions, and then overriding
-                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                    //                                          int[] grantResults)
-                                    // to handle the case where the user grants the permission. See the documentation
-                                    // for Activity#requestPermissions for more details.
-                                    return;
-                                }
-                            }
-                            LocationListener locationListener = new LocationListener() {
-                                /**
-                                 * 位置改变时调用
-                                 */
-                                @Override
-                                public void onLocationChanged(Location location) {
-                                    if (location!=null){
-                                        double latitude = location.getLatitude()-0.0025;
-                                        double longitude = location.getLongitude()+0.005465;
-                                        Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
-                                        markLocation(location);
+                        Runnable run=new Runnable() {
+                            @Override
+                            public void run() {
+                                for (String provider : providers) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                            // TODO: Consider calling
+                                            //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+                                            // here to request the missing permissions, and then overriding
+                                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                            //                                          int[] grantResults)
+                                            // to handle the case where the user grants the permission. See the documentation
+                                            // for Activity#requestPermissions for more details.
+                                            return;
+                                        }
+                                    }
+                                    LocationListener locationListener = new LocationListener() {
+                                        /**
+                                         * 位置改变时调用
+                                         */
+                                        @Override
+                                        public void onLocationChanged(Location location) {
+                                            if (location!=null){
+                                                double latitude = location.getLatitude()-0.0025;
+                                                double longitude = location.getLongitude()+0.005465;
+                                                Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
+                                                markLocation(location);
+                                            }
+                                        }
+
+                                        @Override//状态改变时
+                                        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                                        }
+
+
+                                        @Override  //provider失效时
+                                        public void onProviderEnabled(String provider) {
+
+                                        }
+
+                                        @Override  //provider生效时
+                                        public void onProviderDisabled(String provider) {
+
+                                        }
+                                    };
+                                    locationManager.requestLocationUpdates(provider, 100000, 10, locationListener);
+                                    loc = locationManager.getLastKnownLocation(provider);
+                                    if (loc != null) {
+                                        double latitude = loc.getLatitude()-0.0025;
+                                        double longitude = loc.getLongitude()+0.005465;
+                                        Toast.makeText(MainActivity.this, "当前位置："+ "北纬：" + String.valueOf(latitude) + "东经：" + String.valueOf(longitude) , Toast.LENGTH_LONG).show();
+                                        mGraphicLayer=new GraphicsLayer();
+                                        markLocation(loc);
                                     }
                                 }
-
-                                @Override//状态改变时
-                                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                                }
-
-
-                                @Override  //provider失效时
-                                public void onProviderEnabled(String provider) {
-
-                                }
-
-                                @Override  //provider生效时
-                                public void onProviderDisabled(String provider) {
-
-                                }
-                            };
-                            locationManager.requestLocationUpdates(provider, 100000, 10, locationListener);
-                            loc = locationManager.getLastKnownLocation(provider);
-                            if (loc != null) {
-                                double latitude = loc.getLatitude()-0.0025;
-                                double longitude = loc.getLongitude()+0.005465;
-                                Toast.makeText(MainActivity.this, "当前位置："+ "北纬：" + String.valueOf(latitude) + "东经：" + String.valueOf(longitude) , Toast.LENGTH_LONG).show();
-                                mGraphicLayer=new GraphicsLayer();
-                                markLocation(loc);
                             }
-                        }
+                        };
+                        Thread thread=new Thread(run);
+                        thread.start();
+
                     }
                 }).show();
             }
@@ -296,27 +306,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });*/
     }
 
+
     //标记位置
     private void markLocation(Location location) {
         //mGraphicLayer.removeAll();
-        Polyline poly = null;
+        List<Point> gpspoint=new ArrayList<Point>();
+        Polyline poly = new Polyline();
+        Point startpoint;
+        Point topoint;
         double locx = location.getLongitude()+0.005465;
         double locy = location.getLatitude()-0.0025;
         wgsPoint = new Point(locx, locy);
+        gpspoint.add(wgsPoint);
         mapPoint = (Point) GeometryEngine.project(wgsPoint, SpatialReference.create(4326), mapView.getSpatialReference());
         //创建图层
         Graphic graphic = new Graphic(mapPoint, pictureMarkerSymbol);
         mGraphicLayer.addGraphic(graphic);
-
-        //画线
-
-        //poly.startPath(mapPoint);
-        //poly.lineTo((float) mapPoint.getX(), (float) mapPoint.getY());
-        Graphic graphicline = new Graphic(poly, new SimpleLineSymbol(Color.BLUE, 4, SimpleLineSymbol.STYLE.SOLID));
-        mGraphicLayer.addGraphic(graphicline);
-        mapView.centerAt(mapPoint, true);
-        mapView.addLayer(mGraphicLayer);
-
+        while (gpspoint.size()>1){
+            for (int i=0;i<gpspoint.size();i++){
+                startpoint=gpspoint.get(i);
+                topoint=gpspoint.get(i+1);
+                poly.startPath(startpoint);
+                poly.lineTo(topoint);
+                //画线
+                Graphic graphicline = new Graphic(poly, new SimpleLineSymbol(Color.BLUE, 4, SimpleLineSymbol.STYLE.SOLID));
+                mGraphicLayer.addGraphic(graphicline);
+                mapView.centerAt(mapPoint, true);
+                mapView.addLayer(mGraphicLayer);
+            }
+        }
         SQLiteDatabase GPSdb = createSpatialDB.getReadableDatabase();//数据库为空
         SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
         Date currentdate = new Date(System.currentTimeMillis());
@@ -438,14 +456,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 actionmode=MainActivity.this.startActionMode(zhujiCallback);
                 break;
             case R.id.wifishare:
-               addLocalMap();
-                /*if (!isSelected){
-                   break;
-                }
-                Toast.makeText(getApplicationContext(),"开始提交",Toast.LENGTH_LONG).show();
-                atts.put("field_name", "呵呵");
-                Graphic graphic=new Graphic(null,null,atts);
-                agflayer.applyEdits(null,null,new Graphic[]{graphic},new myEdits());*/
+
                 break;
             default:
                 break;
@@ -965,6 +976,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    /*
+    * 要素查看功能自定义在工具栏上方
+    * */
+    public ActionMode.Callback featureSearch=new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater= mode.getMenuInflater();
+            inflater.inflate(R.menu.featureSeature,menu);
+            return false;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            int id=item.getItemId();
+            switch (id){
+                case R.id.jmds:
+                    Runnable runnable=new Runnable() {
+                        @Override
+                        public void run() {
+                           View view=getLayoutInflater().inflate(R.layout.maplist,null);
+                            ListView listView= (ListView) view.findViewById(R.id.maplist);
+                            ArrayList<HashMap<String,Object>> listfw=new ArrayList<HashMap<String,Object>>();
+                            String select="select * from JMDData";
+                            SQLiteDatabase jmddb=createSurveyDB.getReadableDatabase();
+                            Cursor jmdc=jmddb.rawQuery(select,null);
+                            if (jmdc.moveToFirst()){
+                                int linkID=jmdc.getInt(jmdc.getColumnIndex("LinkID"));
+                                String fwname=jmdc.getString(jmdc.getColumnIndex("FTName"));
+                                HashMap<String,Object> map=new HashMap<String,Object>();
+                                map.put("linkid",linkID);
+                                map.put("fwname",fwname);
+                                listfw.add(map);
+                            }
+                            jmdc.close();
+                            jmddb.close();
+                            SimpleAdapter adapter=new SimpleAdapter(MainActivity.this,listfw,R.layout.maplist,new String[]{"linkid","fwname"},new int[]{R.id.linkid,R.id.fwname});
+                            listView.setAdapter(adapter);
+                        }
+                    };
+                    break;
+                case R.id.dls:
+                    break;
+                case R.id.sxs:
+                    break;
+                case R.id.zbs:
+                    break;
+                case R.id.gxs:
+                    break;
+                case R.id.jjxs:
+                    break;
+                case R.id.zjs:
+                    break;
+                case R.id.dmtzs:
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
+    };
 
     //地图触摸事件
     class MapTouchListener extends MapOnTouchListener {

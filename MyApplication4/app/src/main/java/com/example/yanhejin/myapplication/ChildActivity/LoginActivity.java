@@ -59,23 +59,27 @@ public class LoginActivity extends AppCompatActivity {
     String password="admin";
     String logtime;
     int permission;
-
+    String path=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey/AttributeSurveyDB.db";
+    boolean isRemmbered=false;
+    View focusView = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        createSurveyDB=new CreateSurveyDB(LoginActivity.this,path,null,1);
         // Set up the login form.
         mUserName = (EditText) findViewById(R.id.username);
         rememberpassword= (CheckBox) findViewById(R.id.rememberpw);
         autologin= (CheckBox) findViewById(R.id.autologin);
         //populateAutoComplete();
         mPasswordView = (EditText) findViewById(R.id.password);
+        checkIsRenmmber();
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
                     Toast.makeText(LoginActivity.this,"create success!",Toast.LENGTH_LONG).show();
-                    attemptLogin();
+                    //attemptLogin();
                     return true;
                 }
                 return false;
@@ -86,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                //attemptLogin();
+                attemptLogin();
                 Intent intent=new Intent(LoginActivity.this,MainActivity.class);
                 startActivity(intent);
                 LoginActivity.this.onDestroy();
@@ -95,6 +99,30 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
     }
+
+   public void checkIsRenmmber(){
+       SQLiteDatabase check=createSurveyDB.getReadableDatabase();
+       Cursor checkcursor=check.rawQuery("select * from user ", null);
+       if (checkcursor.getCount()>0){
+
+           String cusername=checkcursor.getString(1);
+           String cpassword=checkcursor.getString(2);
+           while (checkcursor.moveToFirst()){
+               int remmber=checkcursor.getInt(checkcursor.getColumnIndex("admin"));
+               if (remmber==1){
+                   mUserName.setText(cusername);
+                   mPasswordView.setText(cpassword);
+               }else {
+                   focusView=mUserName;
+                   focusView.requestFocus();
+               }
+           }
+       }else {
+           focusView=mUserName;
+           focusView.requestFocus();
+       }
+
+   }
 
    //登录信息
     private void attemptLogin() {
@@ -111,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
-        View focusView = null;
+
 
         // 检查用户名是否为空
         if (TextUtils.isEmpty(username)) {
@@ -131,18 +159,16 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             //如果不为空的话登录
-            String path=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey/FiledSurveyDB.db";
-            createSurveyDB=new CreateSurveyDB(LoginActivity.this,path,null,1);
             SQLiteDatabase userdb=createSurveyDB.getReadableDatabase();
             Cursor usercursor=userdb.rawQuery("select * from user",null);
             if (usercursor.getCount()!=0){
                 if (usercursor.moveToFirst()){
-                    String cusername=usercursor.getString(usercursor.getColumnIndex("UserName"));
-                    String cpassword=usercursor.getString(usercursor.getColumnIndex("PassWord"));
-                    //int cpermission=usercursor.getInt(usercursor.getColumnIndex("Permission"));
+                    String cusername=usercursor.getString(usercursor.getColumnIndexOrThrow("UserName"));
+                    String cpassword=usercursor.getString(usercursor.getColumnIndexOrThrow("PassWord"));
                     if (username.equals(cusername)&&password.equals(cpassword)){
-                        Intent intent=new Intent(LoginActivity.this,MainActivity.class);
-                        startActivity(intent);
+                        /*Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+                        startActivity(intent);*/
+                        Toast.makeText(LoginActivity.this,"验证成功！",Toast.LENGTH_LONG).show();
                     }
                     else {
                         Toast.makeText(LoginActivity.this,"请输入正确的用户名或密码！",Toast.LENGTH_LONG).show();
@@ -152,13 +178,16 @@ public class LoginActivity extends AppCompatActivity {
             else if (usercursor.getCount()==0){
                 CreateDefaultUser();
                 if (rememberpassword.isChecked()){
-                   String UserName=usercursor.getString(usercursor.getColumnIndex("UserName"));
-                   String PassWord=usercursor.getString(usercursor.getColumnIndex("PassWord"));
+                   String UserName=usercursor.getString(usercursor.getColumnIndexOrThrow("UserName"));
+                   String PassWord=usercursor.getString(usercursor.getColumnIndexOrThrow("PassWord"));
+                    SQLiteDatabase db=createSurveyDB.getReadableDatabase();
+                    db.execSQL("update user set isRemmber=? where name=?", new String[]{"1", "admin"});
+                    db.close();
                     mUserName.setText(UserName);
                     mPasswordView.setText(PassWord);
-                    Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+                    /*Intent intent=new Intent(LoginActivity.this,MainActivity.class);
                     startActivity(intent);
-                    LoginActivity.this.onDestroy();
+                    LoginActivity.this.onDestroy();*/
                 }
                 else {
                     Intent intent=new Intent(LoginActivity.this,MainActivity.class);
@@ -199,7 +228,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             //添加验证用户名和密码的片段
-
+            //attemptLogin();
 
             // TODO: register the new account here.
             return true;
@@ -287,14 +316,10 @@ public class LoginActivity extends AppCompatActivity {
         Date currentdate = new Date(System.currentTimeMillis());
         String logtime = format.format(currentdate);
         values.put("UserName", "admin");
-        values.put("PassWord","admin");
-        values.put("Permission",1);
         values.put("LogTime",logtime);
         db.insert("user",null,values);
         db.close();
     }
-
-
 }
 
 

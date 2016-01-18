@@ -5,15 +5,12 @@
         <item android:id="@+id/addmap"
             android:icon="@android:drawable/ic_menu_add"
             android:title="添加地图"/>
-        <item android:id="@+id/layercontrol"
-            android:icon="@android:drawable/ic_menu_manage"
-            android:title="图层管理"/>
         <item android:id="@+id/startedit"
             android:icon="@android:drawable/ic_menu_edit"
             android:title="要素采集" />
-        <item android:id="@+id/search"
-            android:icon="@android:drawable/ic_menu_search"
-            android:title="要素查询"/>
+        <item android:id="@+id/biaozhu"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="要素标注" />
         <item android:id="@+id/surveydiatance"
             android:icon="@android:drawable/ic_menu_manage"
             android:title="测量距离" />
@@ -23,18 +20,19 @@
         <item android:id="@+id/soundRecord"
             android:icon="@android:drawable/ic_btn_speak_now"
             android:title="录音采集"/>
-        <item android:id="@+id/biaozhu"
-            android:icon="@android:drawable/ic_menu_edit"
-            android:title="标注" />
-        <item android:id="@+id/WiFishare"
-            android:icon="@android:drawable/ic_menu_send"
-            android:title="WiFi传输" />
-
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="工具">
         <menu>
-
+            <item android:id="@+id/layercontrol"
+                android:icon="@android:drawable/ic_menu_manage"
+                android:title="图层管理"/>
+            <item android:id="@+id/search"
+                android:icon="@android:drawable/ic_menu_search"
+                android:title="要素查看"/>
+            <item android:id="@+id/datashare"
+                android:icon="@android:drawable/ic_menu_send"
+                android:title="数据导出" />
         </menu>
     </item>
 

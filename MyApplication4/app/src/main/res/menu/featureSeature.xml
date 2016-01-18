@@ -1,0 +1,41 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/jmds"
+            android:title="@string/jumindi"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/dls"
+            android:title="@string/daolu"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/sxs"
+            android:title="@string/shuixi"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/zbs"
+            android:title="@string/zhibei"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/gxs"
+            android:title="@string/guanxian"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/dmtzs"
+            android:title="@string/dimaohetuzhi"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/jjxs"
+            android:title="@string/jingjiexian"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/zjs"
+            android:title="@string/zhuji"
+            app:showAsAction="always"/>
+
+
+    </group>
+
+</menu>

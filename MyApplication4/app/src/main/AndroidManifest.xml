@@ -40,7 +40,9 @@
         <activity
             android:name=".ChildActivity.LoginActivity"
             android:label="@string/title_activity_login"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+
+        </activity>
         <activity android:name=".ChildActivity.FeatureType" >
         </activity>
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for

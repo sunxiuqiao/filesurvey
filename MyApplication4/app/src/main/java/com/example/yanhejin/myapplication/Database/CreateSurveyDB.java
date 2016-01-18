@@ -23,6 +23,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"UserName varchar(50),"
             +"PassWord varchar(50),"
             +"Permission integer,"
+            +"isRemmber integer,"
             +"LogTime varchar(50))";
 
     public static final String CreatePhotoDB="create table PhotoData("+"PhotoID integer primary key autoincrement,"
@@ -162,6 +163,16 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL("drop table if exists DKData");
         db.execSQL("drop table if exists GPSData");
         db.execSQL("drop table if exists PhotoData");
+        db.execSQL("drop table if exists JMDData");
+        db.execSQL("drop table if exists DLData");
+        db.execSQL("drop table if exists SXData");
+        db.execSQL("drop table if exists GXData");
+        db.execSQL("drop table if exists JJXData");
+        db.execSQL("drop table if exists ZJData");
+        db.execSQL("drop table if exists ZBData");
+        db.execSQL("drop table if exists DMData");
+        db.execSQL("drop table if exists PZJData");
+        db.execSQL("drop table if exists WZBZData");
         onCreate(db);
     }
 }
