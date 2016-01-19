@@ -178,6 +178,7 @@
 
     <string name="diwubiaozhu">地物标注</string>
     <string name="wenzibiaozhu">文字标注</string>
+    <string name="title_activity_fwselect">fwselect</string>
 
 
 </resources>

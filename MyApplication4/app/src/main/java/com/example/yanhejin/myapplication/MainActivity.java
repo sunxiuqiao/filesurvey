@@ -49,7 +49,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,6 +83,7 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
+import com.example.yanhejin.myapplication.ChildActivity.fwselect;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
 import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
@@ -455,6 +455,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.biaozhu:
                 actionmode=MainActivity.this.startActionMode(zhujiCallback);
                 break;
+            case R.id.search:
+                actionmode=MainActivity.this.startActionMode(featureSearch);
             case R.id.wifishare:
 
                 break;
@@ -589,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final GraphicsLayer layer = getGraphicLayer();
             final SQLiteDatabase wzdb=createSurveyDB.getReadableDatabase();
             if (layer != null && layer.isInitialized() && layer.isVisible()) {
-                final Point point = mapView.toMapPoint(new Point(x, y));
+                final Point point=mapView.toMapPoint(new Point(x,y));
                 AlertDialog.Builder textBuilder=new AlertDialog.Builder(MainActivity.this);
                 View textview=getLayoutInflater().inflate(R.layout.biaozhu,null);
                 final EditText ysdmtext= (EditText) textview.findViewById(R.id.featureDM);
@@ -983,8 +985,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater= mode.getMenuInflater();
-            inflater.inflate(R.menu.featureSeature,menu);
-            return false;
+            inflater.inflate(R.menu.featureselect,menu);
+            return true;
         }
 
         @Override
@@ -997,29 +999,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int id=item.getItemId();
             switch (id){
                 case R.id.jmds:
-                    Runnable runnable=new Runnable() {
-                        @Override
-                        public void run() {
-                           View view=getLayoutInflater().inflate(R.layout.maplist,null);
-                            ListView listView= (ListView) view.findViewById(R.id.maplist);
-                            ArrayList<HashMap<String,Object>> listfw=new ArrayList<HashMap<String,Object>>();
-                            String select="select * from JMDData";
-                            SQLiteDatabase jmddb=createSurveyDB.getReadableDatabase();
-                            Cursor jmdc=jmddb.rawQuery(select,null);
-                            if (jmdc.moveToFirst()){
-                                int linkID=jmdc.getInt(jmdc.getColumnIndex("LinkID"));
-                                String fwname=jmdc.getString(jmdc.getColumnIndex("FTName"));
-                                HashMap<String,Object> map=new HashMap<String,Object>();
-                                map.put("linkid",linkID);
-                                map.put("fwname",fwname);
-                                listfw.add(map);
-                            }
-                            jmdc.close();
-                            jmddb.close();
-                            SimpleAdapter adapter=new SimpleAdapter(MainActivity.this,listfw,R.layout.maplist,new String[]{"linkid","fwname"},new int[]{R.id.linkid,R.id.fwname});
-                            listView.setAdapter(adapter);
-                        }
-                    };
+                    fwRunnable runnable=new fwRunnable();
+                    Thread th=new Thread(runnable);
+                    th.start();
                     break;
                 case R.id.dls:
                     break;
@@ -1041,9 +1023,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
+            mode.finish();
         }
     };
+
+    class fwRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            Intent fwintent=new Intent(MainActivity.this,fwselect.class);
+            startActivity(fwintent);
+        }
+    }
 
     //地图触摸事件
     class MapTouchListener extends MapOnTouchListener {
