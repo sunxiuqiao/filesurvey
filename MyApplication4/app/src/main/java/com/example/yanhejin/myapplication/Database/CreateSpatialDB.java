@@ -23,6 +23,7 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
     public String CreateGPSData="create table GPSData("+"GPSID integer primary key autoincrement,"
             +"x REAL,"
             +"y REAL,"
+            +"date varchar(50)"
             +"GPSdate REAL)";
 
     public String CreateDLData="create table DLData("+"DLID integer primary key autoincrement,"

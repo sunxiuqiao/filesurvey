@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static ProgressDialog progress;
     public boolean onlineData = true;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -218,71 +219,70 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onClick(View v) {
                         final List<String> providers = locationManager.getProviders(true);
-                        Runnable run=new Runnable() {
-                            @Override
-                            public void run() {
-                                for (String provider : providers) {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                            // TODO: Consider calling
-                                            //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                                            // here to request the missing permissions, and then overriding
-                                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                            //                                          int[] grantResults)
-                                            // to handle the case where the user grants the permission. See the documentation
-                                            // for Activity#requestPermissions for more details.
-                                            return;
-                                        }
-                                    }
-                                    LocationListener locationListener = new LocationListener() {
-                                        /**
-                                         * 位置改变时调用
-                                         */
-                                        @Override
-                                        public void onLocationChanged(Location location) {
-                                            if (location!=null){
-                                                double latitude = location.getLatitude()-0.0025;
-                                                double longitude = location.getLongitude()+0.005465;
-                                                Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
-                                                markLocation(location);
-                                            }
-                                        }
-
-                                        @Override//状态改变时
-                                        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                                        }
-
-
-                                        @Override  //provider失效时
-                                        public void onProviderEnabled(String provider) {
-
-                                        }
-
-                                        @Override  //provider生效时
-                                        public void onProviderDisabled(String provider) {
-
-                                        }
-                                    };
-                                    locationManager.requestLocationUpdates(provider, 100000, 10, locationListener);
-                                    loc = locationManager.getLastKnownLocation(provider);
-                                    if (loc != null) {
-                                        double latitude = loc.getLatitude()-0.0025;
-                                        double longitude = loc.getLongitude()+0.005465;
-                                        Toast.makeText(MainActivity.this, "当前位置："+ "北纬：" + String.valueOf(latitude) + "东经：" + String.valueOf(longitude) , Toast.LENGTH_LONG).show();
-                                        mGraphicLayer=new GraphicsLayer();
-                                        markLocation(loc);
-                                    }
+                        for (String provider : providers) {
+                            loc = locationManager.getLastKnownLocation(provider);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                                        checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for Activity#requestPermissions for more details.
+                                    return;
                                 }
                             }
-                        };
-                        Thread thread=new Thread(run);
-                        thread.start();
+                            LocationListener locationListener = new LocationListener() {
+                                /**
+                                 * 位置改变时调用
+                                 */
+                                @Override
+                                public void onLocationChanged(Location location) {
+                                    if (location != null) {
+                                        double latitude = location.getLatitude() - 0.0025;
+                                        double longitude = location.getLongitude() + 0.005465;
+                                        Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
+                                        markLocation(location);
+                                    }
+                                }
+
+                                @Override//状态改变时
+                                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                                }
+
+
+                                @Override  //provider失效时
+                                public void onProviderEnabled(String provider) {
+
+                                }
+
+                                @Override  //provider生效时
+                                public void onProviderDisabled(String provider) {
+
+                                }
+                            };
+                            locationManager.requestLocationUpdates(provider, 60000, 5, locationListener);
+
+                            if (loc != null) {
+                                double latitude = loc.getLatitude() - 0.0025;
+                                double longitude = loc.getLongitude() + 0.005465;
+                                Point point = new Point(latitude, longitude);
+                                Toast.makeText(MainActivity.this, "当前位置："+ "北纬：" + String.valueOf(longitude) + "东经：" + String.valueOf(latitude) , Toast.LENGTH_LONG).show();
+                                mGraphicLayer = new GraphicsLayer();
+                                markLocation(loc);
+                            }
+                        }
 
                     }
                 }).show();
+
             }
+
         });
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -307,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+
     //标记位置
     private void markLocation(Location location) {
         //mGraphicLayer.removeAll();
@@ -322,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //创建图层
         Graphic graphic = new Graphic(mapPoint, pictureMarkerSymbol);
         mGraphicLayer.addGraphic(graphic);
+
         while (gpspoint.size()>1){
             for (int i=0;i<gpspoint.size();i++){
                 startpoint=gpspoint.get(i);
@@ -335,6 +337,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mapView.addLayer(mGraphicLayer);
             }
         }
+        mapView.centerAt(mapPoint, true);
+        mapView.addLayer(mGraphicLayer);
         SQLiteDatabase GPSdb = createSpatialDB.getReadableDatabase();//数据库为空
         SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
         Date currentdate = new Date(System.currentTimeMillis());
