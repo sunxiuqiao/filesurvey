@@ -40,8 +40,8 @@
         <activity
             android:name=".ChildActivity.LoginActivity"
             android:label="@string/title_activity_login"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".ChildActivity.FeatureType"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".ChildActivity.FeatureType" />
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -51,8 +51,12 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".ChildActivity.fwselect"
+            android:name=".FeatureView.fwselect"
             android:label="@string/title_activity_fwselect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FeatureView.dlselect"
+            android:label="@string/title_activity_dlselect"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

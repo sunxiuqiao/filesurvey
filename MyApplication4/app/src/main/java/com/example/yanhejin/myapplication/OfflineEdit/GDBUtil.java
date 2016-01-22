@@ -54,7 +54,7 @@ public class GDBUtil {
   /*
   *
   * */
-  static final String DEFAULT_FEATURE_SERVICE_URL = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Sync/WildfireSync/FeatureServer";
+  static final String DEFAULT_FEATURE_SERVICE_URL = "http://localhost:6080/arcgis/rest/services/wuhanroad/FeatureServer";
 
   /*
   *
@@ -64,12 +64,12 @@ public class GDBUtil {
   /*
   *
   * */
-  static final String DEFAULT_GDB_PATH = "/ArcGIS/samples/OfflineEditor/";
+  static final String DEFAULT_GDB_PATH = "/ArcGISSurvey/";
 
   /*
   *
   * */
-  static final String DEFAULT_BASEMAP_FILENAME = "/ArcGIS/samples/OfflineEditor/SanFrancisco.tpk";
+  static final String DEFAULT_BASEMAP_FILENAME = "/ArcGISSurvey/武汉栅格地图.tpk";
 
   /*
   *
@@ -139,7 +139,7 @@ public class GDBUtil {
       };
 
       AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-      builder.setMessage("Do you want to delete your previously downloaded geodatabase?").setPositiveButton("Yes", dialogClickListener)
+      builder.setMessage("确定删除现在下载的.geodatabase?").setPositiveButton("Yes", dialogClickListener)
           .setNegativeButton("No", dialogClickListener).show();
 
     } else {

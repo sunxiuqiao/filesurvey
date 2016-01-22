@@ -23,17 +23,18 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
     public String CreateGPSData="create table GPSData("+"GPSID integer primary key autoincrement,"
             +"x REAL,"
             +"y REAL,"
-            +"date varchar(50)"
             +"GPSdate REAL)";
 
     public String CreateDLData="create table DLData("+"DLID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
+
     public String CreateJMDData="create table JMDData("+"JMDID integer primary key autoincrement,"
             + "LinkAID integer,"
             + "x REAL,"
             + "y REAL)";
+
     public String CreateSXData="create table SXData("+"SXID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
@@ -84,8 +85,19 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion==1){
-
-        }
+        String sql="drop table if exists GPSData";
+        String jmdsql="drop table if exists JMDData";
+        String dlsql="drop table if exists DLData";
+        db.execSQL("drop table if exists SXData");
+        db.execSQL("drop table if exists GXData");
+        db.execSQL("drop table if exists JJXData");
+        db.execSQL("drop table if exists ZJData");
+        db.execSQL("drop table if exists ZBData");
+        db.execSQL("drop table if exists DMData");
+        db.execSQL("drop table if exists PZJData");
+        db.execSQL(sql);
+        db.execSQL(jmdsql);
+        db.execSQL(dlsql);
+        onCreate(db);
     }
 }

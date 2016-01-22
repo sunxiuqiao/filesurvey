@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -83,7 +85,7 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
-import com.example.yanhejin.myapplication.ChildActivity.fwselect;
+import com.example.yanhejin.myapplication.FeatureView.fwselect;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
 import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
@@ -219,65 +221,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onClick(View v) {
                         final List<String> providers = locationManager.getProviders(true);
-                        for (String provider : providers) {
-                            loc = locationManager.getLastKnownLocation(provider);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                                        checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    // TODO: Consider calling
-                                    //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                                    // here to request the missing permissions, and then overriding
-                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                    //                                          int[] grantResults)
-                                    // to handle the case where the user grants the permission. See the documentation
-                                    // for Activity#requestPermissions for more details.
-                                    return;
-                                }
-                            }
-                            LocationListener locationListener = new LocationListener() {
-                                /**
-                                 * 位置改变时调用
-                                 */
-                                @Override
-                                public void onLocationChanged(Location location) {
-                                    if (location != null) {
-                                        double latitude = location.getLatitude() - 0.0025;
-                                        double longitude = location.getLongitude() + 0.005465;
-                                        Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
-                                        markLocation(location);
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                Looper.prepare();
+                                for (String provider : providers) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                                                checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                            // TODO: Consider calling
+                                            //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+                                            // here to request the missing permissions, and then overriding
+                                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                            //                                          int[] grantResults)
+                                            // to handle the case where the user grants the permission. See the documentation
+                                            // for Activity#requestPermissions for more details.
+                                            return;
+                                        }
                                     }
+                                    LocationListener locationListener = new LocationListener() {
+                                        /**
+                                         * 位置改变时调用
+                                         */
+                                        @Override
+                                        public void onLocationChanged(Location location) {
+                                            if (location != null) {
+                                                double latitude = location.getLatitude() - 0.0025;
+                                                double longitude = location.getLongitude() + 0.005465;
+                                                Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
+                                                markLocation(location);
+                                            }
+                                        }
+
+                                        @Override//状态改变时
+                                        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                                        }
+
+
+                                        @Override  //provider失效时
+                                        public void onProviderEnabled(String provider) {
+
+                                        }
+
+                                        @Override  //provider生效时
+                                        public void onProviderDisabled(String provider) {
+
+                                        }
+                                    };
+                                    locationManager.requestLocationUpdates(provider, 100000, 10, locationListener);
+                                    loc = locationManager.getLastKnownLocation(provider);
+                                    if (loc != null) {
+                                        double latitude = loc.getLatitude() - 0.0025;
+                                        double longitude = loc.getLongitude() + 0.005465;
+                                        Point point = new Point(latitude, longitude);
+                                        Message msg = handler.obtainMessage();
+                                        msg.obj = point;
+                                        handler.sendMessage(msg);
+                                        mGraphicLayer = new GraphicsLayer();
+                                        markLocation(loc);
+                                    }
+                                    locationManager.requestLocationUpdates(provider,60000,5,locationListener, Looper.myLooper());
+                                    Looper.loop();
                                 }
-
-                                @Override//状态改变时
-                                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                                }
-
-
-                                @Override  //provider失效时
-                                public void onProviderEnabled(String provider) {
-
-                                }
-
-                                @Override  //provider生效时
-                                public void onProviderDisabled(String provider) {
-
-                                }
-                            };
-                            locationManager.requestLocationUpdates(provider, 60000, 5, locationListener);
-
-                            if (loc != null) {
-                                double latitude = loc.getLatitude() - 0.0025;
-                                double longitude = loc.getLongitude() + 0.005465;
-                                Point point = new Point(latitude, longitude);
-                                Toast.makeText(MainActivity.this, "当前位置："+ "北纬：" + String.valueOf(longitude) + "东经：" + String.valueOf(latitude) , Toast.LENGTH_LONG).show();
-                                mGraphicLayer = new GraphicsLayer();
-                                markLocation(loc);
                             }
-                        }
+                        }.start();
 
                     }
-                }).show();
+
+            }).show();
 
             }
 
@@ -306,7 +318,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });*/
     }
 
+    public android.os.Handler handler=new android.os.Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            Point point= (Point) msg.obj;
+            double x=point.getX();
+            double y=point.getY();
 
+        }
+    };
 
     //标记位置
     private void markLocation(Location location) {
@@ -1003,9 +1023,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int id=item.getItemId();
             switch (id){
                 case R.id.jmds:
-                    fwRunnable runnable=new fwRunnable();
-                    Thread th=new Thread(runnable);
-                    th.start();
+                    Intent intent=new Intent();
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setClass(MainActivity.this,fwselect.class);
+                    startActivity(intent);
                     break;
                 case R.id.dls:
                     break;

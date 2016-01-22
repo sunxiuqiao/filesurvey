@@ -30,6 +30,7 @@
     <string name="save">保存</string>
     <string name="undo">撤销</string>
     <string name="zhuji">注记</string>
+    <string name="searchinfo">图上查看</string>
 
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
@@ -179,6 +180,7 @@
     <string name="diwubiaozhu">地物标注</string>
     <string name="wenzibiaozhu">文字标注</string>
     <string name="title_activity_fwselect">fwselect</string>
+    <string name="title_activity_dlselect">dlselect</string>
 
 
 </resources>
