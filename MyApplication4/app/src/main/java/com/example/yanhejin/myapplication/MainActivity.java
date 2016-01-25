@@ -85,9 +85,10 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
-import com.example.yanhejin.myapplication.FeatureView.fwselect;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
+import com.example.yanhejin.myapplication.FeatureView.dlselect;
+import com.example.yanhejin.myapplication.FeatureView.fwselect;
 import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
 import com.example.yanhejin.myapplication.OfflineEdit.TemplatePicker;
 
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         String spatialpath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"/"+"SpatialSurveyDB.db";
         String attributepath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"/"+"AttributeSurveyDB.db";
-        createSpatialDB = new CreateSpatialDB(MainActivity.this, spatialpath, null, 1);
+        createSpatialDB = new CreateSpatialDB(MainActivity.this, spatialpath, null, 2);
         createSurveyDB = new CreateSurveyDB(MainActivity.this, attributepath, null, 2);
        /* File spatialp=new File(dbpath);
         File spatialf=new File(spatialpath);
@@ -649,6 +650,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             wzValues.put("BZ", bz);
                             wzdb.insert("WZBZData", null, wzValues);
                             wzdb.close();
+                            textnumb.close();
                         } else {
                             Toast.makeText(MainActivity.this, "要素代码重复输入！", Toast.LENGTH_LONG).show();
                         }
@@ -902,11 +904,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.drawjmd:
-                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
-                    if (m_State==STATE_ADD_GRAPHIC){
-                        jmdPopup();
-                    }else {
-                    }
+                    jmdPopup();
                     break;
                 case R.id.drawsx:
                     sxPopup();
@@ -1029,6 +1027,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     startActivity(intent);
                     break;
                 case R.id.dls:
+                    Intent dlintent=new Intent();
+                    dlintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    dlintent.setClass(MainActivity.this,dlselect.class);
+                    startActivity(dlintent);
                     break;
                 case R.id.sxs:
                     break;
@@ -1100,7 +1102,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public boolean onSingleTap(MotionEvent point) {
             GraphicsLayer layer=getGraphicLayer();
-            if (m_State==STATE_ADD_GRAPHIC){
                 if (geoType != null) {
                     Point ptCurrent = map.toMapPoint(new Point(point.getX(), point.getY()));
                     points.add(ptCurrent);
@@ -1143,7 +1144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     ptPrevious = ptCurrent;
                 }
-            }
+
             else {
                 return true;
             }
@@ -1481,9 +1482,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 int linkID = Integer.valueOf(dlLinkId.getText().toString());
                                 SQLiteDatabase daoluspatialdb = createSpatialDB.getReadableDatabase();
                                 Point currentpoint;
-                                if (points.size() < 3) {
+                                if (points.size() < 2) {
                                     Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
-                                } else if (points.size() > 2) {
+                                } else if (points.size() > 1) {
                                     ContentValues dlspatialValues = new ContentValues();
                                     for (int i = 0; i < points.size(); i++) {
                                         currentpoint = points.get(i);
@@ -1495,6 +1496,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     daoluspatialdb.close();
                                     Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
                                     points.clear();
+                                    dllink.close();
                                 }
                             } catch (Exception e) {
                                 Log.i(tag, e.toString());
@@ -1514,7 +1516,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void AddZBFeatureData(final String zhujitime){
             AlertDialog.Builder zbBuilder=new AlertDialog.Builder(MainActivity.this);
             View zbView=getLayoutInflater().inflate(R.layout.zhibei,null);
-            EditText zbFName= (EditText) zbView.findViewById(R.id.ftName);
+            EditText zbFName= (EditText) zbView.findViewById(R.id.linkID);
             final EditText zbLinkID= (EditText) zbView.findViewById(R.id.ftName);
             final EditText zbmctext= (EditText) zbView.findViewById(R.id.zbmc);
             final EditText zbzltext= (EditText) zbView.findViewById(R.id.zbzl);

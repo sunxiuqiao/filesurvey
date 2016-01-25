@@ -181,6 +181,15 @@
     <string name="wenzibiaozhu">文字标注</string>
     <string name="title_activity_fwselect">fwselect</string>
     <string name="title_activity_dlselect">dlselect</string>
+    <string name="title_activity_sxselect">sxselect</string>
+
+    <string name="sxname">水系名称</string>
+    <string name="title_activity_zbselect">zbselect</string>
+    <string name="title_activity_gxselect">gxselect</string>
+    <string name="title_activity_dmselect">dmselect</string>
+    <string name="title_activity_jjxselect">jjxselect</string>
+    <string name="title_activity_dlzjselect">dlzjselect</string>
+    <string name="title_activity_wzselect">wzselect</string>
 
 
 </resources>

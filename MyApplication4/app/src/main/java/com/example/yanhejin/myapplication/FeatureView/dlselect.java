@@ -6,12 +6,11 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -34,7 +33,7 @@ public class dlselect extends AppCompatActivity {
     SimpleCursorAdapter adapter;
     CreateSurveyDB dlattdb =new CreateSurveyDB(this,dbpath + "/" + attributedb, null,2);
     CreateSurveyDB dlspatdb =new CreateSurveyDB(this,dbpath + "/" + spatialdb, null,2);
-    String sqla="select ID as _id,FTName,LinkID,DLMC,DLXH,DJDM from JMDData order by LinkID desc";
+    String sqla="select ID as _id,FTName,LinkID,DLMC,DLXH,DJDM,ZJTIME,BZ from DLData order by ID desc";
     Cursor dlCursor;
     int linkid;
     @Override
@@ -45,11 +44,12 @@ public class dlselect extends AppCompatActivity {
         setSupportActionBar(toolbar);
         dllistview= (ListView) findViewById(R.id.dlListView);
         dlCursor=aexecQuery(sqla,null);
-        adapter=new SimpleCursorAdapter(this,R.layout.selectdl,dlCursor,new String[]{"LinkID","DLMC","DLXH","DJDM"},new int[]{R.id.dlname,R.id.dlname,R.id.dlxhselect,R.id.dldjselect});
+        adapter=new SimpleCursorAdapter(this,R.layout.selectdl,dlCursor,new String[]{"LinkID","DLMC","DLXH","DJDM"},
+                new int[]{R.id.linkid,R.id.dlname,R.id.dlxhselect,R.id.djdmselect}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         dllistview.setAdapter(adapter);
         dllistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
+            public void onItemClick(AdapterView<?> parent, final View view, final int position, final long id) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(dlselect.this);
                 builder.setTitle("选择操作");
                 builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
@@ -59,6 +59,8 @@ public class dlselect extends AppCompatActivity {
                         linkid = cursor.getInt(2);
                         aexecDelete(linkid);
                         sexecDelete(linkid);
+                        dlCursor=aexecQuery(sqla,null);
+                        adapter.changeCursor(dlCursor);
                     }
                 });
                 builder.setNegativeButton("修改", new DialogInterface.OnClickListener() {
@@ -73,53 +75,50 @@ public class dlselect extends AppCompatActivity {
                         final String dlmc = cursor.getString(3);
                         final String dlxh = cursor.getString(4);
                         final String djdm = cursor.getString(5);
+                        //final String dltime=cursor.getString(6);
                         final String bz = cursor.getString(7);
                         final AlertDialog.Builder modify = new AlertDialog.Builder(dlselect.this);
                         final View view1 = getLayoutInflater().inflate(R.layout.daolu, null);
                         modify.setView(view1);
+                        EditText fdlName = (EditText) view1.findViewById(R.id.ftName);
+                        final EditText dlLinkId = (EditText) view1.findViewById(R.id.linkID);
+                        final EditText dlmctext = (EditText) view1.findViewById(R.id.dlmc);
+                        final EditText dlxhtext = (EditText) view1.findViewById(R.id.dlxh);
+                        final EditText djdmtext = (EditText) view1.findViewById(R.id.djdm);
+                        final EditText dlbztext = (EditText) view1.findViewById(R.id.bz);
+                        fdlName.setText(featurename);
+                        dlLinkId.setText(String.valueOf(linkid));
+                        dlmctext.setText(dlmc);
+                        dlxhtext.setText(dlxh);
+                        djdmtext.setText(djdm);
+                        dlbztext.setText(bz);
                         modify.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                EditText fdlName = (EditText) view1.findViewById(R.id.ftName);
-                                final EditText dlLinkId = (EditText) view1.findViewById(R.id.linkID);
-                                final EditText dlmctext = (EditText) view1.findViewById(R.id.dlmc);
-                                final EditText dlxhtext = (EditText) view1.findViewById(R.id.dlxh);
-                                final EditText djdmtext = (EditText) view1.findViewById(R.id.djdm);
-                                final EditText dlbztext = (EditText) view1.findViewById(R.id.bz);
-                                fdlName.setText(featurename);
-                                dlLinkId.setText(linkid);
-                                dlmctext.setText(dlmc);
-                                dlxhtext.setText(dlxh);
-                                djdmtext.setText(djdm);
-                                dlbztext.setText(bz);
+
                                 int ID = Integer.valueOf(dlLinkId.getText().toString());
                                 String MC = dlmctext.getText().toString();
                                 String XH = dlxhtext.getText().toString();
                                 String DJDM = djdmtext.getText().toString();
                                 String BZ = dlbztext.getText().toString();
-                                SQLiteDatabase database=dlattdb.getReadableDatabase();
-                                database.execSQL("update DLData set DLMC=?,DLXH=?,DJDM=?,ZJTIME=?,BZ=?",new Object[]{MC,XH,DJDM,zhujitime,BZ});
+                                SQLiteDatabase database = dlattdb.getReadableDatabase();
+                                database.execSQL("update DLData set DLMC=?,DLXH=?,DJDM=?,ZJTIME=?,BZ=? where LinkID=?",
+                                        new Object[]{MC, XH, DJDM, zhujitime, BZ,ID});
                                 database.close();
-
+                                dlCursor=aexecQuery(sqla,null);
+                                adapter.changeCursor(dlCursor);
                             }
                         });
                         modify.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                             }
+
                         });
                         modify.create().show();
                     }
                 });
                 builder.create().show();
-            }
-        });
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
     }

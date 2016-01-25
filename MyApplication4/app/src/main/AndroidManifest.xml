@@ -57,6 +57,34 @@
         <activity
             android:name=".FeatureView.dlselect"
             android:label="@string/title_activity_dlselect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FeatureView.sxselect"
+            android:label="@string/title_activity_sxselect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FeatureView.zbselect"
+            android:label="@string/title_activity_zbselect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FeatureView.gxselect"
+            android:label="@string/title_activity_gxselect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FeatureView.dmselect"
+            android:label="@string/title_activity_dmselect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FeatureView.jjxselect"
+            android:label="@string/title_activity_jjxselect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FeatureView.dlzjselect"
+            android:label="@string/title_activity_dlzjselect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FeatureView.wzselect"
+            android:label="@string/title_activity_wzselect"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,7 +13,7 @@
             android:layout_height="wrap_content"
             android:text="连接号 "
             android:textSize="40px"/>
-        <TextView android:id="@+id/linkid"
+        <TextView android:id="@+id/gxlinkid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="40px" />
@@ -28,9 +27,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dlmc"
+            android:text="电力线走向"
             android:textSize="20px"/>
-        <TextView android:id="@+id/dlname"
+        <TextView android:id="@+id/gxdlxzx"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20px" />
@@ -44,31 +43,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dlxh"
+            android:text="电力线伏数"
             android:textSize="20px"/>
-        <TextView android:id="@+id/dlxhselect"
+        <TextView android:id="@+id/gxdlxfs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20px" />
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_weight="0.25">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/djdm"
-            android:textSize="20px"/>
-        <TextView android:id="@+id/djdmselect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20px" />
-    </LinearLayout>
-
-
-
 </LinearLayout>
