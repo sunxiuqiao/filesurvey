@@ -249,7 +249,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                             if (location != null) {
                                                 double latitude = location.getLatitude() - 0.0025;
                                                 double longitude = location.getLongitude() + 0.005465;
-                                                Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(longitude) + "北纬：" + String.valueOf(latitude), Toast.LENGTH_LONG).show();
+                                                Message msg = handler.obtainMessage();
+                                                Point point = new Point(latitude, longitude);
+                                                msg.obj = point;
+                                                handler.sendMessage(msg);
+                                                mGraphicLayer = new GraphicsLayer();
                                                 markLocation(location);
                                             }
                                         }
@@ -325,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Point point= (Point) msg.obj;
             double x=point.getX();
             double y=point.getY();
-
+            Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(y) + "北纬：" + String.valueOf(x), Toast.LENGTH_LONG).show();
         }
     };
 
