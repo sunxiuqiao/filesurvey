@@ -69,6 +69,12 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
+
+    public String CreateWZZJData="create table WZBZData("+"WZZJID integer primary key autoincrement,"
+            +"LinkAID integer,"
+            +"x REAL,"
+            +"y REAL)";
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CreateJMDData);
@@ -81,6 +87,7 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
         db.execSQL(CreateJJXData);
         db.execSQL(CreateZJData);
         db.execSQL(CreatePZJData);
+        db.execSQL(CreateWZZJData);
     }
 
     @Override
@@ -95,6 +102,7 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
         db.execSQL("drop table if exists ZBData");
         db.execSQL("drop table if exists DMData");
         db.execSQL("drop table if exists PZJData");
+        db.execSQL("drop table if exists WZBZData");
         db.execSQL(sql);
         db.execSQL(jmdsql);
         db.execSQL(dlsql);

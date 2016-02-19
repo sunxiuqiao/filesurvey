@@ -190,6 +190,7 @@
     <string name="title_activity_jjxselect">jjxselect</string>
     <string name="title_activity_dlzjselect">dlzjselect</string>
     <string name="title_activity_wzselect">wzselect</string>
+    <string name="excelname">请在此输入导出excel名称</string>
 
 
 </resources>

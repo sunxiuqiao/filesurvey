@@ -5,7 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
-import com.example.yanhejin.myapplication.FeatureView.zbselect;
+import com.example.yanhejin.myapplication.FeatureView.dmselect;
+import com.example.yanhejin.myapplication.FeatureView.wzselect;
+import com.example.yanhejin.myapplication.MainActivity;
 
 /**
  * Created by licheetec on 2015/5/2.
@@ -15,7 +17,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
     Context mcontext;
 
 
-    public CreateSurveyDB(zbselect context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public CreateSurveyDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name,factory, version);
         mcontext=context;
     }
@@ -131,6 +133,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"BZ varchar(100))";
 
     public static final String CreateWZBZDB="create table WZBZData("+"ID integer primary key autoincrement,"
+            +"LinkID integer,"
             +"YSDM varchar(50),"
             +"YSName varchar(50),"
             +"YSType varchar(50),"

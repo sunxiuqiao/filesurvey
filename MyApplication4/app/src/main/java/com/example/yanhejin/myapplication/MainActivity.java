@@ -87,6 +87,7 @@ import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
+import com.example.yanhejin.myapplication.ExcelOutput.CreateExcel;
 import com.example.yanhejin.myapplication.FeatureView.dlselect;
 import com.example.yanhejin.myapplication.FeatureView.fwselect;
 import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
@@ -104,6 +105,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import jxl.write.WriteException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -486,8 +489,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.search:
                 actionmode=MainActivity.this.startActionMode(featureSearch);
-            case R.id.wifishare:
-
+            case R.id.datashare:
+                ConvertToExcel();
                 break;
             default:
                 break;
@@ -496,6 +499,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void ConvertToExcel(){
+        final String[] excelname = new String[1];
+        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+        View view=getLayoutInflater().inflate(R.layout.addexcelename,null);
+        final EditText editText= (EditText) view.findViewById(R.id.excelname);
+        builder.setView(view);
+        builder.setTitle("填入表名称");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (editText.getText().equals("")) {
+                    Toast.makeText(MainActivity.this, "名称不能为空", Toast.LENGTH_LONG).show();
+                } else {
+                   String name = editText.getText().toString();
+                    CreateExcel createExcel = new CreateExcel();
+                    try {
+                        createExcel.WriteToAttributeDLExcel(name);
+                    } catch (IOException | WriteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        builder.setNegativeButton("取消",null);
+        builder.create().show();
     }
 
     /*
@@ -741,11 +771,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(this, name, Toast.LENGTH_LONG).show();
             Bundle bundle = data.getExtras();
             Bitmap bitmap = (Bitmap) bundle.get("data");// 获取相机返回的数据，并转换为Bitmap图片格式
-
+            String path=android.os.Environment.getDataDirectory().getAbsolutePath()+"/"+"ArcGISSurvey";
             FileOutputStream b = null;
-            File file = new File("/sdcard/Image/");
+            File file = new File(path+"/"+"拍照注记");
             file.mkdirs();// 创建文件夹
-            String fileName = "/sdcard/Image/" + name;
+            String fileName = file + name;
 
             try {
                 b = new FileOutputStream(fileName);
