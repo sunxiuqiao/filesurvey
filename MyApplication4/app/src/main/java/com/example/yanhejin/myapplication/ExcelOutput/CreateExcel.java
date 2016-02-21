@@ -5,8 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
 
 import java.io.File;
@@ -28,17 +28,12 @@ import jxl.write.WriteException;
 public class CreateExcel extends Activity {
 
     String dbpath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/ArcGISSurvey";
-    String attributedb = "AttributeSurveyDB.db";
-    String spatialdb = "SpatialSurveyDB.db";
-    CreateSurveyDB createSurveyDB;
-    CreateSpatialDB createSpatialDB;
+    String attributedb="AttributeSurveyDB.db";
+    String spatialdb="SpatialSurveyDB.db";
    /* SQLiteDatabase attribute = SQLiteDatabase.openOrCreateDatabase(dbpath + "/" + attributedb, null);
     SQLiteDatabase spatial = SQLiteDatabase.openOrCreateDatabase(dbpath + "/" + spatialdb, null);*/
-
-    CreateSurveyDB dataattdb =new CreateSurveyDB(this,dbpath + "/" + attributedb, null,2);
-    CreateSurveyDB dataspatdb =new CreateSurveyDB(this,dbpath + "/" + spatialdb, null,2);
-    SQLiteDatabase attribute=dataattdb.getReadableDatabase();
-    SQLiteDatabase spatial=dataspatdb.getReadableDatabase();
+    CreateSurveyDB createSurveyDB=new CreateSurveyDB(this,dbpath + "/" + attributedb, null,2);
+    CreateSurveyDB createSpatialDB =new CreateSurveyDB(this,dbpath + "/" + spatialdb, null,2);
     WritableSheet sheet;
     WritableWorkbook workbook;
     String[] title = {"居民地", "道路", "水系", "土质地貌", "管线和电力线", "境界线"};
@@ -102,7 +97,7 @@ public class CreateExcel extends Activity {
         }
         workbook = Workbook.createWorkbook(file);
         WritableSheet sheet = workbook.createSheet("居民地", 0);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor jmdCursor = attribute.rawQuery("select * from JMDData", null);
         while (jmdCursor.moveToFirst()) for (int i = 0; i < jmdCursor.getCount(); i++) {
             ID = jmdCursor.getInt(0);
@@ -151,10 +146,9 @@ public class CreateExcel extends Activity {
         WorkbookSettings wbsetting=new WorkbookSettings();
         wbsetting.setLocale(new Locale("en","EN"));
         WritableWorkbook workbook1;
-        workbook1=Workbook.createWorkbook(excelFile,wbsetting);
-
+        workbook1=Workbook.createWorkbook(excelFile, wbsetting);
         sheet = workbook1.createSheet("道路", 1);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor dlCursor = attribute.rawQuery("select * from DLData", null);
         while (dlCursor.moveToFirst()) {
             for (int i = 0; i < dlCursor.getCount(); i++) {
@@ -180,6 +174,7 @@ public class CreateExcel extends Activity {
             if (workbook != null) {
                 try {
                     workbook.close();
+                    Toast.makeText(this,"导出数据成功",Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -204,7 +199,7 @@ public class CreateExcel extends Activity {
         }
         workbook = Workbook.createWorkbook(file);
         WritableSheet sheet = workbook.createSheet("水系", 2);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor sxCursor = attribute.rawQuery("select * from SXData", null);
         while (!sxCursor.moveToFirst()) {
             for (int i = 0; i < sxCursor.getCount(); i++) {
@@ -250,7 +245,7 @@ public class CreateExcel extends Activity {
         }
         workbook = Workbook.createWorkbook(file);
         WritableSheet sheet = workbook.createSheet("土质地貌", 3);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor dmCursor = attribute.rawQuery("select * from DMData", null);
         while (dmCursor.moveToFirst()) {
             for (int i = 0; i < dmCursor.getCount(); i++) {
@@ -296,7 +291,7 @@ public class CreateExcel extends Activity {
         }
         workbook = Workbook.createWorkbook(file);
         WritableSheet sheet = workbook.createSheet("植被", 4);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor zbCursor = attribute.rawQuery("select * from ZBData", null);
         while (zbCursor.moveToFirst()) {
             for (int i = 0; i < zbCursor.getCount(); i++) {
@@ -343,7 +338,7 @@ public class CreateExcel extends Activity {
         }
         workbook = Workbook.createWorkbook(file);
         WritableSheet sheet = workbook.createSheet("管线和电力线", 5);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor gxCursor = attribute.rawQuery("select * from GXData", null);
         while (gxCursor.moveToFirst()) {
             for (int i = 0; i < gxCursor.getCount(); i++) {
@@ -388,7 +383,7 @@ public class CreateExcel extends Activity {
         }
         workbook = Workbook.createWorkbook(file);
         WritableSheet sheet = workbook.createSheet("境界线", 6);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor jjxCursor = attribute.rawQuery("select * from JJXData", null);
         while (jjxCursor.moveToFirst()) {
             for (int i = 0; i < jjxCursor.getCount(); i++) {
@@ -432,7 +427,7 @@ public class CreateExcel extends Activity {
         }
         workbook = Workbook.createWorkbook(file);
         WritableSheet sheet = workbook.createSheet("地物注记", 7);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor dwCursor=attribute.rawQuery("select * from PZJData",null);
         while (dwCursor.moveToFirst()){
             for (int i=0;i<dwCursor.getCount();i++){
@@ -475,7 +470,7 @@ public class CreateExcel extends Activity {
         }
         workbook = Workbook.createWorkbook(file);
         WritableSheet sheet = workbook.createSheet("文字注记", 8);
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor wzCursor= attribute.rawQuery("select * from WZBZData",null);
         while (wzCursor.moveToFirst()){
             for (int i=0;i<wzCursor.getCount();i++){
@@ -520,7 +515,7 @@ public class CreateExcel extends Activity {
         WritableImage image=new WritableImage(1,4,6,18,file);
         sheet.addImage(image);
         workbook.write();
-        attribute = createSurveyDB.getReadableDatabase();
+        SQLiteDatabase attribute = createSurveyDB.getReadableDatabase();
         Cursor imageCursor=attribute.rawQuery("select * from PhotoData",null);
         while (imageCursor.moveToFirst()){
             for (int i=0;i<imageCursor.getCount();i++){

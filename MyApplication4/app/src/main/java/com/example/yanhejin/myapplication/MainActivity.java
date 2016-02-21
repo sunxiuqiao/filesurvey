@@ -87,7 +87,7 @@ import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
-import com.example.yanhejin.myapplication.ExcelOutput.CreateExcel;
+import com.example.yanhejin.myapplication.ExcelOutput.ConvertDataToExcel;
 import com.example.yanhejin.myapplication.FeatureView.dlselect;
 import com.example.yanhejin.myapplication.FeatureView.fwselect;
 import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
@@ -105,8 +105,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import jxl.write.WriteException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -289,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         mGraphicLayer = new GraphicsLayer();
                                         markLocation(loc);
                                     }
-                                    locationManager.requestLocationUpdates(provider,60000,5,locationListener, Looper.myLooper());
+                                    locationManager.requestLocationUpdates(provider, 60000, 5, locationListener, Looper.myLooper());
                                     Looper.loop();
                                 }
                             }
@@ -297,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     }
 
-            }).show();
+                }).show();
 
             }
 
@@ -490,7 +488,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.search:
                 actionmode=MainActivity.this.startActionMode(featureSearch);
             case R.id.datashare:
-                ConvertToExcel();
+                Intent dataintent=new Intent();
+                dataintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                dataintent.setClass(MainActivity.this, ConvertDataToExcel.class);
+                startActivity(dataintent);
                 break;
             default:
                 break;
@@ -501,32 +502,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void ConvertToExcel(){
-        final String[] excelname = new String[1];
-        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
-        View view=getLayoutInflater().inflate(R.layout.addexcelename,null);
-        final EditText editText= (EditText) view.findViewById(R.id.excelname);
-        builder.setView(view);
-        builder.setTitle("填入表名称");
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (editText.getText().equals("")) {
-                    Toast.makeText(MainActivity.this, "名称不能为空", Toast.LENGTH_LONG).show();
-                } else {
-                   String name = editText.getText().toString();
-                    CreateExcel createExcel = new CreateExcel();
-                    try {
-                        createExcel.WriteToAttributeDLExcel(name);
-                    } catch (IOException | WriteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        builder.setNegativeButton("取消",null);
-        builder.create().show();
-    }
 
     /*
     * 单击地图时标记地理注记
