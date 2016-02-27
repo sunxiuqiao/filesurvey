@@ -194,6 +194,7 @@
     <string name="title_activity_wzselect">wzselect</string>
     <string name="excelname">请在此输入导出excel名称</string>
     <string name="title_activity_convert_data_to_excel">ConvertDataToExcel</string>
+    <string name="title_activity_featureslist">featureslist</string>
 
 
 </resources>

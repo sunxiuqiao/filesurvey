@@ -87,7 +87,6 @@ import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
-import com.example.yanhejin.myapplication.ExcelOutput.ConvertDataToExcel;
 import com.example.yanhejin.myapplication.FeatureView.dlselect;
 import com.example.yanhejin.myapplication.FeatureView.fwselect;
 import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
@@ -120,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ArcGISLocalTiledLayer tiledLayer;
     FloatingActionButton location;
     LocationManager locationManager;
-    Object actionmode;
+
+    ActionMode actionmode;
     protected static final String TAG = "EditGraphicElements";
 
     private static final String TAG_DIALOG_FRAGMENTS = "dialog";
@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ContentValues GPSValues = new ContentValues();
         GPSValues.put("x", locx);
         GPSValues.put("y", locy);
-        GPSValues.put("date",GPSdate);
+        GPSValues.put("GPSdate",GPSdate);
         GPSdb.insert("GPSData", null, GPSValues);
         Toast.makeText(MainActivity.this, "GPS数据保存成功", Toast.LENGTH_LONG).show();
         GPSdb.close();
@@ -486,12 +486,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 actionmode=MainActivity.this.startActionMode(zhujiCallback);
                 break;
             case R.id.search:
-                actionmode=MainActivity.this.startActionMode(featureSearch);
+                /*actionmode=MainActivity.this.startActionMode(featureSearch);*/
+                Intent selectIntent=new Intent();
+                selectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                selectIntent.setClass(MainActivity.this, featurelist.class);
+                startActivity(selectIntent);
             case R.id.datashare:
-                Intent dataintent=new Intent();
+                /*Intent dataintent=new Intent();
                 dataintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 dataintent.setClass(MainActivity.this, ConvertDataToExcel.class);
-                startActivity(dataintent);
+                startActivity(dataintent);*/
                 break;
             default:
                 break;
@@ -937,27 +941,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.drawjmd:
+                    actionmode.setTitle("居民地");
                     jmdPopup();
                     break;
                 case R.id.drawsx:
+                    actionmode.setTitle("水系");
                     sxPopup();
                     break;
                 case R.id.drawdl:
+                    actionmode.setTitle("道路");
                     dlPopup();
                     break;
                 case R.id.drawgx:
+                    actionmode.setTitle("管线、电力线");
                     gxPopup();
                     break;
                 case R.id.drawjjl:
+                    actionmode.setTitle("境界线");
                     jjxPopup();
                     break;
                 case R.id.drawdm:
+                    actionmode.setTitle("地貌土质");
                     dmPopup();
                     break;
                 case R.id.drawzb:
+                    actionmode.setTitle("植被");
                     zbPopup();
                     break;
                 case R.id.drawzjmc:
+                    actionmode.setTitle("注记");
                     zhujiPopup();
                     break;
             }
@@ -1108,6 +1120,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         GraphicsLayer layer;
         MapView map;
         Context context;
+        int j=1;
 
         public MapTouchListener(Context context, MapView view) {
             super(context, view);
@@ -1189,6 +1202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         * */
         //@Override
         public boolean onDoubleTap(MotionEvent point) {
+            j++;
             SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
             Date currentdate = new Date(System.currentTimeMillis());
             final String zhujitime = format.format(currentdate);
@@ -1271,7 +1285,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             else {
                 switch (Type) {
                     case "jmdmenu":
-                        AddJMDFeatureData(zhujitime);
+                        AddJMDFeatureData(zhujitime,j);
                         break;
                     case "shuiximenu":
                         AddSXFeatureData(zhujitime);
@@ -1307,7 +1321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /*
         * 居民地信息入库
         * */
-        public void AddJMDFeatureData(final String zhujitime){
+        public void AddJMDFeatureData(final String zhujitime,int i){
             final AlertDialog.Builder jmddata = new AlertDialog.Builder(MainActivity.this);
             View jmdview = getLayoutInflater().inflate(R.layout.jumindi, null);
             jmddata.setView(jmdview);
@@ -1319,6 +1333,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final EditText fygztext = (EditText) jmdview.findViewById(R.id.fygz);
             final EditText bztext = (EditText) jmdview.findViewById(R.id.bz);
             fnameText.setText(featureName);
+            linkData.setText(String.valueOf(001+i));
             final SQLiteDatabase jmdattributedb = createSurveyDB.getReadableDatabase();
             jmddata.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
                 @Override
@@ -2019,13 +2034,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else if (fileEnd.equals("tpk")) {
                     tiledLayer = new ArcGISLocalTiledLayer(pathname);
                     mapView.addLayer(tiledLayer, layerindex - 1);
+                    Toast.makeText(MainActivity.this, "添加图层成功!", Toast.LENGTH_LONG).show();
+                }else {
+                    Toast.makeText(MainActivity.this, "没有找到对应图层!", Toast.LENGTH_LONG).show();
                 }
                 /*try {
                     getfeatures(pathname);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }*/
-                Toast.makeText(MainActivity.this, "添加图层成功!", Toast.LENGTH_LONG).show();
+
             }
         });
         mapBuidler.show();

@@ -90,6 +90,10 @@
         <activity
             android:name=".ExcelOutput.ConvertDataToExcel"
             android:label="@string/title_activity_convert_data_to_excel"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".featurelist"
+            android:label="@string/title_activity_featurelist"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
