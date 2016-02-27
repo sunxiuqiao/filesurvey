@@ -624,14 +624,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         private void AddNewGraphic(final float x, final float y) {
             final GraphicsLayer layer = getGraphicLayer();
             final SQLiteDatabase wzdb=createSurveyDB.getReadableDatabase();
+            final SQLiteDatabase spatialdb=createSpatialDB.getReadableDatabase();
             if (layer != null && layer.isInitialized() && layer.isVisible()) {
                 final Point point=mapView.toMapPoint(new Point(x,y));
                 AlertDialog.Builder textBuilder=new AlertDialog.Builder(MainActivity.this);
-                View textview=getLayoutInflater().inflate(R.layout.biaozhu,null);
+                View textview=getLayoutInflater().inflate(R.layout.biaozhu, null);
                 final EditText ysdmtext= (EditText) textview.findViewById(R.id.featureDM);
                 final EditText text= (EditText) textview.findViewById(R.id.zjmc);
+                final EditText zhujix= (EditText) textview.findViewById(R.id.zhujix);
+                final EditText zhujiy= (EditText) textview.findViewById(R.id.zhujiy);
                 final EditText yslxtext= (EditText) textview.findViewById(R.id.ftName);
                 final EditText bztext= (EditText) textview.findViewById(R.id.bz);
+                zhujix.setText(String.valueOf(x));
+                zhujiy.setText(String.valueOf(y));
                 SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
                 Date currentdate = new Date(System.currentTimeMillis());
                 final String zhujitime = format.format(currentdate);
@@ -641,29 +646,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 textBuilder.setPositiveButton("确定标注", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Cursor textnumb=wzdb.rawQuery("select YSDM from WZBZData where YSDM=?",new String[]{ysdmtext.getText().toString()});
-                        if (!textnumb.moveToFirst()){
-                            ContentValues wzValues = new ContentValues();
-                            String ysdm = ysdmtext.getText().toString();
-                            String name = text.getText().toString();
-                            String type = yslxtext.getText().toString();
-                            String bz = bztext.getText().toString();
-                            TextSymbol textSymbol = new TextSymbol(14, name, Color.BLUE);
-                            textSymbol.setFontFamily("DroidSansFallback.ttf");
-                            textgraphic = new Graphic(point, textSymbol);
-                            layer.addGraphic(textgraphic);
-                            wzValues.put("YSDM", ysdm);
-                            wzValues.put("YSName", name);
-                            wzValues.put("YSType", type);
-                            wzValues.put("ZJTIME", zhujitime);
-                            wzValues.put("BZ", bz);
-                            wzdb.insert("WZBZData", null, wzValues);
-                            wzdb.close();
-                            textnumb.close();
-                        } else {
-                            Toast.makeText(MainActivity.this, "要素代码重复输入！", Toast.LENGTH_LONG).show();
+                        if (ysdmtext.getText().toString().equals("")){
+                            Toast.makeText(MainActivity.this, "属性连接号为空！", Toast.LENGTH_LONG).show();
                         }
-
+                        if (zhujix.getText().toString().equals("")){
+                            Toast.makeText(MainActivity.this, "x坐标为空！", Toast.LENGTH_LONG).show();
+                        }
+                        if (zhujiy.getText().toString().equals("")){
+                            Toast.makeText(MainActivity.this, "y坐标为空！", Toast.LENGTH_LONG).show();
+                        }else {
+                            Cursor textnumb=wzdb.rawQuery("select LinkID from WZBZData where LinkID=?",new String[]{ysdmtext.getText().toString()});
+                            if (!textnumb.moveToFirst()){
+                                ContentValues wzValues = new ContentValues();
+                                String ysdm = ysdmtext.getText().toString();
+                                String name = text.getText().toString();
+                                String type = yslxtext.getText().toString();
+                                String bz = bztext.getText().toString();
+                                TextSymbol textSymbol = new TextSymbol(14, name, Color.BLUE);
+                                textSymbol.setFontFamily("DroidSansFallback.ttf");
+                                textgraphic = new Graphic(point, textSymbol);
+                                layer.addGraphic(textgraphic);
+                                wzValues.put("LinkID", ysdm);
+                                wzValues.put("YSName", name);
+                                wzValues.put("YSType", type);
+                                wzValues.put("ZJTIME", zhujitime);
+                                wzValues.put("BZ", bz);
+                                wzdb.insert("WZBZData", null, wzValues);
+                                wzdb.close();
+                                Toast.makeText(MainActivity.this, "属性数据保存成功", Toast.LENGTH_LONG).show();
+                                textnumb.close();
+                                ContentValues spatialValues=new ContentValues();
+                                float xatt=Float.parseFloat(zhujix.getText().toString());
+                                float yatt=Float.parseFloat(zhujiy.getText().toString());
+                                spatialValues.put("LinkAID",ysdm);
+                                spatialValues.put("x",xatt);
+                                spatialValues.put("y",yatt);
+                                spatialdb.insert("WZBZData", null, spatialValues);
+                                spatialdb.close();
+                                Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "要素代码重复输入！", Toast.LENGTH_LONG).show();
+                            }
+                        }
                     }
                 });
                 textBuilder.setNegativeButton("取消标注", null);
@@ -1525,8 +1549,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void AddZBFeatureData(final String zhujitime){
             AlertDialog.Builder zbBuilder=new AlertDialog.Builder(MainActivity.this);
             View zbView=getLayoutInflater().inflate(R.layout.zhibei,null);
-            EditText zbFName= (EditText) zbView.findViewById(R.id.linkID);
-            final EditText zbLinkID= (EditText) zbView.findViewById(R.id.ftName);
+            EditText zbFName= (EditText) zbView.findViewById(R.id.ftName);
+            final EditText zbLinkID= (EditText) zbView.findViewById(R.id.linkID);
             final EditText zbmctext= (EditText) zbView.findViewById(R.id.zbmc);
             final EditText zbzltext= (EditText) zbView.findViewById(R.id.zbzl);
             final EditText sslctext= (EditText) zbView.findViewById(R.id.sslc);
