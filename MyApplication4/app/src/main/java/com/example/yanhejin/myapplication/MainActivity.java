@@ -770,16 +770,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i("TestFile", "SD card is not avaiable/writeable right now.");
                 return;
             }
+            new DateFormat();
             final String name = DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance(Locale.CHINA)) + ".jpg";
             Toast.makeText(this, name, Toast.LENGTH_LONG).show();
             Bundle bundle = data.getExtras();
             Bitmap bitmap = (Bitmap) bundle.get("data");// 获取相机返回的数据，并转换为Bitmap图片格式
-            String path=android.os.Environment.getDataDirectory().getAbsolutePath()+"/"+"ArcGISSurvey";
+            //String path=android.os.Environment.getDataDirectory().getAbsolutePath()+"/"+"ArcGISSurvey";
             FileOutputStream b = null;
-            File file = new File(path+"/"+"拍照注记");
+            File file = new File("/sdcard/ArcGISSurvey/Image/");
+            //File file = new File(path+"/SurveyImage/");
             file.mkdirs();// 创建文件夹
-            String fileName = file + name;
-
+            //String fileName =file.getPath()+"/"+name;
+            String fileName = "/sdcard/ArcGISSurvey/Image/"+name;
             try {
                 b = new FileOutputStream(fileName);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, b);// 把数据写入文件
@@ -798,8 +800,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 photobuilder.setTitle("填写照片属性信息");
                 photobuilder.setView(photoview);
                 photo.setImageBitmap(bitmap);// 将图片显示在ImageView里
-                photobuilder.setPositiveButton("取消", null);
-                photobuilder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                photobuilder.setNegativeButton("取消", null);
+                photobuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         SQLiteDatabase photodb = createSurveyDB.getReadableDatabase();
@@ -819,6 +821,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     }
+
+    //录音
+    public ActionMode.Callback MediaRecorderCallback=new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.mediarecorder, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()){
+                case R.id.startrecorde:
+                    break;
+                case R.id.stoprecorde:
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+                mode.finish();
+        }
+    };
 
     //按下两次退出程序
     @Override

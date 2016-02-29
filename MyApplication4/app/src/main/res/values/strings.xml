@@ -196,5 +196,8 @@
     <string name="title_activity_convert_data_to_excel">ConvertDataToExcel</string>
     <string name="title_activity_featureslist">featureslist</string>
 
+    <string name="start">开始录音</string>
+    <string name="stop">停止录音</string>
+
 
 </resources>
