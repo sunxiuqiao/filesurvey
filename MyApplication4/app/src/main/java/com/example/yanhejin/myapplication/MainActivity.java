@@ -19,10 +19,12 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -104,6 +106,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.lang.Runnable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -121,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     LocationManager locationManager;
 
     ActionMode actionmode;
+    ActionMode recorderMode;
     protected static final String TAG = "EditGraphicElements";
 
     private static final String TAG_DIALOG_FRAGMENTS = "dialog";
@@ -151,6 +155,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TemplatePicker tp;
     public static ProgressDialog progress;
     public boolean onlineData = true;
+    MediaRecorder mr;
+    MyTask myTask;
+    //Handler mhandler;
+    Handler mHandelr = new Handler();
+
 
 
     @Override
@@ -205,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Envelope initextext=new Envelope(12748887.542, 3609934.261, 12713168.721, 3546235.696);
         mapView.setExtent(initextext);
         setSupportActionBar(toolbar);
+        mr=new MediaRecorder();
         /*point = (Point) GeometryEngine.project(new Point(40.805, 111.661), SpatialReference.create(4326), mapView.getSpatialReference());
         mapView.centerAt(point, true);
         mapView.enableWrapAround(true);
@@ -476,9 +486,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivityForResult(intent,1);
                 break;
             case R.id.soundRecord:
-                Intent soundIntent=new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-                startActivity(soundIntent);
-
+                recorderMode=MainActivity.this.startActionMode(MediaRecorderCallback);
+                //Intent soundIntent=new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+                //startActivity(soundIntent);
+                    break;
             case R.id.surveydiatance:
                 MeasureDistance();
                 break;
@@ -491,6 +502,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 selectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 selectIntent.setClass(MainActivity.this, featurelist.class);
                 startActivity(selectIntent);
+                break;
             case R.id.datashare:
                 /*Intent dataintent=new Intent();
                 dataintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -840,8 +852,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()){
                 case R.id.startrecorde:
+                    mode.setTitle("录音");
+                    try {
+                        mr.reset();
+                        mr.setAudioSource(MediaRecorder.AudioSource.MIC);
+                        mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                        mr.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                        File file=new File(Environment.getExternalStorageDirectory(),System.currentTimeMillis()+".3gp");
+                        //file.mkdirs();
+                        mr.setOutputFile(file.getAbsolutePath());
+                        mr.prepare();
+                        mr.start();
+                        myTask=new MyTask();
+                        mHandelr.post(myTask);
+                        mode.setTitle("录音中...");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case R.id.stoprecorde:
+                    mr.stop();
+                    mr.release();
+                    mHandelr.removeCallbacks(myTask);
+                    final String time = DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance(Locale.CHINA)).toString();
+                    View recordeView=getLayoutInflater().inflate(R.layout.takerecoder,null);
+                    final EditText rename= (EditText) recordeView.findViewById(R.id.recorderlocation);
+                    final EditText describe= (EditText) recordeView.findViewById(R.id.recorderdiscrable);
+                    AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+                    builder.setView(recordeView);
+                    builder.setTitle("填写录音信息");
+                    builder.setNegativeButton("取消", null);
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SQLiteDatabase db = createSurveyDB.getReadableDatabase();
+                            ContentValues values = new ContentValues();
+                            values.put("Name", rename.getText().toString());
+                            values.put("descibe", describe.getText().toString());
+                            values.put("recordetime", time);
+                            db.insert("RecorderDB", null, values);
+                            db.close();
+                        }
+                    });
+                    builder.create().show();
+                    mode.setTitle("录音");
                     break;
             }
             return false;
@@ -853,13 +907,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    public class MyTask implements Runnable{
+
+        int times;
+        @Override
+        public void run() {
+            mHandelr.postDelayed(this,1000);
+            times++;
+        }
+    }
+
+
     //按下两次退出程序
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((System.currentTimeMillis() - exitTime) > 2000) {
-                Toast.makeText(MainActivity.this, "再按一次退出程序", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "再按一次退出外业调绘", Toast.LENGTH_LONG).show();
                 exitTime = System.currentTimeMillis();
             } else {
                 finish();
@@ -1049,8 +1114,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
             switch (item.getItemId()){
+
                 case R.id.diwubiaozu:
+                    mode.setTitle("地理标注");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if (m_State==STATE_ADD_GRAPHIC){
                         item.setTitle("结束标注");
@@ -1060,6 +1128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mapView.setOnSingleTapListener(m_OnSingleTapListener);
                     break;
                 case R.id.wenzibiaozu:
+                    mode.setTitle("文字标注");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if (m_State==STATE_ADD_GRAPHIC){
                         item.setTitle("结束标注");
@@ -2094,7 +2163,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return isMapFile;
     }
-
 
     /*
     * 居民地要素

@@ -135,6 +135,11 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"ZJTIME varchar(50),"
             +"BZ varchar(100))";
 
+    public static  final String CreateRecorderDB="create table RecorderDB("+"ID integer primary key autoincrement,"
+            +"Name varchar(50),"
+            +"descibe varchar(100),"
+            +"recordetime varchar(50))";
+
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -152,6 +157,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL(CreateDMDB);
         db.execSQL(CreatePZJDB);
         db.execSQL(CreateWZBZDB);
+        db.execSQL(CreateRecorderDB);
         Toast.makeText(mcontext, "create success!", Toast.LENGTH_LONG).show();
 
     }
@@ -173,6 +179,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL("drop table if exists DMData");
         db.execSQL("drop table if exists PZJData");
         db.execSQL("drop table if exists WZBZData");
+        db.execSQL("drop table if exists RecorderDB");
         onCreate(db);
     }
 }

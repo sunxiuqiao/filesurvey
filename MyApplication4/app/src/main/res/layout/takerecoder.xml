@@ -3,28 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/takephoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="录音名称"/>
+        android:text="@string/pthotodiscrable"/>
     <EditText
-        android:id="@+id/photodiscrable"
+        android:id="@+id/recorderdiscrable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="请在此处输入照片名称"/>
+        android:hint="请在此处输入录音名称"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="录音描述"/>
+        android:text="@string/photolocation"/>
     <EditText
-        android:id="@+id/photolocation"
+        android:id="@+id/recorderlocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="请在此处输入照片描述信息"/>
+        android:hint="请在此处输入录音描述信息"/>
 
 </LinearLayout>

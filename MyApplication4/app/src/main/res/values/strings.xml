@@ -198,6 +198,7 @@
 
     <string name="start">开始录音</string>
     <string name="stop">停止录音</string>
+    <string name="featurelist">要素类型列表</string>
 
 
 </resources>

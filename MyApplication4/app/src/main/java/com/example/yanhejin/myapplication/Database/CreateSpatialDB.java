@@ -20,57 +20,57 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
 
 
 
-    public String CreateGPSData="create table GPSData("+"GPSID integer primary key autoincrement,"
+    public String CreateGPSData="create table GPSData("+"ID integer primary key autoincrement,"
             +"x REAL,"
             +"y REAL,"
             +"GPSdate REAL)";
 
-    public String CreateDLData="create table DLData("+"DLID integer primary key autoincrement,"
+    public String CreateDLData="create table DLData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
 
-    public String CreateJMDData="create table JMDData("+"JMDID integer primary key autoincrement,"
+    public String CreateJMDData="create table JMDData("+"ID integer primary key autoincrement,"
             + "LinkAID integer,"
             + "x REAL,"
             + "y REAL)";
 
-    public String CreateSXData="create table SXData("+"SXID integer primary key autoincrement,"
+    public String CreateSXData="create table SXData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
 
-    public String CreateGXData="create table GXData("+"GXID integer primary key autoincrement,"
+    public String CreateGXData="create table GXData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
 
-    public String CreateZBData="create table ZBData("+"ZBID integer primary key autoincrement,"
+    public String CreateZBData="create table ZBData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
 
-    public String CreateJJXData="create table JJXData("+"JJXID integer primary key autoincrement,"
+    public String CreateJJXData="create table JJXData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
 
-    public String CreateDMData="create table DMData("+"DMID integer primary key autoincrement,"
+    public String CreateDMData="create table DMData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
 
-    public String CreateZJData="create table ZJData("+"ZJID integer primary key autoincrement,"
+    public String CreateZJData="create table ZJData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
 
-    public String CreatePZJData="create table PZJData("+"PZJID integer primary key autoincrement,"
+    public String CreatePZJData="create table PZJData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
 
-    public String CreateWZZJData="create table WZBZData("+"WZZJID integer primary key autoincrement,"
+    public String CreateWZZJData="create table WZBZData("+"ID integer primary key autoincrement,"
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";

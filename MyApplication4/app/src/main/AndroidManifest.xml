@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -53,39 +54,39 @@
 
         <activity
             android:name=".FeatureView.fwselect"
-            android:label="@string/title_activity_fwselect"
+            android:label="@string/jumindi"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FeatureView.dlselect"
-            android:label="@string/title_activity_dlselect"
+            android:label="@string/daolu"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FeatureView.sxselect"
-            android:label="@string/title_activity_sxselect"
+            android:label="@string/shuixi"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FeatureView.zbselect"
-            android:label="@string/title_activity_zbselect"
+            android:label="@string/zhibei"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FeatureView.gxselect"
-            android:label="@string/title_activity_gxselect"
+            android:label="@string/guanxian"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FeatureView.dmselect"
-            android:label="@string/title_activity_dmselect"
+            android:label="@string/dimaohetuzhi"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FeatureView.jjxselect"
-            android:label="@string/title_activity_jjxselect"
+            android:label="@string/jingjiexian"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FeatureView.dlzjselect"
-            android:label="@string/title_activity_dlzjselect"
+            android:label="@string/diwubiaozhu"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FeatureView.wzselect"
-            android:label="@string/title_activity_wzselect"
+            android:label="@string/wenzibiaozhu"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ExcelOutput.ConvertDataToExcel"
@@ -93,7 +94,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".featurelist"
-            android:label="@string/title_activity_featurelist"
+            android:label="@string/featurelist"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
