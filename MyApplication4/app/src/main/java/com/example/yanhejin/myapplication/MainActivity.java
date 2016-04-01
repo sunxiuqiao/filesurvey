@@ -89,8 +89,7 @@ import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
-import com.example.yanhejin.myapplication.FeatureView.dlselect;
-import com.example.yanhejin.myapplication.FeatureView.fwselect;
+import com.example.yanhejin.myapplication.ExcelOutput.ConvertDataToExcel;
 import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
 import com.example.yanhejin.myapplication.OfflineEdit.TemplatePicker;
 
@@ -106,7 +105,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.lang.Runnable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -476,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 addmapbuilder.create().show();
                 break;
             case R.id.layercontrol:
-
+                LayerControl();
                 break;
             case R.id.startedit:
                 actionmode = MainActivity.this.startActionMode(actioncallback);
@@ -504,10 +502,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(selectIntent);
                 break;
             case R.id.datashare:
-                /*Intent dataintent=new Intent();
+                Intent dataintent=new Intent();
                 dataintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 dataintent.setClass(MainActivity.this, ConvertDataToExcel.class);
-                startActivity(dataintent);*/
+                startActivity(dataintent);
                 break;
             default:
                 break;
@@ -517,8 +515,82 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
+    /*
+    * 图层控制
+    * */
+   public void LayerControl(){
+       ArrayAdapter<String> layerAdpter;
+       List<String> layers=new ArrayList<String>();
+       View layerlistview = getLayoutInflater().inflate(R.layout.maplist, null);
+       final ListView layerslist = (ListView) layerlistview.findViewById(R.id.maplist);
+       for(Layer layer:mapView.getLayers()){
+           String name=layer.getName();
+           layers.add(name);
+       }
+       layerAdpter=new ArrayAdapter<String>(MainActivity.this,R.layout.item,layers);
+       layerslist.setAdapter(layerAdpter);
+       AlertDialog.Builder layerbuider=new AlertDialog.Builder(MainActivity.this);
+       layerbuider.setTitle("图层控制");
+       layerbuider.setView(layerlistview);
+       layerbuider.create();
+       layerbuider.show();
+       layerslist.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+       layerslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+           @Override
+           public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+               AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+               builder.setTitle("选择图层操作");
+               builder.setPositiveButton("上移", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       for (Layer layer : mapView.getLayers()) {
+                           int index = (int) layer.getID();
+                           String name=layer.getName();
+                           if(name.equals("layers")){
+                               Toast.makeText(MainActivity.this, "该层不能移动！", Toast.LENGTH_LONG).show();
+                           }
+                           if (index >= 1&&name!="layers") {
+                               mapView.removeLayer(index);
+                               mapView.addLayer(layer, index + 1);
+                           } else {
+                               Toast.makeText(MainActivity.this, "该层不能移动！", Toast.LENGTH_LONG).show();
+                           }
+                       }
+                   }
+               });
+               builder.setNeutralButton("下移", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       for (Layer layer : mapView.getLayers()) {
+                           int index = (int) layer.getID();
+                           String name=layer.getName();
+                           if(name.equals("layers")){
+                               Toast.makeText(MainActivity.this, "该层不能移动！", Toast.LENGTH_LONG).show();
+                           }
+                           if (index >= 1) {
+                               mapView.removeLayer(index);
+                               mapView.addLayer(layer, index - 1);
+                           } else {
+                               Toast.makeText(MainActivity.this, "该层不能移动！", Toast.LENGTH_LONG).show();
+                           }
+                       }
+                   }
+               });
+               builder.setNegativeButton("删除", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       for (Layer layer : mapView.getLayers()) {
+                           if (layerslist.getItemAtPosition(position).equals(layer.getName())) {
+                               mapView.removeLayer(layer);
+                           }
+                       }
+                       Toast.makeText(MainActivity.this, "删除成功！", Toast.LENGTH_LONG).show();
+                   }
+               });
+               builder.create().show();
+           }
+       });
+   }
     /*
     * 单击地图时标记地理注记
     * */
@@ -1147,68 +1219,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
-    /*
-    * 要素查看功能自定义在工具栏上方
-    * */
-    public ActionMode.Callback featureSearch=new ActionMode.Callback() {
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inflater= mode.getMenuInflater();
-            inflater.inflate(R.menu.featureselect,menu);
-            return true;
-        }
 
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
 
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            int id=item.getItemId();
-            switch (id){
-                case R.id.jmds:
-                    Intent intent=new Intent();
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setClass(MainActivity.this,fwselect.class);
-                    startActivity(intent);
-                    break;
-                case R.id.dls:
-                    Intent dlintent=new Intent();
-                    dlintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    dlintent.setClass(MainActivity.this,dlselect.class);
-                    startActivity(dlintent);
-                    break;
-                case R.id.sxs:
-                    break;
-                case R.id.zbs:
-                    break;
-                case R.id.gxs:
-                    break;
-                case R.id.jjxs:
-                    break;
-                case R.id.zjs:
-                    break;
-                case R.id.dmtzs:
-                    break;
-            }
-            return false;
-        }
 
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mode.finish();
-        }
-    };
-
-    class fwRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            Intent fwintent=new Intent(MainActivity.this,fwselect.class);
-            startActivity(fwintent);
-        }
-    }
 
     //地图触摸事件
     class MapTouchListener extends MapOnTouchListener {
@@ -2108,6 +2121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapBuidler.create();
         mapBuidler.setTitle("本地地图列表");
         mapBuidler.setView(maplistview);
+        maplist.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         maplist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

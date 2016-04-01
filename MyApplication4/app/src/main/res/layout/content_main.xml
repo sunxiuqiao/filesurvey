@@ -19,5 +19,9 @@
         android:id="@+id/mapview">
 
     </com.esri.android.map.MapView>
+    <com.example.yanhejin.myapplication.drawview
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/drawview"/>
 
 </RelativeLayout>

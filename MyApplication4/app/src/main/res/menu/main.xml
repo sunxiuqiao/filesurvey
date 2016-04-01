@@ -21,4 +21,29 @@
         android:icon="@drawable/global"
         app:showAsAction="always"/>
 
+    <item android:title="画笔颜色"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/color_red" android:title="红色"/>
+                <item android:id="@+id/color_green" android:title="绿色"/>
+                <item android:id="@+id/color_blue" android:title="蓝色"/>
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="画笔宽度"
+        app:showAsAction="never">
+        <menu>
+            <group>
+                <item android:id="@+id/width_1" android:title="1"/>
+                <item android:id="@+id/width_2" android:title="2"/>
+                <item android:id="@+id/width_3" android:title="3"/>
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/clear" android:title="清空"/>
+    <item android:id="@+id/save" android:title="保存"/>
+
+
 </menu>

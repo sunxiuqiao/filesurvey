@@ -6,7 +6,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/pthotodiscrable"/>
+        android:text="录音名称"/>
     <EditText
         android:id="@+id/recorderdiscrable"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/photolocation"/>
+        android:text="录音描述"/>
     <EditText
         android:id="@+id/recorderlocation"
         android:layout_width="match_parent"

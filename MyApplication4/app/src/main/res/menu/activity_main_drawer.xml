@@ -24,6 +24,8 @@
 
     <item android:title="工具">
         <menu>
+            <item android:id="@+id/drawer"
+                android:title="草图涂鸦"/>
             <item android:id="@+id/layercontrol"
                 android:icon="@android:drawable/ic_menu_manage"
                 android:title="图层管理"/>

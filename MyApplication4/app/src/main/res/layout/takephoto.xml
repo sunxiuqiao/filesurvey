@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="录音名称"/>
+        android:text="照片名称"/>
     <EditText
         android:id="@+id/photodiscrable"
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="录音描述"/>
+        android:text="照片描述"/>
     <EditText
         android:id="@+id/photolocation"
         android:layout_width="match_parent"

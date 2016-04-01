@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        createSurveyDB=new CreateSurveyDB(LoginActivity.this,path,null,1);
+        createSurveyDB=new CreateSurveyDB(LoginActivity.this,path,null,2);
         // Set up the login form.
         mUserName = (EditText) findViewById(R.id.username);
         rememberpassword= (CheckBox) findViewById(R.id.rememberpw);
