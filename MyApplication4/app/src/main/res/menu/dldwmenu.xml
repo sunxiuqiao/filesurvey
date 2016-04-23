@@ -1,0 +1,42 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/drawkskc"
+            android:title="@string/kuangshankaicai"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawgyss"
+            android:title="@string/gongyesheshi"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/drawnyss"
+            android:title="@string/nongyesheshi"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawkwwt"
+            android:title="@string/kewenweiti"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawggss"
+            android:title="@string/gonggongsheshi"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawbsdt"
+            android:title="@string/beisudunting"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawwwzj"
+            android:title="@string/wenwuzongjiao"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawqtss"
+            android:title="@string/qitasheshi"
+            app:showAsAction="ifRoom"/>
+
+    </group>
+
+
+
+</menu>

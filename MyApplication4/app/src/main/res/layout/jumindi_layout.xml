@@ -7,27 +7,41 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <RadioButton
+            android:id="@+id/sanlieshi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/yibanfangwu"/>
+
+        <RadioButton
             android:id="@+id/dulifangwu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/dulifangwu"/>
+            android:text="@string/putongfangwu"/>
         <RadioButton
             android:id="@+id/jiequshi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/jiejushi"/>
+            android:text="@string/teshufangwu"/>
 
-        <RadioButton
-            android:id="@+id/sanlieshi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/sanlieshi"/>
 
         <RadioButton
             android:id="@+id/yaodongshi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/yaodongshi"/>
+            android:text="@string/fangwufushu"/>
+
+        <RadioButton
+            android:id="@+id/zhizhudun"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/zhizhudun"/>
+        <RadioButton
+            android:id="@+id/yuanshan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/yuanshan"/>
+
+
         <RadioButton
             android:id="@+id/qitafangwu"
             android:layout_width="match_parent"

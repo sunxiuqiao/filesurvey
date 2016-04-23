@@ -12,10 +12,30 @@
             android:layout_height="wrap_content"
             android:text="@string/tielu"/>
         <RadioButton
+            android:id="@+id/tielufushu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tielufushu"/>
+        <RadioButton
+            android:id="@+id/qiaoliang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/qiaoliang"/>
+        <RadioButton
+            android:id="@+id/dukoumatou"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dukoumatou"/>
+        <RadioButton
             android:id="@+id/gonglu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/gonglu"/>
+        <RadioButton
+            android:id="@+id/daolufushu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/daolufushu"/>
 
         <RadioButton
             android:id="@+id/jigenglu"
@@ -40,6 +60,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/neibudaolu"/>
+        <RadioButton
+            android:id="@+id/qitadaolu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/qitadaolu"/>
 
     </RadioGroup>
 </LinearLayout>

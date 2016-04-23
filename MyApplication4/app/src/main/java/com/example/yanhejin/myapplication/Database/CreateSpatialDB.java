@@ -74,6 +74,10 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
             +"LinkAID integer,"
             +"x REAL,"
             +"y REAL)";
+    public String CreateDLDWData="create table DLDWData("+"ID integer primary key autoincrement,"
+            +"LinkAID integer,"
+            +"x REAL,"
+            +"y REAL)";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -88,6 +92,7 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
         db.execSQL(CreateZJData);
         db.execSQL(CreatePZJData);
         db.execSQL(CreateWZZJData);
+        db.execSQL(CreateDLDWData);
     }
 
     @Override
@@ -103,6 +108,7 @@ public class CreateSpatialDB extends SQLiteOpenHelper {
         db.execSQL("drop table if exists DMData");
         db.execSQL("drop table if exists PZJData");
         db.execSQL("drop table if exists WZBZData");
+        db.execSQL("drop table if exists DLDWData");
         db.execSQL(sql);
         db.execSQL(jmdsql);
         db.execSQL(dlsql);

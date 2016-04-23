@@ -140,6 +140,15 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
             +"descibe varchar(100),"
             +"recordetime varchar(50))";
 
+    public static final String CreateDLDWDB="create table DLDWData("+" ID integer primary key autoincrement,"
+            +"LinkID integer,"
+            +"YSName varchar(50),"
+            +"YSDscibe varchar(50),"
+            +"ZJTIME varchar(50),"
+            +"BZ varchar(100))";
+
+
+
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -158,6 +167,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL(CreatePZJDB);
         db.execSQL(CreateWZBZDB);
         db.execSQL(CreateRecorderDB);
+        db.execSQL(CreateDLDWDB);
         Toast.makeText(mcontext, "create success!", Toast.LENGTH_LONG).show();
 
     }
@@ -180,6 +190,7 @@ public class CreateSurveyDB extends SQLiteOpenHelper {
         db.execSQL("drop table if exists PZJData");
         db.execSQL("drop table if exists WZBZData");
         db.execSQL("drop table if exists RecorderDB");
+        db.execSQL("drop table if exists DLDWData");
         onCreate(db);
     }
 }

@@ -71,6 +71,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/douan"/>
+        <RadioButton
+            android:id="@+id/ludiyaosu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ludiyaosu"/>
+        <RadioButton
+            android:id="@+id/jiaoshi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/jiaoshi"/>
 
 
     </RadioGroup>

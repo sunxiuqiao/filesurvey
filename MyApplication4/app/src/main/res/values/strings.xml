@@ -33,6 +33,7 @@
     <string name="searchinfo">图上查看</string>
     <string name="cancel">返回</string>
     <string name="convert">导出</string>
+    <string name="okbutton">创建</string>
 
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
@@ -80,22 +81,31 @@
     <string name="ZJRXM">指界人姓名</string>
 
     <string name="jumindi">居民地</string>
-    <string name="daolu">道路</string>
-    <string name="guanxian">管线、垣栅</string>
-    <string name="shuixi">水系</string>
-    <string name="zhibei">植被</string>
+    <string name="daolu">交通设施</string>
+    <string name="guanxian">管线设施</string>
+    <string name="shuixi">水系设施</string>
+    <string name="zhibei">植被园林</string>
     <string name="jingjiexian">境界线</string>
-    <string name="dimaohetuzhi">地貌和土质</string>
-    <string name="mingchenghezhuji">地理名称和调查注记</string>
+    <string name="dimaohetuzhi">地貌土质</string>
+    <string name="mingchenghezhuji">文字注记</string>
+    <string name="dulidiwu">独立地物</string>
 
-    <string name="dulifangwu">独立房屋</string>
-    <string name="jiejushi">街区式居民地</string>
-    <string name="sanlieshi">散列式居民地</string>
-    <string name="yaodongshi">窑洞式居民地</string>
+    <string name="yibanfangwu">一般房屋</string>
+    <string name="putongfangwu">普通房屋</string>
+    <string name="teshufangwu">特殊房屋</string>
+    <string name="fangwufushu">房屋附属</string>
+    <string name="yuanshan">垣栅</string>
+    <string name="zhizhudun">支柱墩</string>
     <string name="qita">其他</string>
 
     <string name="tielu">铁路</string>
+    <string name="tielufushu">铁路附属</string>
     <string name="gonglu">公路</string>
+    <string name="qitadaolu">其他道路</string>
+    <string name="daolufushu">道路附属</string>
+    <string name="qiaoliang">桥梁</string>
+    <string name="dukoumatou">渡口码头</string>
+    <string name="hangxingbiaozhi">航行标志</string>
     <string name="jigenglu">机耕路</string>
     <string name="xiangcunlu">乡村路</string>
     <string name="xiaolu">小路</string>
@@ -105,7 +115,8 @@
     <string name="dianlixian">电力线</string>
     <string name="tongxunxian">通讯线</string>
     <string name="guandao">管道</string>
-    <string name="yuanshan">垣栅</string>
+    <string name="dixiajianxiu">地下检修井</string>
+    <string name="guandaofushu">管道附属</string>
     <string name="chengqiang">城墙</string>
     <string name="weiqiang">围墙</string>
     <string name="zhanlan">栅栏</string>
@@ -113,11 +124,15 @@
     <string name="liba">篱笆</string>
     <string name="di">堤</string>
 
-    <string name="heliu">河流</string>
+    <string name="heliu">河流溪流</string>
     <string name="hupo">湖泊</string>
     <string name="shuiku">水库</string>
     <string name="chitang">池塘</string>
     <string name="gouqu">沟渠</string>
+    <string name="shuilisheshi">水利设施</string>
+    <string name="ludiyaosu">陆地要素</string>
+    <string name="haiyangyaosu">海洋要素</string>
+    <string name="jiaoshi">礁石</string>
     <string name="shuiyuan">水源</string>
     <string name="zhaoze">沼泽</string>
     <string name="haianxian">海岸线</string>
@@ -140,10 +155,15 @@
     <string name="shuishengzuowu">水生作物地</string>
     <string name="gengdi">耕地</string>
     <string name="caidi">菜地</string>
+    <string name="dileifanghuo">地类防火</string>
+    <string name="yuanlin">园林</string>
+    <string name="qitazhibei">其他植被</string>
 
 
     <string name="guojie">国界</string>
     <string name="guoneijie">国内各种境界</string>
+    <string name="xingzhengjiexian">行政界线</string>
+    <string name="qitajiexian">其他界线</string>
 
     <string name="ganhechuang">干河床</string>
     <string name="ganhehu">干涸湖</string>
@@ -165,6 +185,16 @@
     <string name="junlieidi">龟裂地</string>
     <string name="shadi">沙地</string>
     <string name="xueshan">雪山</string>
+
+
+    <string name="kuangshankaicai">矿山开采</string>
+    <string name="gongyesheshi">工业设施</string>
+    <string name="nongyesheshi">农业设施</string>
+    <string name="kewenweiti">科文卫体</string>
+    <string name="gonggongsheshi">公共设施</string>
+    <string name="beisudunting">碑塑墩亭</string>
+    <string name="wenwuzongjiao">文物宗教</string>
+    <string name="qitasheshi">其他设施</string>
 
     <string name="fwcs">房屋层数</string>
     <string name="fscz">房屋材质</string>
@@ -199,6 +229,12 @@
     <string name="start">开始录音</string>
     <string name="stop">停止录音</string>
     <string name="featurelist">要素类型列表</string>
+    <string name="title_activity_newuser">newuser</string>
 
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="userlevel">用户等级</string>
+    <string name="admin">管理员</string>
+    <string name="ordinary">普通用户</string>
 
 </resources>

@@ -4,24 +4,33 @@
 
     <group android:checkableBehavior="single">
         <item android:id="@+id/drawdl"
-            android:title="@string/dulifangwu"
+            android:title="@string/yibanfangwu"
             app:showAsAction="always"/>
 
         <item android:id="@+id/drawsls"
-            android:title="@string/sanlieshi"
+            android:title="@string/teshufangwu"
             app:showAsAction="always"/>
 
         <item android:id="@+id/drawjqs"
-            android:title="@string/jiejushi"
+            android:title="@string/putongfangwu"
             app:showAsAction="ifRoom"/>
 
         <item android:id="@+id/drawyds"
-            android:title="@string/yaodongshi"
+            android:title="@string/fangwufushu"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawzzd"
+            android:title="@string/zhizhudun"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawys"
+            android:title="@string/yuanshan"
             app:showAsAction="ifRoom"/>
 
         <item android:id="@+id/drawqt"
             android:title="@string/qita"
             app:showAsAction="ifRoom"/>
+
 
 
     </group>

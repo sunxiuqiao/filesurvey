@@ -23,6 +23,18 @@
             android:title="@string/gouqu"
             app:showAsAction="ifRoom"/>
 
+        <item android:id="@+id/drawldys"
+            android:title="@string/ludiyaosu"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawhyys"
+            android:title="@string/haiyangyaosu"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawjs"
+            android:title="@string/jiaoshi"
+            app:showAsAction="ifRoom"/>
+
         <item android:id="@+id/drawsy"
             android:title="@string/shuiyuan"
             app:showAsAction="ifRoom"/>
@@ -46,6 +58,7 @@
         <item android:id="@+id/drawda"
             android:title="@string/douan"
             app:showAsAction="ifRoom"/>
+
 
     </group>
 

@@ -11,6 +11,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/senlin"/>
+        <RadioButton
+            android:id="@+id/yuanlin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/yuanlin"/>
 
         <RadioButton
             android:id="@+id/shulin"
@@ -83,6 +88,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/caidi"/>
+        <RadioButton
+            android:id="@+id/dileifanghuo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dileifanghuo"/>
+
+        <RadioButton
+            android:id="@+id/qitazhibei"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/qitazhibei"/>
     </RadioGroup>
 
 </LinearLayout>

@@ -7,6 +7,14 @@
             android:title="@string/senlin"
             app:showAsAction="ifRoom"/>
 
+        <item android:id="@+id/drawyl"
+            android:title="@string/yuanlin"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawdlfh"
+            android:title="@string/dileifanghuo"
+            app:showAsAction="ifRoom"/>
+
         <item android:id="@+id/drawsld"
             android:title="@string/shulin"
             app:showAsAction="ifRoom"/>
@@ -61,6 +69,10 @@
 
         <item android:id="@+id/drawcdd"
             android:title="@string/caidi"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawqtzb"
+            android:title="@string/qitazhibei"
             app:showAsAction="ifRoom"/>
     </group>
 

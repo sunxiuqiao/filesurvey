@@ -15,8 +15,17 @@
             android:title="@string/tongxunxian"
             app:showAsAction="ifRoom"/>
 
+        <item android:id="@+id/drawdxjxj"
+            android:title="@string/dixiajianxiu"
+            app:showAsAction="ifRoom"/>
+
+
         <item android:id="@+id/drawgd"
             android:title="@string/guandao"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawgdfs"
+            android:title="@string/guandaofushu"
             app:showAsAction="ifRoom"/>
 
         <item android:id="@+id/drawys"

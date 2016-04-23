@@ -11,8 +11,20 @@
             android:title="@string/tielu"
             app:showAsAction="always"/>
 
+        <item android:id="@+id/drawtlfs"
+            android:title="@string/tielufushu"
+            app:showAsAction="ifRoom"/>
+
         <item android:id="@+id/drawgl"
             android:title="@string/gonglu"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawql"
+            android:title="@string/qiaoliang"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawdkmt"
+            android:title="@string/dukoumatou"
             app:showAsAction="ifRoom"/>
 
         <item android:id="@+id/drawjgl"
@@ -29,6 +41,10 @@
 
         <item android:id="@+id/drawnbdl"
             android:title="@string/neibudaolu"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/drawqidl"
+            android:title="@string/qitadaolu"
             app:showAsAction="ifRoom"/>
     </group>
 

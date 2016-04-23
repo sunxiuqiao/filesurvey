@@ -30,6 +30,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/guandao"/>
+        <RadioButton
+            android:id="@+id/guandaofushu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/guandaofushu"/>
+        <RadioButton
+            android:id="@+id/dixiajianxiu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dixiajianxiu"/>
 
         <RadioButton
             android:id="@+id/yuanshan"

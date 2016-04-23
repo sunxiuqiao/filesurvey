@@ -27,8 +27,16 @@
             android:title="@string/dimaohetuzhi"
             app:showAsAction="ifRoom"/>
 
+        <item android:id="@+id/drawdldw"
+            android:title="@string/dulidiwu"
+            app:showAsAction="ifRoom"/>
+
         <item android:id="@+id/drawzjmc"
-            android:title="注记"
+            android:title="文字注记"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/otherfeature"
+            android:title="自定义要素类"
             app:showAsAction="ifRoom"/>
 
     </group>
