@@ -31,7 +31,7 @@ public class featurelist extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         listView= (ListView) findViewById(R.id.featureselect);
-        String[] features={"居民地","道路","水系","植被","管线","地貌土质","境界线","地理注记","文字注记"};
+        String[] features={"居民地","交通设施","水系设施","植被园林","管线设施","地貌土质","境界线","地理注记","文字注记","其他要素类"};
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(featurelist.this,R.layout.features,features);
         featureadapter adapter1=new featureadapter(featurelist.this,features);
         listView.setAdapter(adapter1);

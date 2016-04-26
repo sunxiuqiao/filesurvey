@@ -22,10 +22,11 @@
             android:title="录音采集"/>
     </group>
 
-    <item android:title="工具">
+    <group android:title="工具">
         <menu>
-            <item android:id="@+id/drawer"
-                android:title="草图涂鸦"/>
+            <item android:id="@+id/featureedit"
+                android:title="要素编辑"
+                android:icon="@android:drawable/ic_menu_edit"/>
             <item android:id="@+id/layercontrol"
                 android:icon="@android:drawable/ic_menu_manage"
                 android:title="图层管理"/>
@@ -35,7 +36,10 @@
             <item android:id="@+id/datashare"
                 android:icon="@android:drawable/ic_menu_send"
                 android:title="数据导出" />
+            <item android:id="@+id/upload"
+                android:icon="@android:drawable/ic_menu_upload"
+                android:title="数据上传" />
         </menu>
-    </item>
+    </group>
 
 </menu>

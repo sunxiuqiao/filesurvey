@@ -7,7 +7,7 @@
     <string name="action_settings">新建用户</string>
     <string name="usermanager">用户管理</string>
     <string name="lookforuser">查看用户</string>
-    <string name="title_activity_login">野外调绘</string>
+    <string name="title_activity_login">用户登录</string>
 
     <!-- Strings related to login -->
     <string name="putusername">请在此输入用户名</string>
@@ -229,7 +229,7 @@
     <string name="start">开始录音</string>
     <string name="stop">停止录音</string>
     <string name="featurelist">要素类型列表</string>
-    <string name="title_activity_newuser">newuser</string>
+    <string name="title_activity_newuser">新建用户</string>
 
     <string name="username">用户名</string>
     <string name="password">密码</string>

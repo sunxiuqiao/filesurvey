@@ -7,22 +7,40 @@
         app:showAsAction="never" />
 
     <item android:id="@+id/zoomin"
-        android:title="@string/zoomin"
-        android:icon="@drawable/zoomin"
-        app:showAsAction="always"/>
-
-    <item android:id="@+id/zoomout"
         android:title="@string/zoomout"
         android:icon="@drawable/zoomout"
         app:showAsAction="always"/>
 
+    <item android:id="@+id/locationid"
+        android:title="定位"
+        android:icon="@drawable/location"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/zoomout"
+        android:title="@string/zoomin"
+        android:icon="@drawable/zoomin"
+        app:showAsAction="never"/>
+
+
+    <item android:id="@+id/renwuguanli"
+        android:title="任务管理日志"
+        android:icon="@android:drawable/stat_sys_download"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/download"
+        android:title="下载"
+        android:icon="@android:drawable/stat_sys_download"
+        app:showAsAction="always"/>
+
+
     <item android:id="@+id/locationnow"
         android:title="@string/localtion"
         android:icon="@drawable/global"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
 
     <item android:title="画笔颜色"
         app:showAsAction="never">
+
         <menu>
             <group android:checkableBehavior="single">
                 <item android:id="@+id/color_red" android:title="红色"/>

@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/startedit"
+            android:title="开始编辑"
+            app:showAsAction="always"/>
+
+        <item android:id="@+id/endedit"
+            android:title="保存编辑"
+            app:showAsAction="always"/>
+
+    </group>
+
+</menu>

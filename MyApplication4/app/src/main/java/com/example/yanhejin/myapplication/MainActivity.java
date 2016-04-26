@@ -87,11 +87,13 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
+import com.example.yanhejin.myapplication.ChildActivity.newuser;
 import com.example.yanhejin.myapplication.Database.CreateSpatialDB;
 import com.example.yanhejin.myapplication.Database.CreateSurveyDB;
 import com.example.yanhejin.myapplication.ExcelOutput.ConvertDataToExcel;
 import com.example.yanhejin.myapplication.OfflineEdit.GDBUtil;
 import com.example.yanhejin.myapplication.OfflineEdit.TemplatePicker;
+import com.example.yanhejin.myapplication.OfflineEdit.layerlistadapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -110,11 +112,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     CreateSurveyDB createSurveyDB;
     CreateSpatialDB createSpatialDB;
-    String dbpath=android.os.Environment.getDataDirectory().getAbsolutePath()+"/"+"ArcGISSurvey";
+    String dbpath = android.os.Environment.getDataDirectory().getAbsolutePath() + "/" + "ArcGISSurvey";
     SQLiteDatabase spatialdb;
     SQLiteDatabase attributedb;
     private long exitTime;
     static final String mapURL = "http://cache1.arcgisonline.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer";
+    static final String XuanEnURL = "http://192.168.106.89:6080/arcgis/rest/services/xuanendata/MapServer";
+    static final String wuhanurl = "http://192.168.1.127:6080/arcgis/rest/services/wuhanroad/MapServer";
     MapView mapView;
     FeatureLayer featureLayer;
     ArcGISLocalTiledLayer tiledLayer;
@@ -141,12 +145,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Point wgsPoint;
     Point mapPoint;
     Location loc;
-    Map<String,Object> atts;
+    Map<String, Object> atts;
     ArcGISDynamicMapServiceLayer dmsLayer;
 
     String mMapState;
-    final  int STATE_ADD_GRAPHIC=1;//进入 “添加graphics状态，这时候单击地图时操作就添加graphics
-    final int STATE_SHOW=2;//“选中graphics状态“，这时候单击地图时操作就选择一个graphics，并显示该graphics的附加信息”
+    final int STATE_ADD_GRAPHIC = 1;//进入 “添加graphics状态，这时候单击地图时操作就添加graphics
+    final int STATE_SHOW = 2;//“选中graphics状态“，这时候单击地图时操作就选择一个graphics，并显示该graphics的附加信息”
     int m_State;//状态
     Graphic textgraphic;
 
@@ -159,12 +163,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Handler mHandelr = new Handler();
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        m_State=STATE_SHOW;
+        m_State = STATE_SHOW;
         if (savedInstanceState == null) {
             mMapState = null;
         } else {
@@ -175,8 +178,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-        String spatialpath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"/"+"SpatialSurveyDB.db";
-        String attributepath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"ArcGISSurvey"+"/"+"AttributeSurveyDB.db";
+        String spatialpath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ArcGISSurvey" + "/" + "SpatialSurveyDB.db";
+        String attributepath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ArcGISSurvey" + "/" + "AttributeSurveyDB.db";
         createSpatialDB = new CreateSpatialDB(MainActivity.this, spatialpath, null, 2);
         createSurveyDB = new CreateSurveyDB(MainActivity.this, attributepath, null, 2);
        /* File spatialp=new File(dbpath);
@@ -206,13 +209,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mapView = (MapView) findViewById(R.id.mapview);
-        ArcGISTiledMapServiceLayer maplayeronline=new ArcGISTiledMapServiceLayer(mapURL);
-        maplayeronline.setOpacity((float) 0.5);
-        mapView.addLayer(maplayeronline);
-        Envelope initextext=new Envelope(12748887.542, 3609934.261, 12713168.721, 3546235.696);
+        ArcGISTiledMapServiceLayer maplayeronline = new ArcGISTiledMapServiceLayer(mapURL);
+        //mapView.addLayer(maplayeronline);
+        //mapView.setAlpha((float) 0.5);
+        Envelope initextext = new Envelope(12748887.542, 3609934.261, 12713168.721, 3546235.696);
         mapView.setExtent(initextext);
         setSupportActionBar(toolbar);
-        mr=new MediaRecorder();
+        mr = new MediaRecorder();
+
         /*point = (Point) GeometryEngine.project(new Point(40.805, 111.661), SpatialReference.create(4326), mapView.getSpatialReference());
         mapView.centerAt(point, true);
         mapView.enableWrapAround(true);
@@ -332,12 +336,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });*/
     }
 
-    public android.os.Handler handler=new android.os.Handler(){
+    public android.os.Handler handler = new android.os.Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Point point= (Point) msg.obj;
-            double x=point.getX();
-            double y=point.getY();
+            Point point = (Point) msg.obj;
+            double x = point.getX();
+            double y = point.getY();
             Toast.makeText(MainActivity.this, "当前位置：" + "东经：" + String.valueOf(y) + "北纬：" + String.valueOf(x), Toast.LENGTH_LONG).show();
         }
     };
@@ -345,12 +349,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //标记位置
     private void markLocation(Location location) {
         //mGraphicLayer.removeAll();
-        List<Point> gpspoint=new ArrayList<Point>();
+        List<Point> gpspoint = new ArrayList<Point>();
         Polyline poly = new Polyline();
         Point startpoint;
         Point topoint;
-        double locx = location.getLongitude()+0.005465;
-        double locy = location.getLatitude()-0.0025;
+        double locx = location.getLongitude() + 0.005465;
+        double locy = location.getLatitude() - 0.0025;
         wgsPoint = new Point(locx, locy);
         gpspoint.add(wgsPoint);
         mapPoint = (Point) GeometryEngine.project(wgsPoint, SpatialReference.create(4326), mapView.getSpatialReference());
@@ -358,10 +362,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Graphic graphic = new Graphic(mapPoint, pictureMarkerSymbol);
         mGraphicLayer.addGraphic(graphic);
 
-        while (gpspoint.size()>1){
-            for (int i=0;i<gpspoint.size();i++){
-                startpoint=gpspoint.get(i);
-                topoint=gpspoint.get(i+1);
+        while (gpspoint.size() > 1) {
+            for (int i = 0; i < gpspoint.size(); i++) {
+                startpoint = gpspoint.get(i);
+                topoint = gpspoint.get(i + 1);
                 poly.startPath(startpoint);
                 poly.lineTo(topoint);
                 //画线
@@ -374,13 +378,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView.centerAt(mapPoint, true);
         mapView.addLayer(mGraphicLayer);
         SQLiteDatabase GPSdb = createSpatialDB.getReadableDatabase();//数据库为空
-        SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm",Locale.CHINA);
+        SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm", Locale.CHINA);
         Date currentdate = new Date(System.currentTimeMillis());
         final String GPSdate = format.format(currentdate);
         ContentValues GPSValues = new ContentValues();
         GPSValues.put("x", locx);
         GPSValues.put("y", locy);
-        GPSValues.put("GPSdate",GPSdate);
+        GPSValues.put("GPSdate", GPSdate);
         GPSdb.insert("GPSData", null, GPSValues);
         Toast.makeText(MainActivity.this, "GPS数据保存成功", Toast.LENGTH_LONG).show();
         GPSdb.close();
@@ -418,15 +422,76 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mapView.zoomout();
                 return true;
             case R.id.locationnow:
-                SpatialReference spatialReference= mapView.getSpatialReference().getGCS();
-                Toast.makeText(MainActivity.this,spatialReference.toString(),Toast.LENGTH_LONG).show();
+                SpatialReference spatialReference = mapView.getSpatialReference().getGCS();
+                Toast.makeText(MainActivity.this, spatialReference.toString(), Toast.LENGTH_LONG).show();
                 /*Envelope envelope=spatialReference.getPannableExtent();
                 mapView.setExtent(envelope);*/
+                return true;
+            case R.id.download:
+                ArcGISDynamicMapServiceLayer xuanenmap = new ArcGISDynamicMapServiceLayer(XuanEnURL);
+                mapView.addLayer(xuanenmap);
+                return true;
+
+            case R.id.locationid:
+                AlertDialog.Builder location = new AlertDialog.Builder(MainActivity.this);
+                View loca = getLayoutInflater().inflate(R.layout.location, null);
+                location.setView(loca);
+                final EditText jingdu = (EditText) loca.findViewById(R.id.jingdu);
+                final EditText weid = (EditText) loca.findViewById(R.id.weidu);
+                location.setTitle("自定义位置");
+                location.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        double x=Double.parseDouble(jingdu.getText().toString());
+                        double y=Double.parseDouble(weid.getText().toString());
+                        Point point=new Point(x,y);
+                        mapPoint = (Point) GeometryEngine.project(point, SpatialReference.create(4326), mapView.getSpatialReference());
+                        Graphic graphic = new Graphic(mapPoint, pictureMarkerSymbol);
+                        mGraphicLayer.addGraphic(graphic);
+                        mapView.centerAt(mapPoint, true);
+                        mapView.addLayer(mGraphicLayer);
+                    }
+                });
+                location.create().show();
+                return true;
+            case R.id.action_settings:
+                Intent newuser=new Intent();
+                newuser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                newuser.setClass(MainActivity.this, newuser.class );
+                startActivity(newuser);
+                return true;
+            case R.id.renwuguanli:
+                final AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("任务日志");
+                View view=getLayoutInflater().inflate(R.layout.renwurizhi,null);
+                builder.setView(view);
+                EditText renwuname= (EditText) view.findViewById(R.id.dioahuiname);
+                EditText renwumiaoshu= (EditText) view.findViewById(R.id.dioahuidiscribe);
+                EditText diaohuirenyuan= (EditText) view.findViewById(R.id.dioahuipeople);
+                EditText diaohuishebei= (EditText) view.findViewById(R.id.dioahuisehbei);
+                EditText diaohuirenwu= (EditText) view.findViewById(R.id.dioahuirenwu);
+                builder.setPositiveButton("保存日志", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.setNegativeButton("下载调绘任务", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        addOnlineMap();
+                    }
+                });
+                builder.create().show();
                 return true;
             default:
                 return false;
         }
     }
+
+
+
+
 
     //Toast弹出对话框，自定义弹出内容
     public void AlretMsg(String str, Object... arg) {
@@ -507,6 +572,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dataintent.setClass(MainActivity.this, ConvertDataToExcel.class);
                 startActivity(dataintent);
                 break;
+            case R.id.featureedit:
+                actionmode=MainActivity.this.startActionMode(editfeaturecallback);
+                break;
             default:
                 break;
         }
@@ -521,14 +589,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
    public void LayerControl(){
        ArrayAdapter<String> layerAdpter;
        List<String> layers=new ArrayList<String>();
-       View layerlistview = getLayoutInflater().inflate(R.layout.maplist, null);
+       final View layerlistview = getLayoutInflater().inflate(R.layout.maplist, null);
        final ListView layerslist = (ListView) layerlistview.findViewById(R.id.maplist);
        for(Layer layer:mapView.getLayers()){
            String name=layer.getName();
+            if (name == null)
+                name = "宣恩.tpk";
+            if(name.equals("Layers"))
+                name="宣恩县矢量图";
+
+           String title=layer.getTitle();
            layers.add(name);
        }
+       String[] features={"删除","上移","下移","不可见"};
+       ListView listView1;
+       final View layercontrlw = getLayoutInflater().inflate(R.layout.layercontrollayout, null);
+       listView1= (ListView) layercontrlw.findViewById(R.id.listview);
+       featureadapter adapter1=new featureadapter(MainActivity.this,features);
+       listView1.setAdapter(adapter1);
+       layerlistadapter adapter=new layerlistadapter(MainActivity.this,layers);
        layerAdpter=new ArrayAdapter<String>(MainActivity.this,R.layout.item,layers);
-       layerslist.setAdapter(layerAdpter);
+       layerslist.setAdapter(adapter);
        AlertDialog.Builder layerbuider=new AlertDialog.Builder(MainActivity.this);
        layerbuider.setTitle("图层控制");
        layerbuider.setView(layerlistview);
@@ -539,17 +620,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
            @Override
            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+               builder.setView(layercontrlw);
                builder.setTitle("选择图层操作");
-               builder.setPositiveButton("上移", new DialogInterface.OnClickListener() {
+               builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+
+                   }
+               });
+               /*builder.setPositiveButton("上移", new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
                        for (Layer layer : mapView.getLayers()) {
                            int index = (int) layer.getID();
+                           String url=layer.getUrl();
                            String name=layer.getName();
-                           if(name.equals("layers")){
+                           if(url.equals(mapURL)){
                                Toast.makeText(MainActivity.this, "该层不能移动！", Toast.LENGTH_LONG).show();
                            }
-                           if (index >= 1&&name!="layers") {
+                           else if (index >= 1&&!url.equals(mapURL)) {
                                mapView.removeLayer(index);
                                mapView.addLayer(layer, index + 1);
                            } else {
@@ -564,10 +653,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                        for (Layer layer : mapView.getLayers()) {
                            int index = (int) layer.getID();
                            String name=layer.getName();
-                           if(name.equals("layers")){
+                           String url=layer.getUrl();
+                           if(url.equals(mapURL)){
                                Toast.makeText(MainActivity.this, "该层不能移动！", Toast.LENGTH_LONG).show();
                            }
-                           if (index >= 1) {
+                           if (index >= 1&&!url.equals(mapURL)) {
                                mapView.removeLayer(index);
                                mapView.addLayer(layer, index - 1);
                            } else {
@@ -586,7 +676,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                        }
                        Toast.makeText(MainActivity.this, "删除成功！", Toast.LENGTH_LONG).show();
                    }
-               });
+               });*/
                builder.create().show();
            }
        });
@@ -787,6 +877,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     };
 
+    OnSingleTapListener featureedit_OnSingleTapListener=new OnSingleTapListener() {
+        @Override
+        public void onSingleTap(float x, float y) {
+            for(int id:mGraphicLayer.getGraphicIDs())  {
+                Graphic graphic= mGraphicLayer.getGraphic(id);
+                Geometry.Type type=  graphic.getGeometry().getType();
+                double mindistance=5;
+                if(type==Geometry.Type.POINT){
+                    Point currentpoint= (Point) graphic.getGeometry();
+                    double distancex=Math.abs(x-currentpoint.getX());
+                    double distancey=Math.abs(y-currentpoint.getY());
+                    double distace=Math.sqrt(distancex*distancex+distancey*distancey);
+                    if (distace<=mindistance){
+                        SimpleMarkerSymbol symbol=new SimpleMarkerSymbol(Color.BLUE,8, SimpleMarkerSymbol.STYLE.CROSS);
+                        Graphic pointGraphic=new Graphic(currentpoint,symbol);
+                        mGraphicLayer.addGraphic(pointGraphic);
+
+                    }
+                }
+            }
+        }
+    };
     /*
     * 在图层中查找获得Graphic对象，x，y是屏幕坐标，layer是GraphicLayer目标图层，相差的距离是50像素
     * */
@@ -1111,36 +1223,105 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.drawjmd:
+
                     actionmode.setTitle("居民地");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
                     jmdPopup();
+                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
                     break;
                 case R.id.drawsx:
-                    actionmode.setTitle("水系");
+                    actionmode.setTitle("水系设施");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
                     sxPopup();
+                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
                     break;
                 case R.id.drawdl:
-                    actionmode.setTitle("道路");
+                    actionmode.setTitle("交通设施");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
                     dlPopup();
+                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
                     break;
                 case R.id.drawgx:
-                    actionmode.setTitle("管线、电力线");
+                    actionmode.setTitle("管线设施");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
                     gxPopup();
+                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
                     break;
                 case R.id.drawjjl:
                     actionmode.setTitle("境界线");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
                     jjxPopup();
+                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
                     break;
                 case R.id.drawdm:
                     actionmode.setTitle("地貌土质");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
                     dmPopup();
+                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
                     break;
                 case R.id.drawzb:
-                    actionmode.setTitle("植被");
+                    actionmode.setTitle("植被园林");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
                     zbPopup();
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawzjmc:
-                    actionmode.setTitle("注记");
+                    actionmode.setTitle("文字注记");
+                    actionmode.setTitle("独立地物");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
                     zhujiPopup();
+
+                    break;
+                case R.id.drawdldw:
+                    actionmode.setTitle("独立地物");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if(m_State==STATE_ADD_GRAPHIC)
+                        actionmode.setTitle("停止采集");
+                    else {
+                        actionmode.setTitle("要素采集");
+                    }
+                    dldwPopup();
+                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
                     break;
             }
             return false;
@@ -1219,6 +1400,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    /*
+    * 编辑地物
+    * */
+    public ActionMode.Callback editfeaturecallback=new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.editfeature, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()){
+
+                case R.id.startedit:
+                    mode.setTitle("开始编辑");
+                    m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
+                    if (m_State==STATE_ADD_GRAPHIC){
+                        item.setTitle("停止编辑");
+                    }else {
+                        item.setTitle("开始编辑");
+                    }
+                    mapView.setOnSingleTapListener(featureedit_OnSingleTapListener);
+                    break;
+                case R.id.endedit:
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
+    };
 
 
 
@@ -1422,6 +1644,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         break;
                     case "dimaopmenu":
                         AddDMFeatureData(zhujitime);
+                        break;
+                    case "dulidiwumenu":
+                        AddDLDWFeatureData(zhujitime);
                         break;
                     default:
                         break;
@@ -1778,7 +2003,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             gxattriValues.put("LinkID", Integer.valueOf(gxLinkID.getText().toString()));
                             gxattriValues.put("DLXZX", dlxzx.getText().toString());
                             gxattriValues.put("DLXFS", dlxfs.getText().toString());
-                            gxattriValues.put("ZJTIME",zhujitime);
+                            gxattriValues.put("ZJTIME", zhujitime);
                             gxattriValues.put("BZ", gxbz.getText().toString());
                             gxattributedb.insert("GXData", null, gxattriValues);
                             gxattributedb.close();
@@ -1959,7 +2184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final EditText dmbz= (EditText) dmView.findViewById(R.id.bz);
             dmName.setText(featureName);
             dmBuilder.setView(dmView);
-            dmBuilder.setTitle("填写地貌属性信息");
+            dmBuilder.setTitle("填写独立地物属性信息");
             dmBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -1996,6 +2221,70 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         dmsValues.put("x",cPoint.getX());
                                         dmsValues.put("y",cPoint.getY());
                                         dmsdb.insert("DMData",null,dmsValues);
+                                    }
+                                    dmsdb.close();
+                                    Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
+                                    points.clear();
+                                }
+                            }catch (Exception e){
+                                Log.i(tag,e.toString());
+                            }
+                        }
+                        dmC.close();
+                    }
+                }
+            });
+            dmBuilder.create().show();
+        }
+
+        public void AddDLDWFeatureData(final String zhujitime){
+            AlertDialog.Builder dmBuilder=new AlertDialog.Builder(MainActivity.this);
+            View dmView=getLayoutInflater().inflate(R.layout.dulidiwu,null);
+            EditText dmName= (EditText) dmView.findViewById(R.id.ftName);
+            final EditText dlduLinkID= (EditText) dmView.findViewById(R.id.linkID);
+            final EditText dwMC= (EditText) dmView.findViewById(R.id.dwmc);
+            final EditText dwMS= (EditText) dmView.findViewById(R.id.dwms);
+            final EditText dmbz= (EditText) dmView.findViewById(R.id.bz);
+            dmName.setText(featureName);
+            dmBuilder.setView(dmView);
+            dmBuilder.setTitle("填写地貌属性信息");
+            dmBuilder.setNegativeButton("取消录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    points.clear();
+                }
+            });
+            dmBuilder.setPositiveButton("确定录入", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    SQLiteDatabase dmattributedb=createSurveyDB.getReadableDatabase();
+                    if (dlduLinkID.getText().toString().equals("")){
+                        Toast.makeText(MainActivity.this, "连接号为空！", Toast.LENGTH_LONG).show();
+                    }else {
+                        Cursor dmC=dmattributedb.rawQuery("select LinkID from DLDWData where LinkID=?",new String[]{dlduLinkID.getText().toString()});
+                        if (!dmC.moveToFirst()){
+                            ContentValues dmaValues=new ContentValues();
+                            dmaValues.put("FTName",featureName);
+                            dmaValues.put("LinkID",Integer.valueOf(dlduLinkID.getText().toString()));
+                            dmaValues.put("YSName",dwMC.getText().toString());
+                            dmaValues.put("YSDscibe",dwMS.getText().toString());
+                            dmaValues.put("ZJTIME",zhujitime);
+                            dmaValues.put("BZ", dmbz.getText().toString());
+                            dmattributedb.insert("DLDWData", null, dmaValues);
+                            dmattributedb.close();
+                            try {
+                                if (points.size()<3){
+                                    Toast.makeText(MainActivity.this, "没有要存储的空间数据", Toast.LENGTH_LONG).show();
+                                }else if (points.size()>2){
+                                    SQLiteDatabase dmsdb=createSpatialDB.getReadableDatabase();
+                                    Point cPoint;
+                                    for (int i=0;i<points.size();i++){
+                                        cPoint=points.get(i);
+                                        ContentValues dmsValues=new ContentValues();
+                                        dmsValues.put("LinkAID",Integer.valueOf(dlduLinkID.getText().toString()));
+                                        dmsValues.put("x",cPoint.getX());
+                                        dmsValues.put("y",cPoint.getY());
+                                        dmsdb.insert("DLDWData",null,dmsValues);
                                     }
                                     dmsdb.close();
                                     Toast.makeText(MainActivity.this, "空间数据保存成功", Toast.LENGTH_LONG).show();
@@ -2098,7 +2387,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public List<String> getMapPathFromSD(){
         final int layerindex=1;
-        List<String> maplayerList=new ArrayList<String>();
+        final List<String> maplayerList=new ArrayList<String>();
         View maplistview = getLayoutInflater().inflate(R.layout.maplist, null);
         final ListView maplist = (ListView) maplistview.findViewById(R.id.maplist);
         String mappath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/ArcGISSurvey";
@@ -2115,8 +2404,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         final View itemView=getLayoutInflater().inflate(R.layout.item,null);
+        layerlistadapter layerlistadapter=new layerlistadapter(MainActivity.this,maplayerList);
         arrayAdapter = new ArrayAdapter<String>(this, R.layout.item, maplayerList);
-        maplist.setAdapter(arrayAdapter);
+        maplist.setAdapter(layerlistadapter);
         final AlertDialog.Builder mapBuidler=new AlertDialog.Builder(MainActivity.this);
         mapBuidler.create();
         mapBuidler.setTitle("本地地图列表");
@@ -2126,7 +2416,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView) view.findViewById(R.id.itemview);
-                String pathname = textView.getText().toString();
+                String pathname = maplayerList.get(position);
 
                 position = maplist.getCheckedItemPosition();
                 String fileEnd = pathname.substring(pathname.lastIndexOf(".") + 1, pathname.length()).toLowerCase();
@@ -2138,10 +2428,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         e.printStackTrace();
                     }
                     if (geodatabase != null) {
+                      /*  GeodatabaseFeatureTable table=geodatabase.getGeodatabaseFeatureTableByLayerId(0);
+                        featureLayer=new FeatureLayer(table);
+                        mapView.addLayer(featureLayer);*/
                         for (GeodatabaseFeatureTable geotable : geodatabase.getGeodatabaseTables()) {
                             featureLayer = new FeatureLayer(geotable);
-                            featureLayer.setOpacity(50);
-                            mapView.addLayer(featureLayer, layerindex + 1);
+                            //featureLayer.setOpacity(50);
+                            mapView.addLayer(featureLayer);
                         }
 
                     } else {
@@ -2149,9 +2442,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 } else if (fileEnd.equals("tpk")) {
                     tiledLayer = new ArcGISLocalTiledLayer(pathname);
-                    mapView.addLayer(tiledLayer, layerindex - 1);
+                    mapView.addLayer(tiledLayer);
                     Toast.makeText(MainActivity.this, "添加图层成功!", Toast.LENGTH_LONG).show();
-                }else {
+                } else {
                     Toast.makeText(MainActivity.this, "没有找到对应图层!", Toast.LENGTH_LONG).show();
                 }
                 /*try {
@@ -2185,7 +2478,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final String[] geometryType = {""};
         Type = "jmdmenu";
         setType(Type);
-        mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+        //mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
         mapView.setOnTouchListener(mapTouchListener);
         PopupMenu jmdpopup = new PopupMenu(MainActivity.this, new View(MainActivity.this));
         jmdpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -2194,7 +2487,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int id = item.getItemId();
                 switch (id) {
                     case R.id.drawjqs:
-                        featureName = "街区式";
+                        featureName = "普通房屋";
                         setFNType(featureName);
                         mapTouchListener.geoType = Geometry.Type.POLYGON;
                         geometryType[0] = "Polygon";
@@ -2203,8 +2496,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mSimpleFillSymbol.setAlpha(100);
                         mapTouchListener.setType(geometryType[0]);
                         break;
-                    case R.id.drawyds:
-                        featureName = "窑洞式";
+                    case R.id.drawdl:
+                        featureName = "一般房屋";
+                        setFNType(featureName);
+                        mapTouchListener.geoType = Geometry.Type.POLYGON;
+                        geometryType[0] = "Polygon";
+                        mapTouchListener.getType();
+                        mSimpleFillSymbol = new SimpleFillSymbol(Color.RED, SimpleFillSymbol.STYLE.SOLID);
+                        mSimpleFillSymbol.setAlpha(100);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
+
+                    case R.id.drawsls:
+                        featureName = "特殊房屋";
                         setFNType(featureName);
                         mapTouchListener.geoType = Geometry.Type.POLYGON;
                         geometryType[0] = "Polygon";
@@ -2212,6 +2516,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mSimpleFillSymbol.setAlpha(100);
                         mapTouchListener.setType(geometryType[0]);
                         break;
+                    case R.id.drawzzd:
+                        featureName = "支柱墩";
+                        setFNType(featureName);
+                        mapTouchListener.geoType = Geometry.Type.POLYGON;
+                        geometryType[0] = "Polygon";
+                        mSimpleFillSymbol = new SimpleFillSymbol(Color.RED, SimpleFillSymbol.STYLE.SOLID);
+                        mSimpleFillSymbol.setAlpha(100);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
+                    case R.id.drawys:
+                        featureName = "垣栅";
+                        mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                        geometryType[0] = "Polyline";
+                        simpleLineSymbol = new SimpleLineSymbol(Color.RED, 5, SimpleLineSymbol.STYLE.SOLID);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
+                    case R.id.drawqt:
+                        featureName = "其他房屋";
+                        setFNType(featureName);
+                        mapTouchListener.geoType = Geometry.Type.POLYGON;
+                        geometryType[0] = "Polygon";
+                        mSimpleFillSymbol = new SimpleFillSymbol(Color.RED, SimpleFillSymbol.STYLE.SOLID);
+                        mSimpleFillSymbol.setAlpha(100);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
+
                 }
                 return false;
             }
@@ -2226,7 +2556,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     * */
     public void sxPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-        mapView.setOnTouchListener(mapTouchListener);
+        //mapView.setOnTouchListener(mapTouchListener);
         final String[] geometryType = new String[1];
         Type = "shuiximenu";
         setType(Type);
@@ -2237,7 +2567,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int id = item.getItemId();
                 switch (id) {
                     case R.id.drawhl:
-                        featureName = "河流";
+                        featureName = "河流溪流";
                         setFNType(featureName);
                         mapTouchListener.geoType = Geometry.Type.POLYLINE;
                         geometryType[0] = "Polyline";
@@ -2279,6 +2609,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 2, SimpleLineSymbol.STYLE.DASH);
                         mapTouchListener.setType(geometryType[0]);
                         return true;
+                    case R.id.drawhax:
+                        featureName = "海岸线";
+                        setFNType(featureName);
+                        mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                        geometryType[0] = "Polyline";
+                        simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 2, SimpleLineSymbol.STYLE.DASH);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
                     case R.id.drawsy:
                         featureName = "水源";
                         setFNType(featureName);
@@ -2303,8 +2641,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final String[] geometryType = new String[1];
         Type = "daolumenu";
         setType(Type);
-        mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-        mapView.setOnTouchListener(mapTouchListener);
+       // mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
+        //mapView.setOnTouchListener(mapTouchListener);
         PopupMenu dlpopup = new PopupMenu(MainActivity.this, new View(MainActivity.this));
         dlpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -2319,6 +2657,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 4, SimpleLineSymbol.STYLE.SOLID);
                         mapTouchListener.setType(geometryType[0]);
                         return true;
+                    case R.id.drawtlfs:
+                        featureName = "铁路附属";
+                        setFNType(featureName);
+                        mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                        geometryType[0] = "Polyline";
+                        simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 4, SimpleLineSymbol.STYLE.SOLID);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
                     case R.id.drawgl:
                         featureName = "公路";
                         setFNType(featureName);
@@ -2327,6 +2673,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 4, SimpleLineSymbol.STYLE.SOLID);
                         mapTouchListener.setType(geometryType[0]);
                         return true;
+
+                    case R.id.drawql:
+                        featureName = "桥梁";
+                        setFNType(featureName);
+                        mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                        geometryType[0] = "Polyline";
+                        simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 4, SimpleLineSymbol.STYLE.SOLID);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
+
+                    case R.id.drawdkmt:
+                        featureName = "渡口码头";
+                        setFNType(featureName);
+                        mapTouchListener.geoType = Geometry.Type.POLYLINE;
+                        geometryType[0] = "Polyline";
+                        simpleLineSymbol = new SimpleLineSymbol(Color.BLUE, 3, SimpleLineSymbol.STYLE.SOLID);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
                     case R.id.drawjgl:
                         featureName = "机耕路";
                         setFNType(featureName);
@@ -2373,7 +2737,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     * */
     public void gxPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-        mapView.setOnTouchListener(mapTouchListener);
+        //mapView.setOnTouchListener(mapTouchListener);
         final String[] geometryType = new String[1];
         Type = "guanxianmenu";
         setType(Type);
@@ -2405,6 +2769,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mapTouchListener.geoType = Geometry.Type.POLYLINE;
                         geometryType[0] = "Polyline";
                         simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 1, SimpleLineSymbol.STYLE.SOLID);
+                        mapTouchListener.setType(geometryType[0]);
                         return true;
                     case R.id.drawgd:
                         featureName = "管道";
@@ -2412,6 +2777,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mapTouchListener.geoType = Geometry.Type.POLYLINE;
                         geometryType[0] = "Polyline";
                         simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 3, SimpleLineSymbol.STYLE.SOLID);
+                        mapTouchListener.setType(geometryType[0]);
+                        break;
+
+                    case R.id.drawgdfs:
+                        featureName="管道附属";
+                        setFNType(featureName);
+                        mapTouchListener.geoType=Geometry.Type.POINT;
+                        geometryType[0] = "Point";
+                        setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 5, SimpleMarkerSymbol.STYLE.CROSS);
                         mapTouchListener.setType(geometryType[0]);
                         break;
                 }
@@ -2428,7 +2803,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     * */
     public void zbPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-        mapView.setOnTouchListener(mapTouchListener);
+
         final String[] geometryType = new String[1];
         Type = "zhibeimenu";
         PopupMenu zhibeiPopup = new PopupMenu(MainActivity.this, new View(MainActivity.this));
@@ -2445,6 +2820,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mSimpleFillSymbol = new SimpleFillSymbol(Color.GREEN);
                         mSimpleFillSymbol.setColor(Color.GREEN);
                         mSimpleFillSymbol.setAlpha(50);
+                        break;
+
+                    case R.id.drawyl:
+                        featureName = "园林";
+                        geometryType[0] = "Polygon";
+                        mapTouchListener.setType(geometryType[0]);
+                        mapTouchListener.geoType = Geometry.Type.POLYGON;
+                        mSimpleFillSymbol = new SimpleFillSymbol(Color.GREEN);
+                        mSimpleFillSymbol.setColor(Color.GREEN);
+                        mSimpleFillSymbol.setAlpha(50);
+                        break;
+
+                    case R.id.drawdlfh:
+                        featureName = "地类防火";
+                        geometryType[0] = "Polyline";
+                        mapTouchListener.setType(geometryType[0]);
+                        mapTouchListener.geoType = Geometry.Type.POLYGON;
+                        simpleLineSymbol = new SimpleLineSymbol(Color.GREEN, 4, SimpleLineSymbol.STYLE.DOT);
                         break;
                     case R.id.drawmp:
                         featureName = "苗圃";
@@ -2466,7 +2859,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         featureName = "零星树木";
                         geometryType[0] = "Point";
                         mapTouchListener.setType(geometryType[0]);
-                        mapTouchListener.geoType = Geometry.Type.POLYGON;
+                        mapTouchListener.geoType = Geometry.Type.POINT;
                         markerSymbol = new SimpleMarkerSymbol(Color.GREEN, 4, SimpleMarkerSymbol.STYLE.CIRCLE);
                         break;
                     case R.id.drawjjl:
@@ -2537,7 +2930,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     * */
     public void dmPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-        mapView.setOnTouchListener(mapTouchListener);
+       // mapView.setOnTouchListener(mapTouchListener);
         Type = "dimaopmenu";
         setType(Type);
         final String[] geometryType = {""};
@@ -2674,6 +3067,92 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         jjxInflater.inflate(R.menu.jjxmenu, jjxPopup.getMenu());
         jjxPopup.show();
     }
+
+    public void dldwPopup(){
+        mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
+        //mapView.setOnTouchListener(mapTouchListener);
+        Type = "dulidiwumenu";
+        setType(Type);
+        final String[] geometryType = {""};
+        final PopupMenu jjxPopup = new PopupMenu(MainActivity.this, new View(MainActivity.this));
+        jjxPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                switch (id) {
+                    case R.id.drawkskc:
+                        featureName = "矿山开采";
+                        setFNType(featureName);
+                        geometryType[0] = "Point";
+                        mapTouchListener.geoType = Geometry.Type.POINT;
+                        mapTouchListener.setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        break;
+                    case R.id.drawgyss:
+                        featureName = "工业设施";
+                        setFNType(featureName);
+                        geometryType[0] = "Point";
+                        mapTouchListener.geoType = Geometry.Type.POINT;
+                        mapTouchListener.setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        break;
+                    case R.id.drawnyss:
+                        featureName = "农业设施";
+                        setFNType(featureName);
+                        geometryType[0] = "Point";
+                        mapTouchListener.geoType = Geometry.Type.POINT;
+                        mapTouchListener.setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        break;
+                    case R.id.drawkwwt:
+                        featureName = "科文卫体";
+                        setFNType(featureName);
+                        geometryType[0] = "Point";
+                        mapTouchListener.geoType = Geometry.Type.POINT;
+                        mapTouchListener.setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        break;
+                    case R.id.drawggss:
+                        featureName = "公共设施";
+                        setFNType(featureName);
+                        geometryType[0] = "Point";
+                        mapTouchListener.geoType = Geometry.Type.POINT;
+                        mapTouchListener.setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        break;
+                    case R.id.drawbsdt:
+                        featureName = "碑塑墩亭";
+                        setFNType(featureName);
+                        geometryType[0] = "Point";
+                        mapTouchListener.geoType = Geometry.Type.POINT;
+                        mapTouchListener.setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        break;
+                    case R.id.drawwwzj:
+                        featureName = "文物宗教";
+                        setFNType(featureName);
+                        geometryType[0] = "Point";
+                        mapTouchListener.geoType = Geometry.Type.POINT;
+                        mapTouchListener.setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        break;
+                    case R.id.drawqtss:
+                        featureName = "其他设施";
+                        setFNType(featureName);
+                        geometryType[0] = "Point";
+                        mapTouchListener.geoType = Geometry.Type.POINT;
+                        mapTouchListener.setType(geometryType[0]);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        break;
+                }
+                return false;
+            }
+        });
+        MenuInflater jjxInflater = new MenuInflater(MainActivity.this);
+        jjxInflater.inflate(R.menu.dldwmenu, jjxPopup.getMenu());
+        jjxPopup.show();
+    }
+
 
     /*
     * 注记要素

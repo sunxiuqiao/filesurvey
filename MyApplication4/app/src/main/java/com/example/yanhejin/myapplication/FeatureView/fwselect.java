@@ -55,7 +55,7 @@ public class fwselect extends AppCompatActivity {
                 }
                 final AlertDialog.Builder builder = new AlertDialog.Builder(fwselect.this);
                 builder.setTitle("选择操作");
-                builder.setMessage("follow your heart");
+                //builder.setMessage("follow your heart");
                 builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -127,8 +127,8 @@ public class fwselect extends AppCompatActivity {
     }
     public void getdata(){
         jmdCursor =aexecQuery(sqla,null);
-        adapter=new SimpleCursorAdapter(fwselect.this,R.layout.selectfw, jmdCursor,new String[]{"LinkID","FTName","FWCS","FWCZ"},
-                new int[]{R.id.linkid,R.id.fwname,R.id.fwcselect,R.id.fwczselect}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        adapter=new SimpleCursorAdapter(fwselect.this,R.layout.selectfw, jmdCursor,new String[]{"FTName","LinkID","FWCS","FWCZ"},
+                new int[]{R.id.fwname,R.id.linkid,R.id.fwcselect,R.id.fwczselect}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         fwlist.setAdapter(adapter);
     }
 
