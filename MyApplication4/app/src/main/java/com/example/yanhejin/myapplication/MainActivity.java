@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     GraphicsLayer mGraphicLayer;
     SimpleFillSymbol mSimpleFillSymbol = null;
-    SimpleMarkerSymbol markerSymbol;
+
     SimpleLineSymbol simpleLineSymbol;
     MapTouchListener mapTouchListener;
 
@@ -161,7 +161,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     MyTask myTask;
     //Handler mhandler;
     Handler mHandelr = new Handler();
-
+    private SimpleLineSymbol lineSymbol;
+    private SimpleMarkerSymbol markerSymbol;
+    private SimpleFillSymbol fillSymbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -573,7 +575,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(dataintent);
                 break;
             case R.id.featureedit:
-                actionmode=MainActivity.this.startActionMode(editfeaturecallback);
+                //actionmode=MainActivity.this.startActionMode(editfeaturecallback);
+                Intent queryIntent=new Intent();
+                queryIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                queryIntent.setClass(MainActivity.this,queryActivity.class);
+                startActivity(queryIntent);
                 break;
             default:
                 break;
@@ -681,6 +687,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
            }
        });
    }
+
     /*
     * 单击地图时标记地理注记
     * */
@@ -1227,101 +1234,101 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     actionmode.setTitle("居民地");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("居民地");
                     }
                     jmdPopup();
-                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawsx:
                     actionmode.setTitle("水系设施");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("水系设施");
                     }
                     sxPopup();
-                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawdl:
                     actionmode.setTitle("交通设施");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("交通设施");
                     }
                     dlPopup();
-                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawgx:
                     actionmode.setTitle("管线设施");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("管线设施");
                     }
                     gxPopup();
-                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawjjl:
                     actionmode.setTitle("境界线");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("境界线");
                     }
                     jjxPopup();
-                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawdm:
                     actionmode.setTitle("地貌土质");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("地貌土质");
                     }
                     dmPopup();
-                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawzb:
                     actionmode.setTitle("植被园林");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("植被园林");
                     }
                     zbPopup();
                     mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawzjmc:
                     actionmode.setTitle("文字注记");
-                    actionmode.setTitle("独立地物");
+                    //actionmode.setTitle("独立地物");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("文字注记");
                     }
                     zhujiPopup();
-
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
                 case R.id.drawdldw:
                     actionmode.setTitle("独立地物");
                     m_State=m_State==STATE_ADD_GRAPHIC?STATE_SHOW:STATE_ADD_GRAPHIC;
                     if(m_State==STATE_ADD_GRAPHIC)
-                        actionmode.setTitle("停止采集");
+                        item.setTitle("停止采集");
                     else {
-                        actionmode.setTitle("要素采集");
+                        item.setTitle("独立地物");
                     }
                     dldwPopup();
-                    mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+                    mapView.setOnTouchListener(mapTouchListener);
                     break;
             }
             return false;
@@ -1459,11 +1466,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Context context;
         int j=1;
 
+        private void initSymbols()
+        {
+            lineSymbol = new SimpleLineSymbol(Color.RED, 2, SimpleLineSymbol.STYLE.DASH);
+            markerSymbol = new SimpleMarkerSymbol(Color.BLUE, 8, SimpleMarkerSymbol.STYLE.CIRCLE);
+            fillSymbol = new SimpleFillSymbol(Color.RED);
+            fillSymbol.setAlpha(33);
+        }
         public MapTouchListener(Context context, MapView view) {
             super(context, view);
             this.context=context;
             map=view;
             points = new ArrayList<Point>();
+            //markerSymbol = new SimpleMarkerSymbol(Color.BLUE, 8, SimpleMarkerSymbol.STYLE.CIRCLE);
+            this.initSymbols();
         }
 
         // 根据用户选择设置当前绘制的几何图形类型
@@ -1484,6 +1500,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public boolean onSingleTap(MotionEvent point) {
+            lineSymbol = new SimpleLineSymbol(Color.RED, 2, SimpleLineSymbol.STYLE.DASH);
+            markerSymbol = new SimpleMarkerSymbol(Color.BLUE, 8, SimpleMarkerSymbol.STYLE.CIRCLE);
+            fillSymbol = new SimpleFillSymbol(Color.RED);
             GraphicsLayer layer=getGraphicLayer();
                 if (geoType != null) {
                     Point ptCurrent = map.toMapPoint(new Point(point.getX(), point.getY()));
@@ -1507,7 +1526,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             line.setStart(ptPrevious);
                             line.setEnd(ptCurrent);
                             polyline.addSegment(line, true);
-                            Graphic g = new Graphic(polyline, simpleLineSymbol);
+                            Graphic g = new Graphic(polyline, lineSymbol);
                             layer.addGraphic(g);
                             String length = Double.toString(Math.round(polyline.calculateLength2D())) + " 米";
 
@@ -1519,7 +1538,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             //绘制临时多边形
                             if (tempPolygon == null) tempPolygon = new Polygon();
                             tempPolygon.addSegment(line, true);
-                            Graphic g = new Graphic(tempPolygon, mSimpleFillSymbol);
+                            Graphic g = new Graphic(tempPolygon, fillSymbol);
                             layer.addGraphic(g);
                        /* String sArea = getAreaString(tempPolygon.calculateArea2D()) + " 米";
                         Toast.makeText(mapView.getContext(), sArea, Toast.LENGTH_SHORT).show();*/
@@ -1572,7 +1591,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         line.setEnd(endPoint);
                         polyline.addSegment(line, false);
                     }
-                    Graphic g = new Graphic(polyline, simpleLineSymbol);
+                    Graphic g = new Graphic(polyline, lineSymbol);
                     layer.addGraphic(g);
                     map.addLayer(layer);
                     // 计算总长度
@@ -1604,7 +1623,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         graphicid++;
                     }
                     final String fid = String.valueOf(pointid) + String.valueOf(graphicid);
-                    Graphic g = new Graphic(polygon, mSimpleFillSymbol);
+                    Graphic g = new Graphic(polygon, fillSymbol);
                     layer.addGraphic(g);
                     map.addLayer(layer);
                     // 计算总面积
@@ -2478,8 +2497,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final String[] geometryType = {""};
         Type = "jmdmenu";
         setType(Type);
-        //mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
-        mapView.setOnTouchListener(mapTouchListener);
+        mapTouchListener=new MapTouchListener(MainActivity.this,mapView);
+        //mapView.setOnTouchListener(mapTouchListener);
         PopupMenu jmdpopup = new PopupMenu(MainActivity.this, new View(MainActivity.this));
         jmdpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -2641,7 +2660,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final String[] geometryType = new String[1];
         Type = "daolumenu";
         setType(Type);
-       // mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
+        mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
         //mapView.setOnTouchListener(mapTouchListener);
         PopupMenu dlpopup = new PopupMenu(MainActivity.this, new View(MainActivity.this));
         dlpopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -2654,7 +2673,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         setFNType(featureName);
                         mapTouchListener.geoType = Geometry.Type.POLYLINE;
                         geometryType[0] = "Polyline";
-                        simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 4, SimpleLineSymbol.STYLE.SOLID);
+                        //simpleLineSymbol = new SimpleLineSymbol(Color.BLACK, 4, SimpleLineSymbol.STYLE.SOLID);
                         mapTouchListener.setType(geometryType[0]);
                         return true;
                     case R.id.drawtlfs:
@@ -3033,7 +3052,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     * */
     public void jjxPopup() {
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-        mapView.setOnTouchListener(mapTouchListener);
+        //mapView.setOnTouchListener(mapTouchListener);
         Type = "jjxmenu";
         setType(Type);
         final String[] geometryType = {""};
@@ -3086,7 +3105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         geometryType[0] = "Point";
                         mapTouchListener.geoType = Geometry.Type.POINT;
                         mapTouchListener.setType(geometryType[0]);
-                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 8, SimpleMarkerSymbol.STYLE.CROSS);
                         break;
                     case R.id.drawgyss:
                         featureName = "工业设施";
@@ -3094,7 +3113,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         geometryType[0] = "Point";
                         mapTouchListener.geoType = Geometry.Type.POINT;
                         mapTouchListener.setType(geometryType[0]);
-                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 8, SimpleMarkerSymbol.STYLE.CROSS);
                         break;
                     case R.id.drawnyss:
                         featureName = "农业设施";
@@ -3102,7 +3121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         geometryType[0] = "Point";
                         mapTouchListener.geoType = Geometry.Type.POINT;
                         mapTouchListener.setType(geometryType[0]);
-                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 8, SimpleMarkerSymbol.STYLE.CROSS);
                         break;
                     case R.id.drawkwwt:
                         featureName = "科文卫体";
@@ -3110,7 +3129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         geometryType[0] = "Point";
                         mapTouchListener.geoType = Geometry.Type.POINT;
                         mapTouchListener.setType(geometryType[0]);
-                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 8, SimpleMarkerSymbol.STYLE.CROSS);
                         break;
                     case R.id.drawggss:
                         featureName = "公共设施";
@@ -3118,7 +3137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         geometryType[0] = "Point";
                         mapTouchListener.geoType = Geometry.Type.POINT;
                         mapTouchListener.setType(geometryType[0]);
-                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 8, SimpleMarkerSymbol.STYLE.CROSS);
                         break;
                     case R.id.drawbsdt:
                         featureName = "碑塑墩亭";
@@ -3134,7 +3153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         geometryType[0] = "Point";
                         mapTouchListener.geoType = Geometry.Type.POINT;
                         mapTouchListener.setType(geometryType[0]);
-                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 8, SimpleMarkerSymbol.STYLE.CROSS);
                         break;
                     case R.id.drawqtss:
                         featureName = "其他设施";
@@ -3142,7 +3161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         geometryType[0] = "Point";
                         mapTouchListener.geoType = Geometry.Type.POINT;
                         mapTouchListener.setType(geometryType[0]);
-                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 3, SimpleMarkerSymbol.STYLE.CROSS);
+                        markerSymbol = new SimpleMarkerSymbol(Color.YELLOW, 8, SimpleMarkerSymbol.STYLE.CROSS);
                         break;
                 }
                 return false;
@@ -3159,7 +3178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     * */
     public void zhujiPopup(){
         mapTouchListener = new MapTouchListener(MainActivity.this, mapView);
-        mapView.setOnTouchListener(mapTouchListener);
+        //mapView.setOnTouchListener(mapTouchListener);
         Type = "zjmenu";
         setType(Type);
         final String[] geometryType = {""};
