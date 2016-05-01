@@ -332,7 +332,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     selectsymbol.setAlpha(50);
                     selectsymbol.setOutline(new SimpleLineSymbol(Color.RED, 3));
                     //agflayer.setSelectionSymbol(selectsymbol);
-
                 }
             }
         });*/
@@ -424,8 +423,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mapView.zoomout();
                 return true;
             case R.id.locationnow:
-                SpatialReference spatialReference = mapView.getSpatialReference().getGCS();
-                Toast.makeText(MainActivity.this, spatialReference.toString(), Toast.LENGTH_LONG).show();
+
                 /*Envelope envelope=spatialReference.getPannableExtent();
                 mapView.setExtent(envelope);*/
                 return true;
@@ -434,8 +432,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mapView.addLayer(xuanenmap);
                 return true;
 
-            case R.id.locationid:
-                AlertDialog.Builder location = new AlertDialog.Builder(MainActivity.this);
+            case R.id.editfeature:
+            /*    AlertDialog.Builder location = new AlertDialog.Builder(MainActivity.this);
                 View loca = getLayoutInflater().inflate(R.layout.location, null);
                 location.setView(loca);
                 final EditText jingdu = (EditText) loca.findViewById(R.id.jingdu);
@@ -444,17 +442,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 location.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        double x=Double.parseDouble(jingdu.getText().toString());
-                        double y=Double.parseDouble(weid.getText().toString());
-                        Point point=new Point(x,y);
+                        double x = Double.parseDouble(jingdu.getText().toString());
+                        double y = Double.parseDouble(weid.getText().toString());
+                        Point point = new Point(x, y);
                         mapPoint = (Point) GeometryEngine.project(point, SpatialReference.create(4326), mapView.getSpatialReference());
                         Graphic graphic = new Graphic(mapPoint, pictureMarkerSymbol);
                         mGraphicLayer.addGraphic(graphic);
                         mapView.centerAt(mapPoint, true);
                         mapView.addLayer(mGraphicLayer);
+
                     }
-                });
-                location.create().show();
+                });*/
+                Intent editfeature=new Intent();
+                editfeature.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                editfeature.setClass(MainActivity.this, editfeatureActivity.class);
+                startActivity(editfeature);
                 return true;
             case R.id.action_settings:
                 Intent newuser=new Intent();
@@ -575,7 +577,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(dataintent);
                 break;
             case R.id.featureedit:
-                //actionmode=MainActivity.this.startActionMode(editfeaturecallback);
                 Intent queryIntent=new Intent();
                 queryIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 queryIntent.setClass(MainActivity.this,queryActivity.class);

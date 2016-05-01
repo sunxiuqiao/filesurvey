@@ -25,8 +25,8 @@
     <group android:title="工具">
         <menu>
             <item android:id="@+id/featureedit"
-                android:title="要素编辑"
-                android:icon="@android:drawable/ic_menu_edit"/>
+                android:title="路径规划与导航"
+                android:icon="@android:drawable/ic_menu_send"/>
             <item android:id="@+id/layercontrol"
                 android:icon="@android:drawable/ic_menu_manage"
                 android:title="图层管理"/>

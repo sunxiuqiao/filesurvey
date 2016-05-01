@@ -11,9 +11,9 @@
         android:icon="@drawable/zoomout"
         app:showAsAction="always"/>
 
-    <item android:id="@+id/locationid"
-        android:title="定位"
-        android:icon="@drawable/location"
+    <item android:id="@+id/editfeature"
+        android:title="编辑"
+        android:icon="@android:drawable/ic_menu_edit"
         app:showAsAction="always"/>
 
     <item android:id="@+id/zoomout"
@@ -25,7 +25,7 @@
     <item android:id="@+id/renwuguanli"
         android:title="任务管理日志"
         android:icon="@android:drawable/stat_sys_download"
-        app:showAsAction="never"/>
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/download"
         android:title="下载"

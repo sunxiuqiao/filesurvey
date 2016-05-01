@@ -240,9 +240,12 @@
 
     <string name="button_household">Average Household > 3.5</string>
     <string name="button_reset">Clear Graphics</string>
+    <string name="navi">路径规划与导航</string>
 
     <!-- Service URL -->
     <string name="query_service">http://services.arcgisonline.com/ArcGIS/rest/services/Demographics/USA_Average_Household_Size/MapServer</string>
+    <string name="title_activity_editfeature">地物编辑</string>
+    <string name="title_activity_query2">queryActivity2</string>
 
 
 </resources>
